@@ -1,0 +1,1 @@
+For store how to cleansing data in iMed
