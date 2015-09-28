@@ -1,0 +1,1 @@
+java -cp lib\postgresql-8.1-412.jdbc3.jar;dist\XlsReport.jar com.ketmanee.xlsReport.ui.FrmExport auto
