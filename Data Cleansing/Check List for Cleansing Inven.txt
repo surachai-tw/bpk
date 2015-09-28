@@ -1,0 +1,63 @@
+﻿item_code ไม่ UNIQUE
+SELECT common_name, count(item_id) Cnt FROM item WHERE active='1' AND fix_item_type_id IN ('0', '4') GROUP BY common_name ORDER BY Cnt DESC 
+
+common_name ไม่ UNIQUE
+SELECT item_code, count(item_id) Cnt FROM item WHERE active='1' AND fix_item_type_id IN ('0', '4') GROUP BY item_code ORDER BY Cnt DESC 
+
+item code หน่วยขาย กับ หน่วย Stock ไม่ตรงกัน 
+
+item code มีหลายขนาด บรรจุ (Pack size) ต้องมี 2 หน่วย และมี 2 ระดับ --> อนุญาตให้ มีมากกว่า 1 Pack size ได้ ตาม Vendor แต่หน่วยย่อยต้องตรงกัน
+และให้เช็กที่ส่วนของจัดซื้อ ด้วย กรณีที่มีหลายๆเคส
+
+item ที่ไม่เคลื่อนไหว หรือไม่ได้ใช้งานเป็นเวลานาน หรือ ไม่อยู่ใน Store ใดๆเลย 
+การตรวจสอบว่าไม่เคลื่อนไหว ให้ดูจาก stock card 
+
+lot number และ ไม่มี Expire ให้ดึงมาใส่ เพื่อให้ตัด stock ออกไป 
+
+item ที่ยังไม่มีหน่วย
+
+ล้าง Stock Card ที่เกิน 18 เดือน  
+ล้าง Lot number ที่เกิน 18 เดือน  
+
+
+*** Lot default ที่ยังมี on hand ให้ใส่ Exp 31/10/2015
+
+*** ควรมีหน้าจอที่ค้นได้ทั้งหมดทุกคลัง 
+
+*** Update unit_price cost เป็น avg สำหรับที่ qty=0
+
+*** ประวัติการเปลี่ยนทุน 
+
+
+-- วันที่เก่าที่สุดใน movement 
+--  2013-12-15 
+
+*** ของฝากขาย ต้องอยู่ที่ฝากขาย ห้ามอยู่ที่คลัง Own (Code เดียวกัน ชื่อเดียวกัน)
+
+Cost เป็นค่าว่าง
+stock_mgnt.stock_id ไม่มีอยู่จริง 
+stock_mgnt.item_id ไม่มีอยู่จริง 
+stock_mgnt.small_unit_id บางรายการไม่ตรงกับ item.base_unit_id 
+
+
+-- SUM(CAST(COALESCE(qty, '0') AS FLOAT))
+SELECT qty FROM stock_card 
+WHERE item_id='SUP3000652' AND stock_id='WB0007' 
+AND update_date BETWEEN '2015-08-05' AND '2015-08-20'
+
+-----------------------------------------------------------------------
+
+1. ข้อมูลที่ Sense ยา+โรค ให้แสดงที่สั่ง (Alert) และ ตอนพิมพ์ Sticker ให้แสดงให้แพทย์ เภสัช เห็น 
+2. DI มีไว้แล้ว ปัญหาคือ พยาบาลสั่งพิมพ์ได้ เช่น ใบ MAR, Sticker ยา 
+3. Current Medication --> แสดงยาที่คนไข้ใช้อยู่ อยากให้แสดงในหน้าจอ OPD (Med Reconcile)
+4. Max Dose ยังไม่มี 
+5. Scan Med reconcile --> ถ้ามี 3 จะไม่ต้องทำข้อ 5 
+6. ระบบล็อก ห้ามสั่ง
+
+
+
+
+
+
+
+
