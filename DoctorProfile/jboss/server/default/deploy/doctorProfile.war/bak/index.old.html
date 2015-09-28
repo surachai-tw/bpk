@@ -1,0 +1,92 @@
+<!doctype html>
+<html xmlns:ng="http://angularjs.org" lang="en" ng-app="App">
+<head>
+  <meta charset="UTF-8">
+  <script src="lib/angular.js"></script>
+  <title>Doctor Profile</title>
+</head>
+
+<body>
+	<div>
+		<form ng-controller="ListDoctor" ng-submit="FindDoctor()">
+			<legend>Find doctor in schedule</legend>
+	
+			<label>Clinic:</label> 
+			<input type="text" id="clinic" name="clinic"
+				ng-model="doctorprofile.clinic" 
+				placeholder="Clinic"> 
+				
+			<label>Speciality:</label>
+			<input type="text" id="speciality" name="speciality"
+				ng-model="doctorprofile.speciality" 
+				placeholder="Speciality">
+	
+			<label>Doctor name: </label> 
+			<input type="text" id="doctorname"
+				name="doctorname" ng-model="doctorprofile.doctorname"
+				placeholder="Doctor Name">
+	
+			<input type="submit" ng-click="find()" value="Find"/>
+			<input type="button" ng-click="clear()" value="Clear"/>
+			
+			<label>{{status}}</label>
+		</form>
+	</div>
+
+<script>
+
+	var app = angular.module('App', []);
+	.controller('ListDoctor', ['$scope', function($scope) {
+	      $scope.blankFilter = {};
+
+	      $scope.find = function(doctorprofile) 
+	      {
+	    	$scope.blankFilter = angular.copy(doctorprofile);
+	      };
+
+	      $scope.clear = function() 
+	      {
+	        $scope.doctorprofile = angular.copy($scope.blankFilter);
+	      };
+
+	      $scope.clear();
+	    }]);
+
+/*
+	var app = angular.module('App', []);
+	app.controller('ListDoctor', function($scope, $http), 
+	{
+		Alert("TEST");
+		$http.get("http://localhost:8080/doctorProfile/ListDoctorServlet")
+		.success(function(response) 
+				{	
+					$scope.names = response.records;
+				});
+	});
+*/
+
+/*
+    function ListDoctor($scope, $http)
+    {
+      $scope.user = {};
+     
+      $scope.listDoctor = function() 
+      {
+        $http({
+          method: 'GET',
+          url: 'http://localhost:8080/doctorProfile/ListDoctorServlet',
+          headers: {'Content-Type': 'application/json'},
+          data:  $scope.doctorprofile
+        }).success(function (data) 
+          {
+        	$scope.status=data;
+          });
+      };
+     }
+*/
+
+    </script>
+
+</body>
+
+</html>

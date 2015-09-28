@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JavaScript how to check for ENTER key</title>
+ 
+<script type="text/javascript">
+window.onload = function(){
+    
+ //get reference to the password element
+    var password = document.getElementById("password");
+ //bind the onkeypress event to the password field
+ password.onkeypress = function(event){
+     checkEnterPressed(this,event);
+     event.cancelBubble = true;
+     if (event.stopPropagation) event.stopPropagation();
+    };
+    //if you want to press enter anywhere on the page
+    document.onkeypress = function(event){
+     checkEnterPressed(this,event);
+     event.cancelBubble = true;
+     if (event.stopPropagation) event.stopPropagation();
+    };
+     
+}
+    
+function checkEnterPressed(obj, event){
+ //console.log(obj, event.keyCode);
+ //we are checking for ENTER key here, 
+ //you can check for other key Strokes here as well
+ if(event.keyCode === 13){
+  alert("Login form was submitted by ENTER key!");
+ }
+}
+ 
+function doProcessing(){
+  
+ //your business logic here or
+ //submit the form
+ alert("Login form was submitted by BUTTON Click!");
+}
+</script>
+ 
+</head>
+<body>
+<div id="myExample">
+ <form id="myForm" action="">
+  <fieldset>
+  <p>
+   <label for="userId">
+    UserId:
+   </label>
+  
+   <input
+    id="userId" type="text" name="inputBox" />
+  </p>
+  <p>
+   <label for="password">
+    Password:
+   </label>
+  
+   <input
+    id="password" type="password" name="inputBox" />
+  </p>
+  <p>
+   <input
+    id="myButton" type="button" name="myButton" value="SUBMIT"
+    onClick="JavaScript:doProcessing()">
+  </p>
+  </fieldset>
+ </form>
+</div>
+</body>
+</html>

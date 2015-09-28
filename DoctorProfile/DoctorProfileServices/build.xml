@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="DoctorProfile" default="compile" basedir=".">
+    <description>
+        Test for build DoctorProfile
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="../jboss-3.2.7/server/default/deploy/doctorProfile.war/WEB-INF/classes"/>
+  <property name="lib" location="lib"/>
+	<path id="classpath">
+		<fileset dir="${lib}" includes="**/*.jar"/>
+	</path>
+
+  <target name="clean" description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+  </target>
+
+  <target name="init" depends="clean">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}" classpathref="classpath" includeantruntime="false"/>
+    <copy file="src/connection.properties" tofile="../jboss-3.2.7/server/default/deploy/doctorProfile.war/WEB-INF/classes/connection.properties"/>
+  </target>
+
+</project>

@@ -1,0 +1,16 @@
+Buildfile: D:\AngularJS\DoctorProfileServices\build.xml
+
+clean:
+   [delete] Deleting directory D:\AngularJS\jboss-3.2.7\server\default\deploy\doctorProfile.war\WEB-INF\classes
+
+init:
+    [mkdir] Created dir: D:\AngularJS\jboss-3.2.7\server\default\deploy\doctorProfile.war\WEB-INF\classes
+
+compile:
+    [javac] Compiling 15 source files to D:\AngularJS\jboss-3.2.7\server\default\deploy\doctorProfile.war\WEB-INF\classes
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+     [copy] Copying 1 file to D:\AngularJS\jboss-3.2.7\server\default\deploy\doctorProfile.war\WEB-INF\classes
+
+BUILD SUCCESSFUL
+Total time: 0 seconds

@@ -1,0 +1,50 @@
+<!doctype html>
+<html ng-app="app">
+  <head>
+  	<style type="text/css">
+  	.grid {
+		  width: 500px;
+  		  height: 250px;
+		}
+  	</style>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular-touch.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular-animate.js"></script>
+    <script src="http://ui-grid.info/docs/grunt-scripts/csv.js"></script>
+    <script src="http://ui-grid.info/docs/grunt-scripts/pdfmake.js"></script>
+    <script src="http://ui-grid.info/docs/grunt-scripts/vfs_fonts.js"></script>
+    <script src="http://ui-grid.info/release/ui-grid-unstable.js"></script>
+    <script src="http://ui-grid.info/release/ui-grid-unstable.css"></script>
+    <script>
+    var app = angular.module('app', ['ngTouch', 'ui.grid', 'ui.grid.edit']);
+    
+    app.controller('MainCtrl', ['$scope', function ($scope) {
+     
+    $scope.gridOptions = {
+            enableSorting: true,
+            columnDefs: [
+              { name:'firstName', field: 'first-name' },
+              { name:'1stFriend', field: 'friends[0]' },
+              { name:'city', field: 'address.city'},
+              { name:'getZip', field: 'getZip()', enableCellEdit:false}
+            ],
+            data : [      {
+                               "first-name": "Cox",
+                               "friends": ["friend0"],
+                               "address": {street:"301 Dove Ave", city:"Laurel", zip:"39565"},
+                               "getZip" : function() {return this.address.zip;}
+                           }
+                       ]
+          };
+     
+    }]);    
+    
+    
+    </script>
+  </head>
+  <body>
+    <div ng-controller="MainCtrl">
+      <div id="grid1" ui-grid="gridOptions" ui-grid-edit class="grid"></div>
+    </div>
+  </body>
+</html>

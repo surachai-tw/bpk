@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular-touch.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular-animate.js"></script>
+<script src="http://ui-grid.info/docs/grunt-scripts/csv.js"></script>
+<script src="http://ui-grid.info/docs/grunt-scripts/pdfmake.js"></script>
+<script src="http://ui-grid.info/docs/grunt-scripts/vfs_fonts.js"></script>
+<script src="http://ui-grid.info/release/ui-grid-unstable.js"></script>
+<script src="http://ui-grid.info/release/ui-grid-unstable.css"></script>
+
+<body bgcolor="white" topmargin="0" leftmargin="0">
+
+<div bgcolor="yellow">
+  <section id="secfilter">
+	<form ng-controller="ListDoctor" ng-submit="findDoctor">
+		<legend>Find doctor in schedule</legend>
+
+		<label>Clinic:</label> 
+		<input type="text" id="txtClinic" name="clinic"
+			ng-model="doctorprofile.clinic" 
+			placeholder="Clinic"> 
+			
+		<label>Speciality:</label>
+		<input type="text" id="txtSpeciality" name="speciality"
+			ng-model="doctorprofile.speciality" 
+			placeholder="Speciality">
+
+		<label>Doctor name: </label> 
+		<input type="text" id="txtDoctorname"
+			name="doctorname" ng-model="doctorprofile.doctorname"
+			placeholder="Doctor Name">
+
+		<input type="submit" id="btnSubmit" value="Find"/>
+		<input type="button" id="btnClear" ng-click="clear()" value="Clear"/>
+		
+		<br/><br/>
+		<input type="text" id="txtStatus" name="status" readonly size="100%"> 
+	</form>
+  </section>
+</div>
+
+<div ng-controller="MainCtrl">
+	<div id="grid1" ui-grid="gridOptions"></div>
+</div>
+
+<script>
+	var app = angular.module('ListDoctor', ['ngAnimate', 'ngTouch', 'ui.grid']);
+	app.controller('testCall', function($scope, $http) 
+			{
+		  		$http.get("http://localhost:8080/doctorProfile/ListDoctorServlet")
+		  		.success(function (response) 
+		  		{	
+		  			$scope.names = response.records;
+		  		});
+			});
+
+	app.controller(
+			'findDoctor', function($scope, $http) 
+			{
+		  		$http.get("http://localhost:8080/doctorProfile/ListDoctorServlet")
+		  		.success(function (response) 
+		  		{	
+		  			$scope.names = response.records;
+		  		});
+			});
+	
+	app.controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
+		  $scope.columns = [{ field: 'name' }, { field: 'gender' }];
+		  $scope.gridOptions = {
+		    enableSorting: true,
+		    columnDefs: $scope.columns,
+		    onRegisterApi: function( gridApi ) { 
+		      $scope.gridApi = gridApi;
+		      var cellTemplate = ' 	';   // you could use your own template here
+		      $scope.gridApi.core.addRowHeaderColumn( { name: 'rowHeaderCol', displayName: '', width: 30, cellTemplate: cellTemplate} );
+		    }
+		  };
+		  
+		  $http.get('http://ui-grid.info/data/100.json')
+		    .success(function(data) {
+		      $scope.gridOptions.data = data;
+		      console.log(data)
+		    });
+		}]);
+	
+</script>
+
+</body>
+</html>
