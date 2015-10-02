@@ -1,4 +1,5 @@
 -- DROP TABLE bpk_fix_order_status;
+-- SELECT * FROM bpk_fix_order_status
 CREATE TABLE bpk_fix_order_status 
 (
     fix_order_status_id VARCHAR(255) PRIMARY KEY, 
@@ -17,6 +18,7 @@ INSERT INTO bpk_fix_order_status VALUES('8', 'SUBMIT_IGNORE', '08');
 INSERT INTO bpk_fix_order_status VALUES('9', 'NOT_COMPLETE', '09');
 
 -- DROP TABLE bpk_fix_receipt_status;
+-- SELECT * FROM bpk_fix_receipt_status;
 CREATE TABLE bpk_fix_receipt_status 
 (
     fix_receipt_status_id VARCHAR(255) PRIMARY KEY, 
@@ -29,6 +31,7 @@ INSERT INTO bpk_fix_receipt_status VALUES('2', 'NORMAL', '2');
 -- SELECT * FROM bpk_fix_receipt_status
 
 -- DROP TABLE bpk_fix_receipt_type;
+-- SELECT * FROM bpk_fix_receipt_type;
 CREATE TABLE bpk_fix_receipt_type  
 (
     fix_receipt_type_id VARCHAR(255) PRIMARY KEY, 
@@ -52,6 +55,7 @@ INSERT INTO bpk_fix_receipt_type VALUES('72', 'PAY_INVOICE_MERGE_DETAIL', '14');
 -- SELECT * FROM bpk_fix_receipt_type
 
 -- DROP TABLE bpk_fix_item_type;
+-- SELECT * FROM bpk_fix_item_type;
 CREATE TABLE bpk_fix_item_type  
 (
     bpk_fix_item_type_id VARCHAR(255) PRIMARY KEY, 
@@ -73,6 +77,7 @@ INSERT INTO bpk_fix_item_type VALUES('13', 'PURCHASE', '12');
 INSERT INTO bpk_fix_item_type VALUES('14', 'ASSET', '13');
 INSERT INTO bpk_fix_item_type VALUES('15', 'OTHER', '14');
 
+-- SELECT bpkget_item_type_by_id('15');
 CREATE FUNCTION bpkget_item_type_by_id(id text) RETURNS text 
 LANGUAGE plpgsql 
 AS '
@@ -89,6 +94,7 @@ BEGIN
     RETURN rec_desc;
 END';
 
+-- SELECT * FROM bpk_hospital_item
 CREATE TABLE bpk_hospital_item   
 (
     bpk_hospital_item_id VARCHAR(255) PRIMARY KEY, 
@@ -134,7 +140,7 @@ END';
 
 -- SELECT * FROM base_department 
 -- DROP FUNCTION bpkget_department_description_by_spid(id text);
-CREATE FUNCTION bpkget_department_description_by_spid(id text) RETURNS text 
+CREATE OR REPLACE FUNCTION bpkget_department_description_by_spid(id text) RETURNS text 
 LANGUAGE plpgsql 
 AS '
 DECLARE 
@@ -153,7 +159,7 @@ END';
 -- SELECT bpkget_department_description_by_spid('001');
 
 -- DROP FUNCTION bpkget_department_id_by_spid(id text);
-CREATE FUNCTION bpkget_department_id_by_spid(id text) RETURNS text 
+CREATE OR REPLACE FUNCTION bpkget_department_id_by_spid(id text) RETURNS text 
 LANGUAGE plpgsql 
 AS '
 DECLARE 
@@ -170,7 +176,8 @@ BEGIN
 END';
 -- SELECT bpkget_department_id_by_spid('001');
 
-DROP TABLE bpk_account_group;
+-- DROP TABLE bpk_account_group;
+-- SELECT * FROM bpk_account_group;
 CREATE TABLE bpk_account_group 
 (
     id VARCHAR(255) PRIMARY KEY, 
@@ -182,6 +189,7 @@ CREATE TABLE bpk_account_group
 -- SELECT * FROM base_billing_group WHERE acc_group='' OR acc_group IS NULL 
 
 -- DROP TABLE bpk_department_services;
+SELECT * FROM bpk_department_services;
 CREATE TABLE bpk_department_services 
 (
     id SERIAL PRIMARY KEY, 

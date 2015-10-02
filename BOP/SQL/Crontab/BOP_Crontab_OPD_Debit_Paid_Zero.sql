@@ -1,4 +1,4 @@
-INSERT INTO bpk_account_debit_detail(receipt_id, receive_date, receive_time, hn, vn, visit_id, visit_spid, visit_date, visit_time, fix_visit_type_id, base_patient_type_id, financial_discharge, financial_discharge_date, financial_discharge_time, main_doctor_id, patient_name, fix_receipt_type_id, receipt_type_description, fix_receipt_status_id, receipt_status_description, original_receipt_number, receipt_number, base_billing_group_id, billing_description, account_id, account_description, linesale, linediscount, linepaid, sale, discount, special_discount, decimal_discount, paid, plan_id, plan_code, plan_description, receive_eid, all_plan)
+-- INSERT INTO bpk_account_debit_detail(receipt_id, receive_date, receive_time, hn, vn, visit_id, visit_spid, visit_date, visit_time, fix_visit_type_id, base_patient_type_id, financial_discharge, financial_discharge_date, financial_discharge_time, main_doctor_id, patient_name, fix_receipt_type_id, receipt_type_description, fix_receipt_status_id, receipt_status_description, original_receipt_number, receipt_number, base_billing_group_id, billing_description, account_id, account_description, linesale, linediscount, linepaid, sale, discount, special_discount, decimal_discount, paid, plan_id, plan_code, plan_description, receive_eid, all_plan)
 SELECT
     receipt.receipt_id, 
     receipt.receive_date, 
@@ -47,11 +47,11 @@ INNER JOIN receipt_billing_group ON receipt.receipt_id=receipt_billing_group.rec
 LEFT JOIN base_billing_group billgrp ON receipt_billing_group.base_billing_group_id=billgrp.base_billing_group_id 
 LEFT JOIN bpk_account_group ON billgrp.acc_group=bpk_account_group.id 
 LEFT JOIN plan ON receipt.plan_id=plan.plan_id 
-INNER JOIN visit ON receipt.visit_id=visit.visit_id AND visit.fix_visit_type_id='1' AND visit.financial_discharge='1' 
+INNER JOIN visit ON receipt.visit_id=visit.visit_id AND visit.fix_visit_type_id='0' AND visit.financial_discharge='1' 
 WHERE CAST(receipt.paid AS FLOAT)=0
 AND receipt.receipt_id NOT IN (SELECT DISTINCT receipt_id FROM bpk_account_debit_detail)
 AND receipt.receipt_number NOT LIKE 'X%'
-financial_discharge_date=Cast(CURRENT_DATE-1 AS VARCHAR(10))
+AND financial_discharge_date=Cast(CURRENT_DATE-1 AS VARCHAR(10))
 AND receipt.fix_receipt_type_id IN ('1')
 AND receipt.fix_receipt_status_id='2'
 ORDER BY receive_date, receipt.visit_id, receipt.receipt_id, billgrp.base_billing_group_id;
