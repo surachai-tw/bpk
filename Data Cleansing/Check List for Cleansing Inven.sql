@@ -178,6 +178,32 @@ SELECT * FROM
 ) tmp 
 ORDER BY tmp."Item Name" COLLATE "th_TH", tmp."Quantity" DESC, "Count Record Lot" DESC, "Expire Date" DESC 
 
+-- 11. Setup สั่งซื้อ ไม่ตรงกับ Master ของ Item 
+-- หน่วยย่อย ของ 2 หน้าจอ ไม่ตรงกัน 
+SELECT * FROM 
+(
+    SELECT 
+        item.item_code "Item Code", 
+        item.common_name "Item Name", 
+        stock_setup_order.item_trade_name "Trade Name", 
+        distributor.distributor_name "Vender Name", 
+        CASE WHEN stock_setup_order.active='1' THEN 'Active' ELSE 'In-Active' END "Active Status", 
+        stock_setup_order_detail.active_date "มีผลตั้งแต่วันที่", 
+        bpkget_base_unit_by_id(stock_setup_order_detail.big_unit_id) "หน่วยใหญ่ Setupสั่งซื้อ", 
+        stock_setup_order_detail.mid_unit_rate, 
+        stock_setup_order_detail.unit_rate, 
+        bpkget_base_unit_by_id(stock_setup_order_detail.small_unit_id) "หน่วยย่อย Setupสั่งซื้อ", 
+        bpkget_base_unit_by_id(item.base_unit_id) "หน่วยย่อย Master" 
+    FROM 
+    stock_setup_order 
+    INNER JOIN item ON stock_setup_order.item_id = item.item_id AND item.active='1' 
+    INNER JOIN stock_setup_order_detail ON stock_setup_order.stock_setup_order_id = stock_setup_order_detail.stock_setup_order_id 
+    LEFT JOIN distributor ON stock_setup_order.distributor_id = distributor.distributor_id 
+) tmp 
+WHERE tmp."หน่วยย่อย Setupสั่งซื้อ"<>tmp."หน่วยย่อย Master"
+ORDER BY tmp."Item Name" COLLATE "th_TH", tmp."Active Status", tmp."มีผลตั้งแต่วันที่"
+
+
 item ที่ยังไม่มีหน่วย
 
 ล้าง Stock Card ที่เกิน 18 เดือน  
