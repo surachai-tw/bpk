@@ -67,7 +67,7 @@ public class RunAllocate
 
     /**
      * @param args the command line arguments
-     *
+     */
     public static void main(String[] args)
     {
         // , "2015-05-02", "2015-05-03", "2015-05-04", "2015-05-05", "2015-05-06", "2015-05-07", "2015-05-08", "2015-05-09", "2015-05-10"
@@ -158,20 +158,21 @@ public class RunAllocate
             }
         }
     }
-     */
+    /**/
 
-    /* For test by visit_id */
+    /* For test by visit_id 
     public static void main(String[] args)
     {
         AllocateDAO aAllocateDAO = new AllocateDAO();
         long startMs = System.currentTimeMillis();
-        String date = "2015-09-13";
+        String date = "2015-09-05";
         System.out.println("Prepare to allocate visit on date "+date);
-        aAllocateDAO.makeAlloacteIpd("115091304594064901", date);
+        aAllocateDAO.makeAlloacteIpd("115090318364917801", date);
         long finishMs = System.currentTimeMillis();
         System.out.println("Allocated "+date+" finish in "+(((float)(finishMs-startMs)/1000)/60)+" Minutes");
         //|-------------------------------------------------------------
     }
+    */
 
     public static Date getDateChristFromString(String yyyy_mm_dd)
     {

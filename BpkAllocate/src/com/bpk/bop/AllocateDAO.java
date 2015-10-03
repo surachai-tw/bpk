@@ -300,7 +300,7 @@ public class AllocateDAO {
 
                     sqlDebitBillGroup = new StringBuilder("UPDATE bpk_account_debit_detail SET wlinediscount='").append(tmpDebitBillGroupVO.getWlineDiscount()).append("', wlinepaid='").append(tmpDebitBillGroupVO.getWlinePaid()).append("' WHERE id='").append(tmpDebitBillGroupVO.getId()).append("'");
 
-                    System.out.println(sqlDebitBillGroup.toString());
+                    // System.out.println(sqlDebitBillGroup.toString());
                     stmtBillGroup.executeUpdate(sqlDebitBillGroup.toString());
                 }
                 stmtBillGroup.close();
