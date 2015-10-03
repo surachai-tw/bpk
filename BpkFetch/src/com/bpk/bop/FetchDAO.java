@@ -19,7 +19,7 @@ public class FetchDAO
             conn = DAOFactory.getConnection();
             stmt = conn.createStatement();
 
-            System.out.println(sqlFetch);
+            // System.out.println(sqlFetch);
             resultRec = stmt.executeUpdate(sqlFetch);
 
             stmt.close();
