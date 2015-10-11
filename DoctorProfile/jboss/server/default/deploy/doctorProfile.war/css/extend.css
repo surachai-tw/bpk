@@ -1,0 +1,1358 @@
+body 
+{
+	margin:0;
+	font-size: 12px;
+	font-family: Tahoma, Verdana, Segoe, sans-serif;
+}
+
+table, td, tr, th, p, div 
+{
+	font-family: Tahoma, Verdana, Segoe, sans-serif;
+	font-size: 12px;
+	vertical-align: top;
+}
+
+fieldset {padding:4px;}
+legend {font-weight:bold; color:blue}
+
+.txtBorder 
+{
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+	background-color: #FFFFFF;
+}
+
+.txtNumber
+{
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+	text-align: right;
+	background-color: #FFFFFF;
+}
+
+.txtNoBorderNumber
+{
+	border: 0px;
+	text-align: right;
+}
+
+.cmbRequire
+{
+	background-color:#CDFEFD
+}
+
+.txtBorderRequire
+{
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+	background-color:#CDFEFD;
+}
+
+.txtNumberRequire
+{
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+	text-align: right;
+	background-color:#CDFEFD;
+}
+
+.txtNumberDisabled
+{
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+	text-align: right;
+	background-color:#D1D1D1;
+}
+
+.txtDisabled
+{
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+	background-color:#D1D1D1;
+}
+
+.txtStyleAdmin
+{
+	border-style:solid;border-color:gray;border-width:1px;
+}
+
+.btnStyleAdmin
+{
+	border-style:solid;border-color:gray;border-width:1px;width:50px;
+}
+
+.btnStyleAdmin25
+{
+	border-style:solid;border-color:gray;border-width:1px;width:25px;
+}
+
+.pointer
+{
+	cursor: pointer;
+}
+
+.b
+{
+	font-weight: bold;
+}
+
+.divSidePanelLtr
+{
+	height:20px;
+}
+
+.divSidePanelRtl
+{
+	height:23px;
+	text-align:right;
+}
+
+.btnStyle
+{
+	border-top: 1px solid #DDDDDD;
+	border-right: 1px solid #666666;
+	border-bottom: 1px solid #666666;
+	border-left: 1px solid #DDDDDD;
+	height: 21px;
+}
+
+.btnStyleS
+{
+	border-top: 1px solid #DDDDDD;
+	border-right: 1px solid #666666;
+	border-bottom: 1px solid #666666;
+	border-left: 1px solid #DDDDDD;
+	width: 15px;
+	height: 21px;
+}
+
+.btnStyleM
+{
+	border-top: 1px solid #DDDDDD;
+	border-right: 1px solid #666666;
+	border-bottom: 1px solid #666666;
+	border-left: 1px solid #DDDDDD;
+	width: 25px;
+	height: 21px;
+}
+
+.btnStyleL
+{
+	border-top: 1px solid #DDDDDD;
+	border-right: 1px solid #666666;
+	border-bottom: 1px solid #666666;
+	border-left: 1px solid #DDDDDD;
+	width: 40px;
+	height: 21px;
+}
+
+.borderSize1 {
+	border-top: 1px solid #666666;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px solid #666666;
+
+}
+
+.lblOdd {
+
+	font-weight: bold;
+	background-color: #F5F5F5;
+}
+
+.lblEven {
+
+	font-weight: bold;
+	background-color: #FFFFFF;
+}
+
+.lblRequire {
+
+	font-weight: bold;
+	color: #FF2222;
+	background-color: #FFFFFF;
+}
+
+.tabDisable 
+{
+	font-weight: bold;
+	background-image: url(bgTabDisable.gif);
+	background-repeat: repeat;
+	/* background-color: #DEE7EB; */
+	color: #354A55;
+}
+
+.tabEnable 
+{
+	font-weight: bold;
+	background-image: url(bgTabEnable.gif);
+	background-repeat: repeat;
+	/* background-color: #7b9cae; */
+	color: #FFFFFF;
+}
+
+.tabEnable2 
+{
+	font-weight: bold;
+	background-image: url(bgTabOver2.gif);
+	background-repeat: repeat;
+	/* background-color: #7b9cae; */
+	color: #FFFFFF;
+}
+
+.tabDisable2 
+{
+	font-weight: bold;
+	background-image: url(bgTabDisable2.gif);
+	background-repeat: repeat;
+	/* background-color: #DEE7EB; */
+	color: #354A55;
+}
+
+.tabOver {
+
+	font-weight: bold;
+	background-color: #DEE7EB;
+	color: #5B7F93;
+}
+.menuOver {
+	font-weight: bold;
+	background-color: #5B7F93;
+	color: #FFFFFF;
+
+}
+
+.menuNormal 
+{
+    color: #FFFFFF;
+	border: 1px solid #637DB5;
+	background-color: #637DB5;
+	font-weight: bold;
+}
+
+.header1 {  
+	font-style: normal; 
+	color: #000000; 
+	background: #E6E6FF; 
+	font-size: 14px; 
+}
+
+.contentHeader { 
+font-style: normal; 
+color: #000000; 
+background: #E6E6FF; 
+font-size: 12px;
+}
+
+.summaryAlert1 { 
+font-style: normal; 
+color: #000000; 
+background: #99FFCC; 
+font-size: 12px;
+}
+.summaryAlert2 { 
+font-style: normal; 
+color: #000000;
+background: #FFFF99; 
+font-size: 12px; 
+}
+.summaryAlert3 { 
+font-style: normal; 
+color: #000000; 
+background: #FED3D7; 
+font-size: 12px; 
+}
+
+.summaryHeader1 { 
+font-style: bold; 
+color: #FFFFFF; 
+background: #637DB5; 
+font-size: 12px; 
+}
+
+.summaryHeader2 { 
+font-style: bold; 
+color: #000000; 
+background: #E6E6FF; 
+font-size: 12px; 
+}
+
+.summaryHeader3 { 
+font-style: bold; 
+color: #000000; 
+background: #DEE7EB; 
+font-size: 12px; 
+}
+
+.summaryDetail1 { 
+font-style: bold; 
+color: #000000; 
+background: #FF0000; 
+font-size: 12px; 
+}
+
+.summaryDetail2 { 
+font-style: bold; 
+color: #000000; 
+background: #FF6600; 
+font-size: 12px; 
+}
+
+.summaryDetail3 { 
+font-style: bold; 
+color: #000000; 
+background: #FFFF00; 
+font-size: 12px; 
+}
+
+.contentHeader2 {
+background: #E6E6FF; 
+}
+
+.dashLine {
+
+	border-top: 1px dashed #999999;
+}
+
+.statusBar 
+{
+    color: #FFFFFF;
+	border: 1px solid #637DB5;
+	background-color: #637DB5;
+	font-weight: bold;
+}
+
+.trOverOdd {
+	background-color:#CFCFCF
+}
+
+.trOverEvent {
+	background-color:#CFCFCF
+}
+
+.selectRow {
+	background-color:#99FFFF
+}
+
+.tblLoginBorder {
+
+	border-top: 1px ridge #7B9CAE;
+	border-right: 1px ridge #7B9CAE;
+	border-bottom: 1px ridge #7B9CAE;
+	border-left: 1px ridge #7B9CAE;
+}
+
+.success{
+	color: #FFFFFF;
+	background-color:#009900;
+	font-weight: bold;
+}
+
+.fail{
+	color: #FFFFFF;
+	background-color:#FF0000;
+	font-weight: bold;
+}
+
+.txtBorder1
+{
+	border: 1px solid #000000;
+}
+
+.assignWait
+{
+	background-color: #FFE4CA;
+}
+
+.assignComplete
+{
+	background-color: #FBCAFF;
+}
+
+.tabmenu {cursor:hand}
+
+.shortkey {color:red}
+
+.normalstatus {color:black}
+
+.trOver1{background-color:#D8D8D8}
+
+.trOver2{background-color:#A6A6A6}
+
+.selectRow{background-color:#33FFFF}
+
+.textfield {color:red}
+.label {color:blue}
+.labelFound {color:blue}
+.labelNotFound {color:red}
+
+.bgForm
+{
+	border: 1px solid #637DB5;
+}
+
+.bgForm1 
+{
+	background: #D5E4EF; 
+}
+
+.bgForm2 
+{
+	background: #FCFFE9; 
+}
+
+.bgForm3 
+{
+	background: #FFF5DB; 
+}
+
+.bgForm4 
+{
+	background: #DDDDDD; 
+}
+
+.bgForm5 
+{
+	background: #FFE4E8; 
+}
+/* treatment course*/
+.bgForm6 
+{
+	background: #FFFF99; 
+}
+.bgForm7
+{
+	background: #C1C6EF; 
+}
+
+.bgAlert
+{
+	background: #FA5B5F;
+}
+
+.bgVitalSignSelect
+{
+    color: #AAAAAA;
+	background-color: #637DB5;
+}
+
+.bgOutOfRange
+{
+	color: red;
+	background-color: yellow;
+}
+.txtLabError
+{
+	color: #FFFFFF;
+	background-color: #FF6600;
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+}
+.txtLabAbnormal
+{
+	color: red;
+	background-color: yellow;
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+}
+.txtLabNumberAbnormal
+{
+	text-align: right;
+	color: #000000;
+	background-color: #FFFF33;
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+}
+.bgBodyCenter 
+{
+
+}
+.bgCritical
+{
+	color: #FFFFFF;
+	background-color: #FF6600;
+}
+.bgFormLabel 
+{ 
+	font-style: normal; 
+	color: #000000; 
+	background: #F1F1F1; 
+	vertical-align:bottom;
+}
+
+.bgFormLabelTop
+{ 
+	font-style: normal; 
+	color: #000000; 
+	background: #F1F1F1; 
+	vertical-align:top;
+}
+
+.bgFormLabelMiddle
+{
+	font-style: normal; 
+	color: #000000; 
+	background: #F1F1F1; 
+	vertical-align:middle;
+}
+
+.bgFormLabel1 
+{ 
+	font-style: normal; 
+	color: #000000; 
+	background: #E8E8E8; 
+}
+
+.bgOver 
+{
+    color: #000000;
+	background-color: #C4D3DF;
+}
+
+.bgTabOver 
+{
+    color: #FFFFFF;
+	background-image: url(bgTabOver.gif);
+	background-repeat: repeat;
+	/* background-color: #7B9CAE; */
+	font-weight: bold;
+}
+
+.bgHilite 
+{
+    color: #FFFFFF;
+	background-color: #637DB5;
+}
+
+.bgHiliteSelected
+{
+    color: #FFFFFF;
+	background-color: #637DB5;
+	border: 2px solid #FF6600;
+}
+
+.bgTabHilite 
+{
+    color: #FFFFFF;
+	background-image: url(bgTabEnable.gif);
+	background-repeat: repeat;
+	/* background-color: #637DB5; */
+	font-weight: bold;
+}
+
+.bgHeader
+{
+	background-color: #E6E6FF;
+}
+
+.bgHeaderForm 
+{
+    color: #FFFFFF;
+	border: 1px solid #637DB5;
+	background-image: url(bgTabEnable.gif);
+	background-repeat: repeat;
+	/* background-color: #637DB5; */
+	font-weight: bold;
+}
+
+.bgPatientInfo 
+{
+    color: #000000;
+	border: 1px solid #637DB5;
+	background-color: #E6E6FF;
+	font-weight: bold;
+}
+
+.bgHeaderTable 
+{
+    color: #000000;
+	border: 1px solid #E6E6FF;
+	background-color: #E6E6FF;
+	font-weight: bold;
+}
+
+.lineOdd 
+{
+	background-color: #F5F5F5;
+}
+
+.lineOdd1 
+{
+	background-color: #A6A6A6;
+}
+
+.lineEven 
+{
+}
+
+.lineLock
+{
+	background-color: #FFE4CA;
+}
+
+.lineReturned
+{
+	background-color: #E9D8E8;
+}
+
+.lineItemCritical
+{
+	background-color: #FBFED8;
+}
+
+.lineItemOutOfOrder
+{
+	background-color: #FED3D7;
+}
+
+.lineEmergency
+{
+	background-color: #FFE4CA;
+}
+
+.lineVeryEmergency
+{
+	background-color: #FED3D7;
+}
+
+.lineDisabled
+{
+	background-color: #D1D1D1;
+}
+
+/*.lineCompleteLabXray
+{
+	background-color: #FED3D7;
+}*/
+.lineOverMaxWaitTime
+{
+	background-color: #FED3D7;
+}
+.lineCompleteLabXray
+{
+	background-color: #A8E99E;
+}
+.lineRootSetItem
+{
+	background-color: #FCFA3F;
+}
+.lineChildSetItem
+{
+	background-color: #FBF8BE;
+}
+.lineChageSetOp
+{
+	background-color: #FFFF66;
+}
+.lineWaitingAcceptDelay
+{
+	background-color: #FFE79D;
+}
+
+.statusWorking
+{
+	background-color:#F4EF81;
+	color:#000000;
+	font-weight:bold
+}
+
+.patientInfo_link
+{
+	vertical-align:bottom;
+	cursor:hand;
+	color:red;
+	text-decoration:underline;
+}
+
+.txtNumberReadOnly
+{
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+	text-align: right;
+	background-color:#D2D2D2;
+}
+
+.txtReadOnly
+{
+	border-top: 1px ridge #999999;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px ridge #999999;
+	background-color:#D2D2D2;
+}
+
+.txtAutoComplete
+{
+	border: 1px solid #3399FF;
+}
+
+.txtAutoCompleteRequire
+{
+	border: 1px solid #3399FF;
+	background-color:#CDFEFD;
+}
+
+.labor
+{
+	border:groove 0px;
+	padding:0;
+	font-family:arial;
+	font-size:12;
+	width:330;
+	height:370;
+	position:absolute;
+	top:0;
+	left:-310;
+}
+
+sup {font-size: 10px; font-family: Tahoma, Verdana, Segoe, sans-serif;}
+
+/*****  css for dental  *****/
+
+/*Treatment Short Cut On Select*/
+.txOrderMenuSelect
+{
+	background-color: #848284;
+	color: #FFFFFF;
+}
+/*Treatment Short Cut on Mouse Over*/
+.txOrderMenuOver
+{
+	background-color: #A7A7A7;
+	color: #8482AD;
+}
+/*Treatment Short Cut On MouseOut*/
+.txOrderMenuNonSelect
+{
+	background-color: #DADAD8;
+	color: #8482AD;
+	font-weight:bold;
+}
+/*Patient General Data Text*/
+.txtPatientGeneralData
+{
+	font-weight:bold;
+	font-size: 16px;
+	color:#FFFFFF;
+}
+/*Patient Medical History Data Text*/
+.txtPatientMedicalHistoryData
+{
+	font-weight:bold;
+	font-size: 16px;
+	color:#FFCF00;
+}
+/*Tab Header*/
+.tbHeader
+{
+	background-color: #ADADAD;
+	font-weight: bold;
+	text-align: center;
+	font-size: 11px;
+	background-image: url("tbHeader.gif");
+	background-repeat: repeat-x;
+	color:#693900;
+	height: 20px;
+	cursor:default;
+}
+
+#tbHeader
+{
+	background-color: #ADADAD;
+	font-weight: bold;
+	text-align: center;
+	font-size: 11px;
+	background-image: url("tbHeader.gif");
+	background-repeat: repeat-x;
+	color:#693900;
+	height: 20px;
+}
+
+#tbHeader td {
+	border-bottom: solid 1px #ADADAD;
+	border-left: solid 1px #ADADAD;
+	border-right: solid 1px #DEDEDE;
+}
+
+/*Tab Slider*/
+.tabSlide
+{
+	color: #714A00;
+	height: 20px;
+	cursor: pointer;
+	background: url("tabSlide.gif") repeat-x;	
+	border-bottom: solid 1px #ADADAD;
+}
+.tabSlideOver
+{
+	color: Gray;
+	height: 20px;
+	cursor: pointer;
+	background: url("tabSlideOver.gif") repeat-x;	
+	border-bottom: solid 1px #ADADAD;
+}
+.tabSlideDiagnosis
+{
+	color: #714A00;
+	height: 20px;
+	background: url("tabSlideDiagnosis.gif") repeat-x;	
+}
+.altText{
+	background-color:#EEE8AA;
+	border: solid 1px gray;
+	position: absolute;
+	margin-top: 23px;
+	margin-left: 0px;
+	font-size:14px;
+	padding: 5px;
+}
+
+/*Treatment Order On Select*/
+.tblOrderMenuSelect
+{
+	background-color: #848284;
+	font-weight:bold;
+	color: #FFFFFF;
+}
+/*Treatment Order on Mouse Over*/
+.tblOrderMenuOver
+{
+	background-color: #A7A7A7;
+	color: #FFFFFF;
+}
+/*Treatment Order On MouseOut*/
+.tblOrderMenuNonSelect
+{
+	background-color: #EFEBEF;
+	color: #000000;
+}
+.tblOrderMenu
+{
+	border: 1px solid #848284;
+	padding: 0px;
+}
+.tblDentalAdmin
+{
+	color: Gray;
+	font-weight:bold;
+	font-size:13px;
+	height: 24px;
+}
+/*ตาราง teeth chart*/
+.tblTeethChart
+{
+	color: Gray;
+	font-weight:bold;
+	font-size:12px;
+	background: no-repeat;
+	background-position: bottom center;
+}
+/*แถบที่ไม่ได้เลือก*/
+.tabInAc{
+	background: url(tabInac1.gif) no-repeat;
+	height: 20px;
+	padding-top: 5px;
+	cursor: pointer;
+	width: 120px;
+	text-align: center;
+	font-weight: bold;
+	color: #696969;
+	opacity:0.6;filter:alpha(opacity=60);
+}
+/*แถบที่ถูกเลือก*/
+.tabAc{
+	background: url(tabAc1.gif) no-repeat;
+	height: 20px;
+	padding-top: 5px;
+	width: 120px;
+	cursor: pointer; 
+	text-align: center;
+	font-weight: bold;
+	color: #393939;
+}
+
+.tabBorder{
+	background: url(tabBorder989393.gif) repeat-x;
+	height: 25px;
+}
+/*ปุ่มเลือกด้านฟัน*/
+.btnToothSurfaceInac{
+	background: url(btnTeethSurfaceInac.gif) no-repeat;
+	height: 18px;
+	width: 22px;
+	color:#000000;
+	font-size:11px;
+	vertical-align: middle;
+	cursor:hand;
+}
+.btnToothSurfaceAct{
+	background: url(btnTeethSurfaceAct.gif) no-repeat;
+	height: 18px;
+	width: 22px;
+	font-weight: bold;
+	color:#FFFFFF;
+	font-size:11px;
+	vertical-align: middle;
+	cursor:hand;
+}
+
+/*Div ของ Treatment symbol*/
+.divTreatmentSymbol{
+	position:absolute;
+	width:46px;
+	height:85px;
+	z-index:90;
+}
+
+.divTreatmentMap{
+	position:absolute;
+	width:46px;
+	height:85px;
+	z-index:99;
+}
+
+/*Etc from doctor Room*/
+input.button{
+	font: bold 12px Arial, Sans-serif; 
+	height: 25px;
+	margin: 0;
+	padding: 2px 1px; 
+	color: #393939;
+	background: #A2A2A2 url(tbHeader.gif) repeat-x 0 0;
+	border: solid 1px #BDBDBD;
+	cursor: pointer;
+}
+
+input.operator{
+	font: bold 14px Arial, Sans-serif; 
+	height: 20px;
+	margin: 0;
+	width: 25px;
+	text-align: center;
+	color: #393939;
+	background: #A2A2A2 url(tbHeader.gif) repeat-x 0 0;
+	border: solid 1px #BDBDBD;
+	cursor: pointer;
+}
+
+.tableShow{
+	border: solid 1px gray;
+	background-color: none;
+	color: black;
+	text-align:center
+}
+
+.tableShowHilight{
+	border: solid 1px gray;
+	background-color: #567895;
+	color: white;
+	font-weight:bold;
+	text-align:center
+}
+
+img.imgLink{
+	cursor: pointer;
+	border: solid 1px #393939;
+}
+.tbSubject{
+	background-color : #C3E6F5;
+	font-weight: bold;
+}
+
+.fontUnderline{	
+	background-color : #C3E6F5;
+	
+}
+
+.divSubject{
+	border: solid 2px #ADB3B6;
+	background-color : #6495ED;
+	font-weight: bold;
+	height: 20px;
+}
+
+.number{
+	text-align: right;
+}
+
+.header1{
+	font-size: 15px;
+	color: #000000; 
+	font-weight: bold;
+}
+
+.header2{
+	font-size: 13px;
+	color: #000000; 
+	font-weight: bold;
+}
+
+.labTitle{
+	background: #99CCFF;
+	height: 20px;
+	padding-left: 5px;
+	border-bottom: solid 1px #ADAFA0;
+}
+
+.labResult{
+	background: #ccccff;
+	height: 20px;
+	padding-top: 5px;
+	padding-left: 5px;
+	border-bottom: solid 1px #ADAFA0;
+}
+
+.windowHeader{
+	background: url(miniWindowL.gif) no-repeat top left;
+	height: 20px;
+	width: 100%;
+}
+
+#bgform1{
+	background: url(miniWindowR.gif) no-repeat top right;
+	height: 20px;
+}
+
+#div1{
+	background: url(miniWindowR.gif) no-repeat top right;
+	height: 20px;
+}
+
+#div2{
+	background: url(miniWindowR.gif) no-repeat top right;
+	height: 20px;
+}
+
+#div3{
+	background: url(miniWindowR.gif) no-repeat top right;
+	height: 20px;
+}
+
+#div4{
+	background: url(miniWindowR.gif) no-repeat top right;
+	height: 20px;
+}
+
+#div5{
+	background: url(miniWindowR.gif) no-repeat top right;
+	height: 20px;
+}
+
+.windowContent{
+	border: solid 1px #486271;
+}
+
+/*bg for doctor --labNXray*/
+/* min:title,max:head_labTest_value*/
+.content1{
+	background-color: #99CCFF;
+}
+/*min:name;max:head_labTest_name*/
+.content2{
+	background-color: #ccccff;
+}
+/*min:result;max:result*/
+.content3{
+	background-color: #D1E6FA;
+}
+/*max:title*/
+.content4{
+	background-color: #C9DBED;
+}
+/*max:normal_value*/
+.content5{
+	background-color: #CCFFFF;
+}
+/*min:abnormal_value;max:abnormal_value*/
+.content6{
+	background-color: yellow;
+}
+
+/*max:value_name*/
+.content7{
+	background-color: #eddcf8;
+}
+
+.tabSlideHeader
+{
+	color: #156180;
+	height: 25px;
+	font-weight: bold;
+	cursor: pointer;
+	background: url("tabSlideHeader.gif") repeat-x;
+	border-bottom: solid 1px #ADADAD;
+	vertical-align: bottom;
+	padding-top: 5px;
+	padding-left: 5px;
+}
+
+.tabSlideHeaderOver
+{
+	color: gray;
+	height: 25px;
+	font-weight: bold;
+	cursor: pointer;
+	background: url("tabSlideHeaderOver.gif") repeat-x;
+	border-bottom: solid 1px #ADADAD;
+	padding-top: 5px;
+	padding-left: 5px;
+}
+
+.divNormal
+{
+	padding: 5px;
+}
+
+.tdPatientListOver
+{
+	/*height: 25px;*/
+	cursor: pointer;
+	/*vertical-align: middle;*/
+	background: #FFFDA0;
+}
+
+.tdPatientList{
+	/*height: 25px;*/
+	cursor: pointer;
+	/*vertical-align: middle;*/
+	background: #FFFFFF;
+}
+
+.tdPatientListActive{
+	/*height: 25px;*/
+	cursor: pointer;
+	/*vertical-align: middle;*/
+	background: #F4EF8A;
+}
+/*End of doctor css*/
+
+.bgGreen{
+	background:rgb(232,242,208);
+}
+.bgYellow{
+	background:rgb(255,255,209);
+}
+.bgOrange{
+	background:rgb(255,236,216);
+}
+.bgLightBlue{
+	background:rgb(226,238,255);
+}
+.bgGrey{
+	background:rgb(240,240,240);
+}
+.bgDarkGrey{
+	background:rgb(154,154,154);
+}
+.bgDarkOrange{
+	background:rgb(255,181,132);
+}
+.bgDarkBlue{
+	background:rgb(179,198,255);
+}
+.bgPink{
+	background:rgb(255,202,228);
+}
+.bgDarkGreen{
+	background:rgb(152,220,152);
+}
+.templateNcpGroupOnOver
+{
+	background-color: #A7A7A7;
+	font-weight:bold;
+	color: #8482AD;
+}
+.templateNcpGroupOnSelect
+{
+	background-color: #848284;
+	font-weight:bold;
+	color: #FFFFFF;
+}
+.templateNcpGroup
+{
+	background-color: #F1F1F1;
+	color: #8482AD;
+	font-weight:bold;
+}
+.btnStyleNoBtn
+{
+	word-wrap:break-word;
+	cursor:hand;
+	background-color:#FFFFFF;
+	border: 0px;
+	text-align:left;
+	
+}
+.btnStyleNoBtnOnMouseOver
+{
+	cursor:hand;
+	background-color:#FFFFFF;
+	color:blue;
+	border: 0px;
+	text-align:left;
+	text-decoration:underline;
+	word-wrap:break-word;
+}
+
+.bgQueueEmergency
+{
+	background-color:#FFFFD1;
+}
+
+.bgPatientInfoAppointemnt
+{
+	color:#606060;
+	background-color:#FDBD93;
+	text-align:center;
+	vertical-align:middle;
+}
+
+.billingLineBillingGroup
+{
+	background-color: #F5F5F5;
+	font-weight:bold;
+}
+
+.billingLineItem
+{
+	background-color: #F5F5F5;
+}
+
+.billingLineOrder
+{
+	background-color: #FFFFFF;
+}
+
+.txtBillingItemName
+{
+	background-color: #F5F5F5;
+	border:none;
+}
+
+.billingTabPlanName
+{
+	height:20px;
+	width:120px;
+	vertical-align:middle;
+	text-align:center;
+	font-size:12px;
+	cursor:hand;
+	background-color:#F5F5F5;
+}
+
+.billingTabPlanNameSelected
+{
+	height:20px;
+	width:120px;
+	vertical-align:middle;
+	text-align:center;
+	font-size:12px;
+	cursor:hand;
+	background-color:#637DB5;
+	color:#FFFFFF;
+	font-weight:bold;
+}
+
+.billingGovTdSummary
+{
+	border-left:1px solid #8C8C8C;
+	font-size:12px;
+	text-align:right;
+}
+
+.billingGovTdSummaryPatientShare
+{
+	border-left:1px solid #8C8C8C;
+	font-size:12px;
+	text-align:right;
+	background-color:#FFE4E8;
+}
+
+.billingCellChargeComplete
+{
+	background-color:#E1F0B3;
+}
+
+.billingCellChargeInComplete
+{
+	background-color:#FFE3DD;
+}
+
+.patientInfo_discharge
+{
+	background-color:#EFE0D1;
+}
+
+.txtPrimaryDoctorIpd
+{
+	background-color: #FFCF9F;
+	border: 1px solid #3399FF;
+}
+
+.rowPrimaryDoctorIpd
+{
+	background-color: #FFCF9F;
+}
+
+option.opd{background-color:white; color:blue}
+option.ipd{background-color:white; color:red}
+
+.optionObserveWard{color:#A800F9}
+
+.lineInActive
+{
+	background-color:#E6E6CC ;
+	color:#A0A0A0;
+}
+.lineRemainReport
+{
+	background-color:#FFC58A;
+	color:#000000;
+	
+}
+#tdHnYearBefore
+{
+	text-align:left;
+}
+#tdHnYearAfter
+{
+	text-align:right;
+}
+.tdTotalCostDark {background-color:#DDE6DB; text-align:right}
+.tdTotalCostLight {background-color:#EDF2F5; text-align:right}
+
+.tdTotalPlanDark {background-color:#FCE1BA; text-align:right}
+.tdTotalPlanLight {background-color:#FEF4E7; text-align:right}
+
+.tdDebtRemain {background-color:#FCC4BA; text-align:right}
+.tdScrollHead {background-color:#E0E0E0; border-left:1px solid #FFFFFF; border-top:1px solid #FFFFFF; border-bottom:2px solid #A0A0A0}
+.tdScrollBody {background-color:#E0E0E0; border-top:1px solid #FFFFFF; border-bottom:2px solid #A0A0A0}
+.tdScrollTail {background-color:#E0E0E0; border-right:2px solid #A0A0A0; border-top:1px solid #FFFFFF; border-bottom:2px solid #A0A0A0}
+
+.txtDotLine
+{
+	border-top: 0px;
+	border-right:0px;
+	border-bottom:1px dotted #CCCCCC;
+	border-left:0px;
+}
