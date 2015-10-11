@@ -51,7 +51,7 @@ INNER JOIN visit ON receipt.visit_id=visit.visit_id AND visit.fix_visit_type_id=
 WHERE CAST(receipt.paid AS FLOAT)=0
 AND receipt.receipt_id NOT IN (SELECT DISTINCT receipt_id FROM bpk_account_debit_detail)
 AND receipt.receipt_number NOT LIKE 'X%'
-financial_discharge_date=Cast(CURRENT_DATE-1 AS VARCHAR(10))
+AND financial_discharge_date=Cast(CURRENT_DATE-1 AS VARCHAR(10))
 AND receipt.fix_receipt_type_id IN ('1')
 AND receipt.fix_receipt_status_id='2'
 ORDER BY receive_date, receipt.visit_id, receipt.receipt_id, billgrp.base_billing_group_id;
