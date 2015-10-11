@@ -73,7 +73,7 @@ INSERT INTO bpk_fix_item_type VALUES('13', 'PURCHASE', '12');
 INSERT INTO bpk_fix_item_type VALUES('14', 'ASSET', '13');
 INSERT INTO bpk_fix_item_type VALUES('15', 'OTHER', '14');
 
-CREATE FUNCTION bpkget_item_type_by_id(id text) RETURNS text 
+CREATE OR REPLACE FUNCTION bpkget_item_type_by_id(id text) RETURNS text 
 LANGUAGE plpgsql 
 AS '
 DECLARE 
@@ -100,7 +100,7 @@ INSERT INTO bpk_hospital_item VALUES('1', 'สำหรับขายให้ผู้ป่วย', '2');
 INSERT INTO bpk_hospital_item VALUES('2', 'สำหรับใช้ใน รพ.', '3');
 INSERT INTO bpk_hospital_item VALUES('3', 'ยาซื้อฉุกเฉิน', '4');
 
-CREATE FUNCTION bpkget_hospital_item_by_id(id text) RETURNS text 
+CREATE OR REPLACE FUNCTION bpkget_hospital_item_by_id(id text) RETURNS text 
 LANGUAGE plpgsql 
 AS '
 DECLARE 
@@ -134,7 +134,7 @@ END';
 
 -- SELECT * FROM base_department 
 -- DROP FUNCTION bpkget_department_description_by_spid(id text);
-CREATE FUNCTION bpkget_department_description_by_spid(id text) RETURNS text 
+CREATE OR REPLACE FUNCTION bpkget_department_description_by_spid(id text) RETURNS text 
 LANGUAGE plpgsql 
 AS '
 DECLARE 
@@ -153,7 +153,7 @@ END';
 -- SELECT bpkget_department_description_by_spid('001');
 
 -- DROP FUNCTION bpkget_department_id_by_spid(id text);
-CREATE FUNCTION bpkget_department_id_by_spid(id text) RETURNS text 
+CREATE OR REPLACE FUNCTION bpkget_department_id_by_spid(id text) RETURNS text 
 LANGUAGE plpgsql 
 AS '
 DECLARE 
@@ -761,7 +761,7 @@ BEGIN
 END';
 
 -- DROP FUNCTION bpkget_employee_name(TEXT);
-CREATE FUNCTION bpkget_employee_name(eid text) RETURNS text
+CREATE OR REPLACE FUNCTION bpkget_employee_name(eid text) RETURNS text
 LANGUAGE plpgsql
 AS '
 DECLARE
@@ -777,7 +777,7 @@ BEGIN
 END';
 
 -- DROP FUNCTION bpkget_patient_name(patid text);
-CREATE FUNCTION bpkget_patient_name(patid text) RETURNS text
+CREATE OR REPLACE FUNCTION bpkget_patient_name(patid text) RETURNS text
 LANGUAGE plpgsql
 AS '
 DECLARE
@@ -793,7 +793,7 @@ BEGIN
 END';
 
 -- DROP FUNCTION bpkget_service_description(id text);
-CREATE FUNCTION bpkget_service_description(id text) RETURNS text
+CREATE OR REPLACE FUNCTION bpkget_service_description(id text) RETURNS text
 LANGUAGE plpgsql
 AS '
 DECLARE
