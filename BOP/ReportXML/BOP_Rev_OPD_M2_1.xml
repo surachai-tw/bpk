@@ -58,8 +58,7 @@ FROM
     )
     GROUP BY verify_deptid, ordered_by_department
 ) tmp 
-ORDER BY "ชื่อแผนก" COLLATE "th_TH"
-]]></queryString>
+ORDER BY "ชื่อแผนก" COLLATE "th_TH"]]></queryString>
 	<field name="รหัสแผนก" class="java.lang.String"/>
 	<field name="ชื่อแผนก" class="java.lang.String"/>
 	<field name="ต้นทุนยา" class="java.lang.Double"/>
