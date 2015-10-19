@@ -12,76 +12,49 @@
 <script language="JavaScript">
 <!--
 
-//**
-//tab menu
-function onload()
+function listDoctor_findDoctor()
 {
-	tabHilight(tdListDoctor);
-	top.statusFrame.repStatusSuccess();
-}
+	top.filter_empId = listDoctor_txtDoctorEid.employee_eid;
+	top.filter_clinic = listDoctor_txtClinic.value;
+	top.filter_specialty = listDoctor_txtSpecialty.value;
+	top.filter_optionWithSchedule = radoptionWithSchedule.value;
+	top.filter_searchPage = listDoctor_cmbPage.options[listDoctor_cmbPage.selectedIndex].value;
+	top.filter_searchCount = listDoctor_cmbLimitPage.options[listDoctor_cmbLimitPage.selectedIndex].value;
 
-/*เคลียค่าสำหรับ onover onout
-function onload()
-{
-	divListDoctor.style.backgroundColor = "white";
-	divListDoctor.style.color = "black";
-	tdListVisitAssignDoctor.style.backgroundColor = "white";
-	tdListVisitAssignDoctor.style.color = "black";
-}*/
-
-function tabOnMouseOver(obj)
-{
-	/*
-	if(obj.style.backgroundColor != "#637DB5")
-	{
-		obj.style.backgroundColor = "#6699FF";
-		tdListVisitAssignDoctor.style.color = "black";
-	}
-	*/
-}
-
-function tabOnMousetOut(obj)
-{
-	/*
-	if(obj.style.backgroundColor != "#637DB5")
-	{
-		obj.style.backgroundColor = "#FFFFFF";
-		tdListVisitAssignDoctor.style.color = "black";
-	}
-	*/
-}
-
-function tabHilight(objId)
-{
-	//tdListDoctor.style.backgroundColor = "#637DB5";
-	//tdListDoctor.style.color = "white";
-	//tdListVisitAssignDoctor.style.backgroundColor = "white";
-	//tdListVisitAssignDoctor.style.color = "black";
-}
-//**
-//end tab menu
-function ifrmDiagnosisAndOperationAutoComplete_OnBlur()
-{
-	ifrmDiagnosisAndOperationAutoComplete.mainFrame.findEmployeeMain_hide();
-	ifrmSubDiagnosisAndOperationAutoComplete.mainFrame.findDiagAndOperationSub_hide();
+	top.statusFrame.repWorkStatus("กำลังทำการค้นหารายชื่อแพทย์...");
+	top.listDoctorJSPFrame.UCForm.UC.value = "listDoctor";
+	top.listDoctorJSPFrame.UCForm.submit();
 }
 
 function listDoctor_btnSearch_OnClick()
 {
+	listDoctor_cmbPage.selectedIndex = 0;
+
+	listDoctor_findDoctor();
+}
+
+function listDoctor_btnClearKeyWord_onclick()
+{
 	var txtEmpId = document.getElementById("listDoctor_txtDoctorEid");
 	var txtClinic = document.getElementById("listDoctor_txtClinic");
 	var txtSpecialty = document.getElementById("listDoctor_txtSpecialty");
+	var radoptionWithSchedule = document.getElementById("radoptionWithSchedule");
+	var cmbLimitPage = document.getElementById("cmbLimitPage");
 
-	parent.filter_empId = txtEmpId.employee_eid;
-	parent.filter_clinic = txtClinic.value;
-	parent.filter_specialty = txtSpecialty.value;
-	parent.filter_optionWithSchedule = radoptionWithSchedule.value;
-//	parent.search_page = listPatientInWard_objNavigator.getSearchPage();
-//	parent.search_count = listPatientInWard_objNavigator.getSearchCount();
-	
-	top.statusFrame.repWorkStatus("กำลังทำการค้นหารายชื่อแพทย์...");
-	top.listDoctorJSPFrame.UCForm.UC.value = "listDoctor";
-	top.listDoctorJSPFrame.UCForm.submit();
+	try
+	{
+		txtEmpId.value = "";
+		txtClinic.value = "";
+		txtSpecialty.value = "";
+		radoptionWithSchedule.checked = true;
+
+		cmbPage.selectedIndex = 0;
+		cmbLimitPage.selectedIndex = 1;
+	}
+	catch (e)
+	{
+		alert(e);
+	}
 }
 
 function listDoctor_txtDoctorEid_OnKeyUp()
@@ -112,8 +85,8 @@ function clearTableData()
 {
 	var tbl = ifrmListDoctor.tblBpkEmployeeVO;
 	// var tbl = document.getElementById("ifrmListDoctor.tblBpkEmployeeVO");
-	for( ; tbl.rows.length > 1; )
-		tbl.deleteRow(1);
+	for( ; tbl.rows.length > 0; )
+		tbl.deleteRow(0);
 }
 
 var lineChildSetItem = "lineChildSetItem";
@@ -135,6 +108,7 @@ function showListBpkEmployeeVO()
 		var row = tblBpkEmployeeVO.insertRow();
 		row.aBpkEmployeeVO = aBpkEmployeeVO;
 		row.employee_id = aBpkEmployeeVO.employeeId;
+		row.height = 21;
 
 		if(i>0)
 		{
@@ -153,7 +127,7 @@ function showListBpkEmployeeVO()
 		{
 			cell.innerHTML = aBpkEmployeeVO.employeeName;
 		}
-		cell.width = "18%";
+		cell.width = "16%";
 
 		cell = row.insertCell();
 		if(previousEmpName==aBpkEmployeeVO.employeeName)
@@ -164,7 +138,7 @@ function showListBpkEmployeeVO()
 		{
 			cell.innerHTML = aBpkEmployeeVO.clinicDescription;
 		}
-		cell.width = "18%";
+		cell.width = "16%";
 
 		cell = row.insertCell();
 		if(previousEmpName==aBpkEmployeeVO.employeeName)
@@ -193,7 +167,7 @@ function showListBpkEmployeeVO()
 
 		cell = row.insertCell();
 		cell.innerText = " ";
-		cell.width = "6%";
+		cell.width = "10%";
 
 		if(isReNew)
 		{
@@ -208,11 +182,60 @@ function showListBpkEmployeeVO()
 	}
 }
 
+function btnFirst_onClick()
+{
+	listDoctor_cmbPage.selectedIndex = 0;
+
+	listDoctor_findDoctor();
+}
+
+function btnPrev_onClick()
+{
+	--listDoctor_cmbPage.selectedIndex;
+
+	listDoctor_findDoctor();
+}
+
+function listDoctor_cmbPage_onChange()
+{
+	listDoctor_findDoctor();
+}
+
+function listDoctor_cmbLimitPage_onChange()
+{
+}
+
+function btnNext_onClick()
+{
+	++listDoctor_cmbPage.selectedIndex;
+
+	listDoctor_findDoctor();
+}
+
+function btnLast_onClick()
+{
+	listDoctor_cmbPage.selectedIndex = listDoctor_cmbPage.options.length-1;
+
+	listDoctor_findDoctor();
+}
+
+function setEableNavigatorNext(enabled)
+{
+	btnNext.disabled = !enabled;
+	btnLast.disabled = !enabled;
+}
+
+function setEableNavigatorPrev(enabled)
+{
+	btnPrev.disabled = !enabled;
+	btnFirst.disabled = !enabled;
+}
+
 //-->
 </script>
 
 </head>
-<body marginwidth="0" marginheight="0" topmargin="0" leftmargin="0" onload="onload();">
+<body marginwidth="0" marginheight="0" topmargin="0" leftmargin="0">
 
 <!-- table tab -->
 <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
@@ -235,15 +258,45 @@ function showListBpkEmployeeVO()
 						คลินิก:&nbsp;<input id="listDoctor_txtClinic" type="text" class="txtBorder" style="width:170px" onKeyUp="listDoctor_txtClinic_OnKeyUp();">&nbsp;&nbsp;&nbsp;&nbsp;
 						ความชำนาญ:&nbsp;<input id="listDoctor_txtSpecialty" type="text" class="txtBorder" style="width:170px" onKeyUp="listDoctor_txtSpecialty_OnKeyUp();">&nbsp;&nbsp;&nbsp;&nbsp;
 						<input type="radio" name="radoptionWithSchedule" id="radoptionWithSchedule" checked>เฉพาะที่มีตาราง&nbsp;&nbsp;
-						<input type="radio" name="radoptionWithSchedule" id="radoptionWithoutSchedule">ทั้งหมด&nbsp;&nbsp;&nbsp;&nbsp;
-						<input id="listDoctor_btnSearch" type="button" class="btnStyleL" value="ค้น" onclick="listDoctor_btnSearch_OnClick();">&nbsp;
-						<input id="listDoctor_btnClearKeyWord" type="button" class="btnStyleL" value="ล้าง" onclick="listDoctor_btnClearKeyWord_onclick();">&nbsp;
+						<input type="radio" name="radoptionWithSchedule" id="radoptionWithoutSchedule">ทั้งหมด&nbsp;
 					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 	<tr>
+		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="listDoctor_btnSearch" type="button" class="btnStyleL" value="ค้น" onclick="listDoctor_btnSearch_OnClick();">&nbsp;
+			<input id="listDoctor_btnClearKeyWord" type="button" class="btnStyleL" value="ล้าง" onclick="listDoctor_btnClearKeyWord_onclick();">&nbsp;
+			<input type="button" id="btnFirst" value="|<" onClick="btnFirst_onClick();"  class="btnStyleS" disabled>
+			<input type="button" id="btnPrev" onClick="btnPrev_onClick();" value="<"  class="btnStyleS" disabled>
+			<select id="listDoctor_cmbPage" onChange="listDoctor_cmbPage_onChange();">
+				<jsp:include page="inc/cmbPage.inc.jsp" flush="false"/>
+			</select>
+			<select id="listDoctor_cmbLimitPage" onChange="listDoctor_cmbLimitPage_onChange();">
+				<jsp:include page="inc/cmbLimitPage.inc.jsp" flush="true" />
+			</select>
+			<input type="button" id="btnNext" onClick="btnNext_onClick();" value=">"  class="btnStyleS" disabled>
+			<input type="button" id="btnLast" value=">|" onClick="btnLast_onClick();"  class="btnStyleS" disabled>
+		</td>
+	</tr>
+	<tr><td>&nbsp;</td></tr>
+	<tr>
+		<td style="height:21px">
+			<table width="100%" style="border-top: solid 1px #CDCDCD; height:21px" cellspacing="0" cellpadding="0">
+				<tr align="center" class="contentHeader">
+					<td width="16%"><b>แพทย์</b></td>
+					<td width="16%"><b>คลินิก</b></td>
+					<td width="29%"><b>ความชำนาญ</b></td>
+					<td width="18%"><b>วันในสัปดาห์</b></td>
+					<td width="6%"><b>เริ่มเวลา</b></td>
+					<td width="6%"><b>ถึงเวลา</b></td>
+					<td width="*">&nbsp;</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+		<tr>
 		<td class="bgForm" style="padding-top:2px; height:100%">
 			<div id="divListDoctor" style="height:100%">
 				<iframe id="ifrmListDoctor" src="listIfrmDoctor.jsp" width="100%" style="height:100%" frameborder="no"></iframe>

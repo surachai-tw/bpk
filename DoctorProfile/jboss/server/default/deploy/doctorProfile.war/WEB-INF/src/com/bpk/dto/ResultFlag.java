@@ -9,4 +9,7 @@ public final class ResultFlag
 	
 	public final static String RESULT_DATA = "RESULT_DATA";
 	
+    /** จำนวน Record ทั้งหมด */
+    public static final String TOTAL_RECORD = "TOTAL_RECORD";
+	
 }

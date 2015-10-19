@@ -64,6 +64,8 @@ public class DoctorProfileDAO
 		String pDoctor = null;
 		// String pDay = null;
 		String pOptionWithSchedule = null;
+		String pCount = null;
+		String pPage = null;
 		/** คิดว่าไม่น่าจะได้ใช้  */
 		// String pDayInWeekMon = null, pDayInWeekTue = null, pDayInWeekWed = null, pDayInWeekThu = null, pDayInWeekFri = null, pDayInWeekSat = null, pDayInWeekSun = null;
 		
@@ -73,6 +75,8 @@ public class DoctorProfileDAO
 			pSpeciality = BpkUtility.getValidateString(param.get("specialityDescription"));
 			pDoctor = BpkUtility.getValidateString(param.get("employeeName"));
 			pOptionWithSchedule = BpkUtility.getValidateString(param.get("optionWithSchedule"));
+			pCount = BpkUtility.getValidateString(param.get("count"));
+			pPage = BpkUtility.getValidateString(param.get("page"));
 			
 			/** คิดว่าไม่น่าจะได้ใช้ 
 			pDayInWeekMon = BpkUtility.getValidateString(param.get("dayInWeekMon"));
@@ -184,11 +188,21 @@ public class DoctorProfileDAO
 			// ส่วนนี้ ต้องเรียงด้วยเวลา ก่อน วัน เพราะต้องยุบวัน เข้าไปในกลุ่มเวลาเดียวกัน
 			sql.append("ORDER BY tmp.employee_name COLLATE \"th_TH\", tmp.clinic_description COLLATE \"th_TH\", tmp.specialty COLLATE \"th_TH\", schedule.start_time, schedule.end_time, schedule.display_order ");
 			
-			// ต้อง Hard code ไว้ก่อน เนื่องจากใน Production หาก Query เกิน 608 จะพบ Error ตอน JSON.decode
-			// sql.append(" LIMIT 400");
-
 			conn = DAOFactory.getConnection();
 			stmt = conn.createStatement();
+			rst = stmt.executeQuery("SELECT Count(*) cnt FROM ("+sql.toString()+") AS tmp");
+			if(rst.next())
+			{
+				int records = rst.getInt("cnt");
+				result.put(ResultFlag.TOTAL_RECORD, new Integer(records));
+				rst.close();
+			}
+			rst = null;
+			
+			// ต้อง Hard code ไว้ก่อน เนื่องจากใน Production หาก Query เกิน 608 จะพบ Error ตอน JSON.decode
+			// sql.append(" LIMIT 400");
+			sql.append(" LIMIT ").append(pCount).append(" OFFSET ").append(Integer.parseInt(pPage)*Integer.parseInt(pCount));
+
 			BpkUtility.printDebug(this, sql.toString());
 			rst = stmt.executeQuery(sql.toString());
 
@@ -308,4 +322,76 @@ public class DoctorProfileDAO
 		return result;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public HashMap getSlotDoctor(HashMap param)
+	{
+		String pEmployeeId = null;
+		String pStartDate = null;
+		String pEndDate = null;
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		List<BpkEmployeeVO> listBpkEmployeeVO = new ArrayList<BpkEmployeeVO>();
+		StringBuilder sql = null;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rst = null;
+		try
+		{
+			if (param != null)
+			{
+				pEmployeeId = BpkUtility.getValidateString(param.get("employeeId"));
+				pStartDate = BpkUtility.getValidateString(param.get("startDate"));
+				pEndDate = BpkUtility.getValidateString(param.get("endDate"));
+			}
+			
+			sql = new StringBuilder("SELECT DISTINCT doctor_schedule.fix_day_of_week dayid, dayofweek.description dayname, trim(replace(replace(replace(bpkget_service_description(doctor_schedule.spid), '..', ''), 'ห้องตรวจ', ''), 'จุดซักประวัติ', '')) AS clinic_description, substring(doctor_schedule.start_time, 1, 5) start_time, substring(doctor_schedule.end_time, 1, 5) end_time, dayofweek.display_order");
+			sql.append(" FROM doctor_schedule ");
+			sql.append(" INNER JOIN bpk_fix_day_of_week dayofweek ON doctor_schedule.fix_day_of_week = dayofweek.bpk_fix_day_of_week_id ");
+			sql.append(" WHERE doctor_schedule.employee_id = '").append(pEmployeeId).append("'");
+			sql.append(" ORDER BY dayofweek.display_order ");
+			BpkUtility.printDebug(this, sql.toString());
+
+			conn = DAOFactory.getConnection();
+			stmt = conn.createStatement();
+			rst = stmt.executeQuery(sql.toString());
+
+			for (; rst.next();)
+			{
+				BpkEmployeeVO tmpBpkEmployeeVO = new BpkEmployeeVO();
+			
+				tmpBpkEmployeeVO.setDayId(rst.getString("dayid"));
+				tmpBpkEmployeeVO.setDayName(rst.getString("dayname"));
+				tmpBpkEmployeeVO.setClinicDescription(rst.getString("clinic_description"));
+				tmpBpkEmployeeVO.setStartTime(rst.getString("start_time"));
+				tmpBpkEmployeeVO.setEndTime(rst.getString("end_time"));
+				
+				listBpkEmployeeVO.add(tmpBpkEmployeeVO);
+			}
+			
+			rst.close();
+			stmt.close();
+			conn.close();
+			
+			if (listBpkEmployeeVO != null && listBpkEmployeeVO.size() > 0)
+			{
+				// BpkUtility.printDebug(this, "SUCCESS and Add listBpkEmployeeVO");				
+				result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
+				result.put(ResultFlag.RESULT_DATA, listBpkEmployeeVO);
+			} else
+			{
+				// BpkUtility.printDebug(this, "FAIL and No listBpkEmployeeVO");				
+				result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);
+			}			
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		finally
+		{
+			rst = null;
+			stmt = null;
+			conn = null;
+		}
+		return result;
+	}
 }

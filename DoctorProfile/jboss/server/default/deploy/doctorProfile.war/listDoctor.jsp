@@ -12,23 +12,11 @@ var filter_empId;
 var filter_clinic;
 var filter_specialty;
 var filter_optionWithSchedule;
-var filter_searchCount;
 var filter_searchPage;
+var filter_searchCount;
 
 // สำหรับเก็บข้อมูลใน Table 
 var listBpkEmployeeVO = new Array();
-
-///*
-var firstname;
-var lastname;
-var doctor_eid;
-var doctor_status;
-var date_to;
-var date_from;
-
-//
-var beginning_diagnosis;
-var icd10_code;
 
 //-->
 </script>
@@ -37,7 +25,7 @@ var icd10_code;
 <frameset rows="70%,20%,15" frameborder="NO" border="0" framespacing="0">
   <frame src="listDoctorMain.jsp" name="mainFrame" id="mainFrame" scrolling="yes">
   <frame src="listDoctorJSP.jsp" name="listDoctorJSPFrame" id="listDoctorJSPFrame" 
-	scrolling="no" noresize>
+	scrolling="yes" noresize>
   <frame src="inc/windowStatus.jsp" name="statusFrame" scrolling="no" noresize>
 </frameset>
 

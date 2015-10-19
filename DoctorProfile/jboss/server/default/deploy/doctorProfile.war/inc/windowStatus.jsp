@@ -62,7 +62,7 @@ function repStatusSuccess(text)
 {
 	if(text== null || text == "")
 	{
-		text = "การทำงานเรียบร้อย";
+		text = "จบการทำงาน";
 	}
 	repStatus(text, status_success);
 }
@@ -78,7 +78,7 @@ function clearStatus()
 <body>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
-      <td id="status_tdStatus" class="statusWorking" height="100%">กำลังทำงาน&nbsp;</td>
+      <td id="status_tdStatus" class="statusBar" height="100%">&nbsp;</td>
     </tr>
   </table>
 </body>

@@ -45,6 +45,11 @@ var aBpkEmployeeVO = null;
 		param.put("specialityDescription", filterSpecialty);
 		
 		param.put("optionWithSchedule", filterOptionWithSchedule);
+
+		param.put("count", filterSearchCount);
+
+		param.put("page", filterSearchPage);
+
 		result = aDAO.listDoctor(param);
 
 		// BpkUtility.printDebug(this, "result = "+result);
@@ -75,17 +80,70 @@ var aBpkEmployeeVO = null;
 <%
 				}
 			}
-%>			
+
+			Integer totalRec = (Integer)result.get(ResultFlag.TOTAL_RECORD);
+			if(Integer.parseInt(filterSearchCount)==0)
+				filterSearchCount = "1";
+			int pageCount = (int)Math.ceil((double)totalRec.intValue()/Integer.parseInt(filterSearchCount));
+			if(pageCount==0)
+				pageCount = 1;
+
+			// กรณีที่ยังมีจำนวนที่เหลืออยู่ไม่ได้แสดงผล
+			if(Integer.parseInt(filterSearchPage)<pageCount-1)
+			{
+%>
+				top.mainFrame.setEableNavigatorNext(true);
+<%
+			}
+			else
+			{
+%>
+				top.mainFrame.setEableNavigatorNext(false);
+<%
+			}
+
+			// กรณีที่เป็นหน้า 2 เป็นต้นไป ให้ย้อนกลับไปได้
+			if(Integer.parseInt(filterSearchPage)>0 && listBpkEmployeeVO.size()>0)
+			{
+%>
+				top.mainFrame.setEableNavigatorPrev(true);
+<%
+			}
+			else
+			{
+%>
+				top.mainFrame.setEableNavigatorPrev(false);
+<%
+			}
+%>
+			var cmbObj = top.mainFrame.listDoctor_cmbPage;
+			var pageCount = "<%=pageCount%>";
+			while(cmbObj.options.length)
+			{
+				cmbObj.remove(0);
+			}
+			if(pageCount>1)
+			{
+				for(i=0; i<pageCount; i++)
+				{
+					var option = document.createElement("option");
+					option.text = (i+1)+" / "+pageCount;
+					option.value = i;
+					cmbObj.add(option, i);
+				}
+				cmbObj.selectedIndex = <%=Integer.parseInt(filterSearchPage)%>;
+			}
+			
 			// alert("check method = "+top.mainFrame.ifrmListDoctor);
 			top.mainFrame.showListBpkEmployeeVO();
-			top.statusFrame.repStatusSuccess("SUCCESS");
+			top.statusFrame.repStatusSuccess("จบการทำงาน");
 <%
 		}
 		else
 		{
 			System.out.println("Result Status = "+status);
 %>
-			top.statusFrame.repStatus("ไม่พบรายชื่อผู้ป่วยในวอร์ด");
+			top.statusFrame.repStatus("ไม่พบข้อมูล");
 <%
 		}
 	}
