@@ -190,3 +190,42 @@ GO
 SELECT Count(*) FROM stock_return
 GO 
 
+-- 9. item ที่ไม่เคลื่อนไหว หรือ ไม่ได้ใช้งานเป็นเวลานาน หรือ ไม่อยู่ใน Store ใดๆเลย 
+-- การตรวจสอบว่าไม่เคลื่อนไหว ให้ดูจาก stock card 
+
+
+SELECT item_id FROM bpk_item_inactive WHERE item_id IN (SELECT DISTINCT item_id FROM stock_mgnt WHERE active='1');
+SELECT item_id FROM bpk_item_inactive WHERE item_id IN (SELECT DISTINCT item_id FROM stock_mgnt);
+DELETE FROM bpk_item_inactive WHERE item_id='913092714281978601';
+
+SELECT (SELECT stock_name FROM stock WHERE stock_id=order_from_stock_id), * FROM stock_order WHERE item_id IN (SELECT DISTINCT item_id FROM bpk_item_inactive);
+SELECT (SELECT stock_name FROM stock WHERE stock_id=stock_mgnt.stock_id), * FROM stock_mgnt WHERE item_id IN (SELECT DISTINCT item_id FROM bpk_item_inactive);
+
+SELECT * FROM stock_order WHERE item_id IN (SELECT DISTINCT item_id FROM bpk_item_inactive) 
+
+-- **** พบใน stock_order **** เป็นพวก Consign แต่ไม่ต้องสนใจ ให้เอาออกไปเลย 
+SELECT order_from_stock_id, (SELECT stock_name FROM stock WHERE stock_id=order_from_stock_id), purchasing_request_number "PR", purchasing_offer_number "PO", (SELECT common_name FROM item WHERE item_id=stock_order.item_id) item_name, purchasing_offer_note FROM stock_order WHERE item_id IN (SELECT DISTINCT item_id FROM bpk_item_inactive) 
+ORDER BY stock_name, purchasing_offer_number, item_name
+
+SELECT * FROM stock_order_tmp LIMIT 1 
+
+SELECT * FROM stock_request WHERE item_id IN (SELECT DISTINCT item_id FROM bpk_item_inactive) 
+
+-- **** พบใน stock_request_order **** เป็นพวก Consign แต่ไม่ต้องสนใจ ให้เอาออกไปเลย 
+SELECT * FROM stock_request_order WHERE item_id IN (SELECT DISTINCT item_id FROM bpk_item_inactive) 
+
+SELECT * FROM stock_request_order WHERE item_id IN (SELECT DISTINCT item_id FROM bpk_item_inactive) 
+-- **** พบใน stock_request_order **** เป็นพวก Consign แต่ไม่ต้องสนใจ ให้เอาออกไปเลย 
+SELECT * FROM stock_return WHERE item_id IN (SELECT DISTINCT item_id FROM bpk_item_inactive) 
+
+
+-------------------------------------------------------
+-- ส่วนของโภชนาการ 
+
+SELECT * FROM stock_order 
+INNER JOIN stock_setup_order ON stock_order.distributor_id = stock_setup_order.distributor_id 
+INNER JOIN stock_setup_order_detail ON stock_setup_order.stock_setup_order_id = stock_setup_order_detail.stock_setup_order_id 
+WHERE stock_order.fix_stock_order_status_id IN  ('1', '2', '3')
+
+
+

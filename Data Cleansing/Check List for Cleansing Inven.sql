@@ -103,7 +103,7 @@ FROM stock_mgnt
 WHERE stock_mgnt.active='1' AND NOT isnumeric(unit_rate) AND isnumeric(stock_mgnt.cur_quantity)
 ORDER BY "Stock Name", "Item Name"
 
--- 8. หน่วยใหญ่ กับ หน่วยย่อยของ Stock เป็นหน่วยเดียวกัน แต่ขนาดบรรจุ ไม่ใช้ 1:1
+-- 8. หน่วยใหญ่ กับ หน่วยย่อยของ Stock เป็นหน่วยเดียวกัน แต่ขนาดบรรจุ ไม่ใช่ 1:1
 SELECT tmp.stock_id "Stock Code", tmp.stock_name "Stock Name", tmp.item_code "Item Code", tmp.common_name "Item Name", lot_number "LOT", bpkget_base_unit_by_id(tmp.big_unit_id) "Big Unit", mid_unit_rate, unit_rate, bpkget_base_unit_by_id(tmp.small_unit_id) "Small Unit" FROM 
 (
     SELECT DISTINCT stock.stock_id, stock.stock_name, item.item_code, item.common_name, stock_mgnt.lot_number, COALESCE(stock_mgnt.big_unit_id, '') big_unit_id, mid_unit_rate, unit_rate, COALESCE(stock_mgnt.small_unit_id, '') small_unit_id 
@@ -156,7 +156,7 @@ FROM
     SELECT item_id FROM tmp_chk_item_last_order 
 ) tmp
 LEFT JOIN tmp_chk_item_last_movement ON tmp.item_id = tmp_chk_item_last_movement.item_id 
-LEFT JOIN tmp_chk_item_last_order ON tmp.item_id = tmp_chk_item_last_order.item_id 
+LEFT JOIN tmp_chk_item_last_order ON tmp.item_id = tmp_chk_item_last_order.item_id;
 
 -- 10. Lot ที่เก่ามาก และคาดว่าจะไม่มีผลต่อการทำงานแล้ว ควรย้ายข้อมูลไปไว้ที่ส่วนอื่น อาจจะสืบค้นได้โดย IT แต่ค้นทางหน้าจอไม่ได้ 
 -- เพื่อลดข้อมูลในระบบที่ไม่จำเป็น และป้องกันไม่ให้ user นำ Lot ดังกล่าวมาใช้งานอีก และช่วยเพิ่มเรื่อง Performance ระบบ ให้ทำงานได้เร็วขึ้น
@@ -176,7 +176,7 @@ SELECT * FROM
     WHERE mainmgnt.stock_id IN (SELECT stock_id FROM stock)
     GROUP BY mainitem.item_id, mainitem.item_code, mainitem.common_name, mainmgnt.lot_number, mainmgnt.expire_date 
 ) tmp 
-ORDER BY tmp."Item Name" COLLATE "th_TH", tmp."Quantity" DESC, "Count Record Lot" DESC, "Expire Date" DESC 
+ORDER BY tmp."Item Name" COLLATE "th_TH", tmp."Quantity" DESC, "Count Record Lot" DESC, "Expire Date" DESC;
 
 -- 11. Setup สั่งซื้อ ไม่ตรงกับ Master ของ Item 
 -- หน่วยย่อย ของ 2 หน้าจอ ไม่ตรงกัน 
