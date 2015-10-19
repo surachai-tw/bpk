@@ -188,7 +188,7 @@ CREATE TABLE bpk_department_services
     base_department_id VARCHAR(255) UNIQUE, 
     is_revenue_allow VARCHAR(255) DEFAULT '1' 
 );
-INSERT INTO bpk_department_services (base_department_id) SELECT base_department_id FROM base_department ORDER BY base_department_id 
+INSERT INTO bpk_department_services (base_department_id) SELECT base_department_id FROM base_department ORDER BY base_department_id ;
 SELECT * FROM base_department ORDER BY base_department_id;
 -- UPDATE bpk_department_services SET is_revenue_allow='0' WHERE 
 -- base_department_id IN 
