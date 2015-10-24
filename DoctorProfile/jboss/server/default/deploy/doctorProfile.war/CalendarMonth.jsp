@@ -7,23 +7,26 @@
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.iMed.iMedCore.utility.Utility"%>
+<%@ page import="com.bpk.utility.BpkUtility"%>
 <%@ page import="com.bpk.dao.DAOFactory"%>
 <%@ page import="com.bpk.dao.DoctorProfileDAO"%>
 <%@ page import="com.bpk.dto.ResultFlag"%>
 <%@ page import="com.bpk.dto.BpkEmployeeVO"%>
 <html>
- <head>
+<head>
   <title> Calendar </title>
   <jsp:include page="inc/charset.jsp" flush="false"/>
   <link type="text/css" rel="stylesheet" href="css/extend.css" />
 <%
 		String viewDate = request.getParameter("viewDate");
+		String employeeId = request.getParameter("employeeId");
 		Calendar aCal = Calendar.getInstance(new Locale("en", "US"));
 		aCal.setLenient(true);
 		// สำหรับใช้แสดงผลที่หัวปฏิทิน
 		Calendar aCalMonth = Calendar.getInstance(new Locale("en", "US")); 
 		aCalMonth.setLenient(true);
-		System.out.println("viewDate = "+viewDate);
+		BpkUtility.printDebug(this, "viewDate = "+viewDate);
+		BpkUtility.printDebug(this, "employeeId = "+employeeId);
 		if(viewDate!=null && viewDate.length()==10)
 		{
 			aCal.set(Calendar.YEAR, Integer.parseInt(viewDate.substring(0, 4)));
@@ -32,14 +35,40 @@
 
 			aCalMonth.setTime(aCal.getTime());
 		}
-		System.out.println("aCalMonth = "+aCalMonth.getTime());
+
+		// เรียกใช้ DAO 
+		DoctorProfileDAO aDAO = DAOFactory.newDoctorProfileDAO();
+		HashMap resultDetail = aDAO.getEmployeeDetail(employeeId);
+		BpkEmployeeVO aBpkEmployeeVO = null;
+		if(ResultFlag.STATUS_SUCCESS.equals(resultDetail.get(ResultFlag.STATUS)))
+		{
+			aBpkEmployeeVO = (BpkEmployeeVO)resultDetail.get(ResultFlag.RESULT_DATA);
+		}
 %>
   <script type="text/javascript">
   <!--
-	
+
+	/**
+	* ใช้ตรวจสอบการมีอยู่ของรูปภาพ
+	*/
+	function imageExists(image_url)
+	{
+		var http = new XMLHttpRequest();
+
+		http.open('HEAD', image_url, false);
+		http.send();
+
+		return http.status != 404;
+	}
+
+	function btnBack_OnClick()
+	{
+		location.href = "listDoctor.jsp";
+	}
+
 	function btnToday_OnClick()
 	{
-		location.href = "CalendarMonth.jsp?viewDate=<%=Utility.getCurrentDate()%>";
+		location.href = "CalendarMonth.jsp?viewDate=<%=Utility.getCurrentDate()%>&employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
 	}
 
 	function btnPrevMonth_OnClick()
@@ -60,7 +89,7 @@
 		aPrevCal.set(Calendar.DAY_OF_MONTH, 1);
 		aPrevCal.set(Calendar.MONTH, chkPrevMonth);
 %>
-		location.href = "CalendarMonth.jsp?viewDate=<%=new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aPrevCal.getTime())%>";
+		location.href = "CalendarMonth.jsp?viewDate=<%=new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aPrevCal.getTime())%>&employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
 	}
 
 	function btnNextMonth_OnClick()
@@ -81,7 +110,7 @@
 		aNextCal.set(Calendar.DAY_OF_MONTH, 1);
 		aNextCal.set(Calendar.MONTH, chkNextMonth);
 %>
-		location.href = "CalendarMonth.jsp?viewDate=<%=new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aNextCal.getTime())%>";
+		location.href = "CalendarMonth.jsp?viewDate=<%=new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aNextCal.getTime())%>&employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
 	}
 
 	function clearTableData()
@@ -99,36 +128,42 @@
 		cell.style.color = "red";
 		cell.style.textAlign = "center";
 		cell.style.verticalAlign = "middle";
+		cell.style.border = "solid 1px #E8E8E8";
 		cell.width = "12%";
 
 		cell = row.insertCell();
 		cell.innerText = "จันทร์";
 		cell.style.textAlign = "center";
 		cell.style.verticalAlign = "middle";
+		cell.style.border = "solid 1px #E8E8E8";
 		cell.width = "12%";
 
 		cell = row.insertCell();
 		cell.innerText = "อังคาร";
 		cell.style.textAlign = "center";
 		cell.style.verticalAlign = "middle";
+		cell.style.border = "solid 1px #E8E8E8";
 		cell.width = "12%";
 
 		cell = row.insertCell();
 		cell.innerText = "พุธ";
 		cell.style.textAlign = "center";
 		cell.style.verticalAlign = "middle";
+		cell.style.border = "solid 1px #E8E8E8";
 		cell.width = "12%";
 
 		cell = row.insertCell();
 		cell.innerText = "พฤหัสบดี";
 		cell.style.textAlign = "center";
 		cell.style.verticalAlign = "middle";
+		cell.style.border = "solid 1px #E8E8E8";
 		cell.width = "12%";
 
 		cell = row.insertCell();
 		cell.innerText = "ศุกร์";
 		cell.style.textAlign = "center";
 		cell.style.verticalAlign = "middle";
+		cell.style.border = "solid 1px #E8E8E8";
 		cell.width = "12%";
 
 		cell = row.insertCell();
@@ -136,15 +171,56 @@
 		cell.style.color = "gray";
 		cell.style.textAlign = "center";
 		cell.style.verticalAlign = "middle";
+		cell.style.border = "solid 1px #E8E8E8";
 		cell.width = "12%";
 	}
 
-	function getDayDisplay(date)
+	function getDayDisplay(date, slots, displayColor)
 	{
 		var display = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">";
-		display += "<tr><td>";
+		display += ("<tr><td style=\"color:"+displayColor+"\">");
 		display += date;
-		display += "</td></tr>";
+		display += "</td></tr>";		
+		for(var i=0; i<5; i++)
+		{
+			if(slots.indexOf('+')==-1)
+			{
+				display += "<tr><td class=\"slotsAppointment\">";
+				display += slots;
+				display += "</td></tr>";
+				break;
+			}
+			else
+			{
+				var line = slots.substring(0, slots.indexOf('+'));
+				slots = slots.substring(slots.indexOf('+')+1);
+				if(line!=null && line!="")
+				{
+					display += "<tr><td class=\"slotsAppointment\">";
+					display += line;
+					display += "</td></tr>";
+				}
+				else
+				{
+					display += "<tr><td>";
+					display += "&nbsp;";
+					display += "</td></tr>";
+				}
+			}
+		}
+		/*
+		if(slots!=null && slots!="")
+		{
+			display += "<tr><td class=\"slotsAppointment\">";
+			display += slots;
+			display += "</td></tr>";
+		}
+		else
+		{
+			display += "<tr><td>";
+			display += "&nbsp;";
+			display += "</td></tr>";
+		}
 		display += "<tr><td>";
 		display += "&nbsp;";
 		display += "</td></tr>";
@@ -157,9 +233,7 @@
 		display += "<tr><td>";
 		display += "&nbsp;";
 		display += "</td></tr>";
-		display += "<tr><td>";
-		display += "&nbsp;";
-		display += "</td></tr>";
+		*/
 		display += "</table>";
 		return display;
 	}
@@ -171,11 +245,11 @@
 		Calendar aCalStart = Calendar.getInstance(new Locale("en", "US")); 
 		aCalStart.setLenient(true);
 		aCalStart.setTime(aCal.getTime());
-		// System.out.println("aCalStart = "+aCalStart.getTime());
+
 		// ลดไปทีละ 1 วัน จนเจอวันอาทิตย์ 
 		chkCalStart:
 		for(int i=aCalStart.get(Calendar.DAY_OF_YEAR); ; )
-		{ // aCalStart.get(Calendar.DAY_OF_WEEK)!=Calendar.SUNDAY
+		{
 			if(i-1<0)
 			{
 				// aCalStart.set(Calendar.YEAR, aCalStart.get(Calendar.YEAR)-1);
@@ -193,7 +267,6 @@
 				break chkCalStart;
 			}
 		}
-		System.out.println("aCalStart = "+aCalStart.getTime());
 
 		// วันสุดท้ายต้องเป็นวันเสาร์ 
 		Calendar aCalEnd = Calendar.getInstance(new Locale("en", "US"));
@@ -211,33 +284,37 @@
 				break chkCalEnd;
 			}
 		}
-		System.out.println("aCalEnd = "+aCalEnd.getTime());
 
-		// เรียกใช้ DAO 
-		DoctorProfileDAO aDAO = DAOFactory.newDoctorProfileDAO();
+		// รายการข้อมูลของวันที่นัดได้ทั้งหมดของหมอแต่ละคน
+		List listBpkEmployeeVO = null;
 		HashMap param = new HashMap();
-		param.put("employeeId", request.getParameter("employeeId"));
+		param.put("employeeId", employeeId);
 		param.put("startDate", new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aCalStart.getTime()));
 		param.put("endDate", new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aCalEnd.getTime()));
 		HashMap result = aDAO.getSlotDoctor(param);
 		if(ResultFlag.STATUS_SUCCESS.equals(result.get(ResultFlag.STATUS)))
 		{
-			List listBpkEmployeeVO = (List)result.get(ResultFlag.RESULT_DATA);
+			listBpkEmployeeVO = (List)result.get(ResultFlag.RESULT_DATA);
 
+			/*
 			for(int i=0; i<listBpkEmployeeVO.size(); i++)
 			{
 				BpkEmployeeVO aBpkEmployeeVO = (BpkEmployeeVO)listBpkEmployeeVO.get(i);
-				System.out.println(aBpkEmployeeVO.toJSON());
 			}
+			*/
 		}
 %>
-		var row, cell;
+		var row, cell, displayColor;
 <%
 		// Run วันไปเรื่อยๆ จนถึงวันที่กำหนด
 		for(int i=aCalStart.get(Calendar.DAY_OF_YEAR); aCalStart.getTime().before(aCalEnd.getTime());)
 		{
+%>			displayColor = "black";
+<%
 			int date = aCalStart.get(Calendar.DAY_OF_MONTH);
 			int day = aCalStart.get(Calendar.DAY_OF_WEEK);
+			int startMonth = aCalStart.get(Calendar.MONTH);
+			int thisMonth = aCalMonth.get(Calendar.MONTH);
 			if(day==Calendar.SUNDAY)
 			{
 %>			
@@ -247,64 +324,126 @@
 <%			}
 %>
 			cell = row.insertCell();
-//			cell.innerText = "<%=date%>";
-			cell.innerHTML = getDayDisplay("<%=date%>");
+
 			cell.style.textAlign = "left";
+			cell.style.border = "solid 1px #E8E8E8";
 			cell.width = "12%";
 <%
 			if(day==Calendar.SUNDAY)
 			{	
-%>			cell.style.color = "red";
+%>			displayColor = "red";
 <%			}
 			else if(day==Calendar.SATURDAY)
 			{
-%>			cell.style.color = "gray";
+%>			displayColor = "gray";
 <%			}
+
+			if(startMonth!=thisMonth)
+			{
+%>			displayColor = "lightgray";
+<%			}
+			String timeInRange = aDAO.getTimeInRange(BpkUtility.convertDate2StdFormat(aCalStart.getTime()), listBpkEmployeeVO);
+%>
+			cell.innerHTML = getDayDisplay("<%=date%>", "<%=timeInRange%>", displayColor);
+<%
 			i = i+1;
 			aCalStart.set(Calendar.DAY_OF_YEAR, i);
-
-			// System.out.println("aCalStart.getTime() = "+aCalStart.getTime());
-			// System.out.println("aCalEnd.getTime() = "+aCalEnd.getTime());
 		}
 %>
 	}
 
+	function onLoad()
+	{
+		drawCalendarMonth();
+
+		try
+		{
+			// กรณีที่ไม่มีภาพของแพทย์ใน folder ให้ใช้รูป noimage.jpg
+			var img = "<%=aBpkEmployeeVO!=null ? "../doctorProfileImage/"+aBpkEmployeeVO.getEmployeeId()+".jpg" : "../doctorProfileImage/false.jpg" %>";
+			
+			if(!imageExists(img))
+			{
+				imgDoctor.src = "images/noimage.jpg";
+			}
+		}
+		catch (e)
+		{
+			alert("imgDoctor exception e = "+e);
+		}
+	}
+
   //-->
   </script>
- </head>
+</head>
 
- <body onload="drawCalendarMonth()" marginwidth="0" marginheight="0" topmargin="0" leftmargin="0">
-	<table width="100%" height="100%" border="0" cellspacing="2" cellpadding="0">
-		<tr>
-			<td valign="middle" align="center" style="height:28px;vertical-align:middle" class="header1"><%=new SimpleDateFormat("MMMM yyyy", new Locale("th", "TH")).format(aCalMonth.getTime())%></td>
-		</tr>
-		<tr>
-			<td width="100%" style="height:32px">
-				<table border="0" cellspacing="5" cellpadding="0" width="100%">
-					<tr>
-						<td><input type="button" id="btnToday" 
-							 onClick="btnToday_OnClick();"
-							 value="Today" class="btnStyle" style="width:72px;height:24px"/></td>
-						<td><input type="button" id="btnPrevMonth" 
-							 onClick="btnPrevMonth_OnClick();"
-							 value=" < " class="btnStyle" style="width:24px;height:24px">&nbsp;
-							<input type="button" id="btnNextMonth" 
-							 onClick="btnNextMonth_OnClick();"
-							 value=" > " class="btnStyle" style="width:24px;height:24px"></td>
-						<td width="80%">&nbsp;</td>
-						<td><input type="button" id="btnDay" value="Day" class="btnStyle" style="width:64px;height:24px"></td>
-						<td><input type="button" id="btnWeek" value="Week" class="btnStyle" style="width:64px;height:24px"></td>
-						<td><input type="button" id="btnMonth" value="Month" class="btnStyle" style="width:64px;height:24px"></td>
-					</tr>
+<body onload="onLoad();" marginwidth="0" marginheight="0" topmargin="0" leftmargin="0">
+  <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="2">
+	<tr>
+		<td><jsp:include page="inc/header.inc.jsp" flush="false"/></td>
+	</tr>
+	<tr>
+		<td>
+		  <table width="100%" height="100%" border="0" cellspacing="2" cellpadding="0">
+			<tr>
+			<td width="240">
+				<table width="100%" height="100%" border="0" cellspacing="2" cellpadding="0">
+					<tr><td class="doctorHeader" style="height:32px">&nbsp;<%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getEmployeeName() : ""%></td></tr>
+					<tr><td style="width:105px;height:105px;vertical-align:bottom;text-align:right"><%=aBpkEmployeeVO!=null ? "<img id=\"imgDoctor\" src=\"../doctorProfileImage/"+aBpkEmployeeVO.getEmployeeId()+".jpg\"/>" : "&nbsp;"%></td></tr>
+					<tr><td style="height:21px"><b><%=aBpkEmployeeVO!=null ? "License:&nbsp;"+aBpkEmployeeVO.getLicenseNo() : ""%></b><%=aBpkEmployeeVO!=null && aBpkEmployeeVO.getLicenseNo()!=null && !"".equals(aBpkEmployeeVO.getLicenseNo()) ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "" %><b><%=aBpkEmployeeVO!=null ? "User:&nbsp;"+aBpkEmployeeVO.getEmployeeId() : ""%></b></td></tr>
+					<tr><td style="height:21px"><%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getQualification() : ""%></td></tr>
+					<tr><td style="height:21px"><%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getEducational() : ""%>&nbsp;<%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getInstitute() : ""%></td></tr>
+					<tr><td style="height:21px"><%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getBoard() : ""%></td></tr>
+					<tr><td style="height:21px"><%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getSpecialty() : ""%></td></tr>
+					<tr><td style="height:21px"><%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getOthers() : ""%></td></tr>
+					<tr><td style="height:42px"><%
+					
+					if(aBpkEmployeeVO!=null)
+					{
+					
+					%><input type="button" id="btnEditDetail" onClick="btnEditDetail_OnClick();"
+							 value="แก้ไข" class="btnStyle" style="vertical-align:middle;width:72px;"/><%
+					}
+					else
+					{
+						%>&nbsp;<%
+					}
+										 %></td></tr>
+					<tr><td height="*" class="bgFormLabelTop">&nbsp;</td></tr>
 				</table>
 			</td>
-		</tr>
-		<tr>
-			<td width="100%">
-				<table id="tblCalendarMonth" width="100%" height="100%" border="1" cellspacing="0" cellpadding="0">
+			<td>
+				<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td width="100%" style="height:32px">
+							<table border="0" cellspacing="0" cellpadding="4" width="100%">
+								<tr>
+									<td style="vertical-align:middle"><a href="#"><div id="btnBack" onClick="btnBack_OnClick();" class="btnStyleBackAfterSearch" style="vertical-align:middle;width:72px;"><center><img src="css/back.png"/></center></div></a></td>
+									<td style="vertical-align:middle"><input type="button" id="btnToday" 
+										 onClick="btnToday_OnClick();"
+										 value="วันนี้" class="btnStyle" style="vertical-align:middle;width:72px;"/></td>
+									<td style="vertical-align:middle">
+										<table border="0" cellspacing="0" cellpadding="1">
+											<tr><td><input type="button" id="btnPrevMonth" 
+														onClick="btnPrevMonth_OnClick();"
+														value=" < " class="btnStyle" style="width:24px"/></td>
+												<td><input type="button" id="btnNextMonth" 
+														onClick="btnNextMonth_OnClick();"
+														value=" > " class="btnStyle" style="width:24px"/></td></tr>
+										 </table></td>
+									<td width="80%" class="bgFormLabelTop" style="vertical-align:middle"><b>&nbsp;<%=new SimpleDateFormat("MMMM yyyy", new Locale("th", "TH")).format(aCalMonth.getTime())%></b></td>
+									<td style="vertical-align:middle"><input type="button" id="btnDay" value="1 วัน" class="btnStyle" style="width:64px"/></td>
+									<td style="vertical-align:middle"><input type="button" id="btnWeek" value="สัปดาห์" class="btnStyle" style="width:64px"/></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr><td width="100%"><table id="tblCalendarMonth" class="tableShow" width="100%" height="100%" border="1" cellspacing="0" cellpadding="0"/></td></tr>
 				</table>
+			</td>
 			</tr>
-		</tr>
-	</table>
- </body>
+		  </table>
+		</td>
+	</tr>
+  </table>
+</body>
 </html>

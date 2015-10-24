@@ -1,25 +1,105 @@
 <%@ page contentType="text/html; charset=windows-874"%>
-<%@ page import="com.iMed.iMedCore.utility.*"%>
-<%@ page import="com.iMed.iMedCore.utility.fix.*"%>
-<%@ page import="com.iMed.iMedCore.utility.feature.IMedFeature"%>
+<%@ page import="com.bpk.utility.BpkUtility"%>
+<!DOCTYPE html>
 <html>
 <head>
 <jsp:include page="inc/charset.jsp" flush="false"/>
 <link type="text/css" rel="stylesheet" href="css/extend.css" />
-<!-- script language="JavaScript" src="../../js/utility.js"></script-->
-<!-- script language="JavaScript" src="../../js/TextField.js"></script-->
 
 <script language="JavaScript">
 <!--
 
+function onLoad()
+{
+<%
+	String filter_employeeName = (String)session.getAttribute("filter_employeeName");
+	String filter_clinic = (String)session.getAttribute("filter_clinic");
+	String filter_specialty = (String)session.getAttribute("filter_specialty");
+	String filter_optionWithSchedule = (String)session.getAttribute("filter_optionWithSchedule");
+
+	String filter_searchPage = (String)session.getAttribute("filter_searchPage");
+	BpkUtility.printDebug(this, "Get value "+filter_searchPage+" from session 'filter_searchPage'");
+
+	String filter_searchCount = (String)session.getAttribute("filter_searchCount");
+%>
+	var tmp_listDoctor_txtDoctor = "<%=filter_employeeName!=null ? filter_employeeName : ""%>";
+	var tmp_listDoctor_txtClinic = "<%=filter_clinic!=null ? filter_clinic : ""%>";
+	var tmp_listDoctor_txtSpecialty = "<%=filter_specialty!=null ? filter_specialty : ""%>";
+	var tmp_radoptionWithSchedule = "<%=filter_optionWithSchedule!=null ? filter_optionWithSchedule : ""%>";
+
+	var tmp_listDoctor_cmbPage = "<%=filter_searchPage!=null ? filter_searchPage : ""%>";
+	var tmp_listDoctor_cmbLimitPage = "<%=filter_searchCount!=null ? filter_searchCount : ""%>";
+
+	listDoctor_txtDoctor.value = tmp_listDoctor_txtDoctor;
+	listDoctor_txtClinic.value = tmp_listDoctor_txtClinic;
+	listDoctor_txtSpecialty.value = tmp_listDoctor_txtSpecialty;
+
+	if(tmp_radoptionWithSchedule!=null)
+	{
+		radoptionWithSchedule.checked = true;
+	}
+	else
+	{
+		radoptionWithoutSchedule.checked = true;
+	}
+	// alert("radoptionWithoutSchedule = "+radoptionWithoutSchedule.checked);
+
+	listDoctor_findDoctor();
+
+	// ส่วนนี้ ต้องการให้เลือกหน้าที่เคยเลือกไว้ให้ด้วย แต่ยังไม่ work
+	try
+	{
+		listDoctor_cmbPage.value = tmp_listDoctor_cmbPage!=null && tmp_listDoctor_cmbPage!="" ? tmp_listDoctor_cmbPage : 0;	
+	}
+	catch (e)
+	{
+		try
+		{
+			for(var i=0; i<listDoctor_cmbPage.options.length; i++)
+			{
+				if(tmp_listDoctor_cmbPage==listDoctor_cmbPage.options[i].value)
+				{
+					listDoctor_cmbPage.selectedIndex = i;
+				}
+			}
+		}
+		catch (e2)
+		{
+			alert(e2);
+		}
+	}
+
+	try
+	{
+		listDoctor_cmbLimitPage.value = tmp_listDoctor_cmbLimitPage!=null && tmp_listDoctor_cmbLimitPage!="" ? tmp_listDoctor_cmbLimitPage : "20";
+	}
+	catch (e)
+	{
+	}
+}
+
 function listDoctor_findDoctor()
 {
-	top.filter_empId = listDoctor_txtDoctorEid.employee_eid;
+	top.filter_employeeName = listDoctor_txtDoctor.value;
 	top.filter_clinic = listDoctor_txtClinic.value;
 	top.filter_specialty = listDoctor_txtSpecialty.value;
 	top.filter_optionWithSchedule = radoptionWithSchedule.value;
-	top.filter_searchPage = listDoctor_cmbPage.options[listDoctor_cmbPage.selectedIndex].value;
-	top.filter_searchCount = listDoctor_cmbLimitPage.options[listDoctor_cmbLimitPage.selectedIndex].value;
+
+	try
+	{
+		top.filter_searchPage = listDoctor_cmbPage.options[listDoctor_cmbPage.selectedIndex].value;
+	}
+	catch (e)
+	{
+	}
+	
+	try
+	{
+		top.filter_searchCount = listDoctor_cmbLimitPage.options[listDoctor_cmbLimitPage.selectedIndex].value;
+	}
+	catch (e)
+	{
+	}
 
 	top.statusFrame.repWorkStatus("กำลังทำการค้นหารายชื่อแพทย์...");
 	top.listDoctorJSPFrame.UCForm.UC.value = "listDoctor";
@@ -35,21 +115,41 @@ function listDoctor_btnSearch_OnClick()
 
 function listDoctor_btnClearKeyWord_onclick()
 {
-	var txtEmpId = document.getElementById("listDoctor_txtDoctorEid");
-	var txtClinic = document.getElementById("listDoctor_txtClinic");
-	var txtSpecialty = document.getElementById("listDoctor_txtSpecialty");
-	var radoptionWithSchedule = document.getElementById("radoptionWithSchedule");
-	var cmbLimitPage = document.getElementById("cmbLimitPage");
-
 	try
 	{
-		txtEmpId.value = "";
-		txtClinic.value = "";
-		txtSpecialty.value = "";
+		listDoctor_txtDoctor.value = "";
+		listDoctor_txtDoctor.employee_eid = "";
+		listDoctor_txtClinic.value = "";
+		listDoctor_txtSpecialty.value = "";
 		radoptionWithSchedule.checked = true;
 
-		cmbPage.selectedIndex = 0;
-		cmbLimitPage.selectedIndex = 1;
+		listDoctor_cmbPage.selectedIndex = 0;
+		listDoctor_cmbLimitPage.selectedIndex = 1;
+
+		top.filter_employeeName = listDoctor_txtDoctor.value;
+		top.filter_clinic = listDoctor_txtClinic.value;
+		top.filter_specialty = listDoctor_txtSpecialty.value;
+		top.filter_optionWithSchedule = radoptionWithSchedule.value;
+
+		try
+		{
+			top.filter_searchPage = listDoctor_cmbPage.options[listDoctor_cmbPage.selectedIndex].value;
+		}
+		catch (e)
+		{
+		}
+		
+		try
+		{
+			top.filter_searchCount = listDoctor_cmbLimitPage.options[listDoctor_cmbLimitPage.selectedIndex].value;
+		}
+		catch (e)
+		{
+		}
+
+		top.statusFrame.repWorkStatus("ล้างตัวกรอง...");
+		top.listDoctorJSPFrame.UCForm.UC.value = "resetFilterListDoctor";
+		top.listDoctorJSPFrame.UCForm.submit();
 	}
 	catch (e)
 	{
@@ -57,7 +157,7 @@ function listDoctor_btnClearKeyWord_onclick()
 	}
 }
 
-function listDoctor_txtDoctorEid_OnKeyUp()
+function listDoctor_txtDoctor_OnKeyUp()
 {
 	if(event.keyCode==13)
 	{
@@ -100,7 +200,7 @@ function showListBpkEmployeeVO()
 	var listBpkEmployeeVO = top.listBpkEmployeeVO;
 	var size = listBpkEmployeeVO.length;
 	var previousEmpName = "";
-	var isReNew = true;
+	// var isReNew = true;
 	var lineStyle = lineOdd;
 	for(var i=0; i<size; i++)
 	{
@@ -110,6 +210,7 @@ function showListBpkEmployeeVO()
 		row.employee_id = aBpkEmployeeVO.employeeId;
 		row.height = 21;
 
+		/*** ReNew ยังไม่ต้องใช้ 
 		if(i>0)
 		{
 			if(listBpkEmployeeVO[i-1].employeeId == row.employee_id)
@@ -117,6 +218,7 @@ function showListBpkEmployeeVO()
 			else
 				isReNew = true;
 		}
+		*/
 
 		var cell = row.insertCell();
 		if(previousEmpName==aBpkEmployeeVO.employeeName)
@@ -125,7 +227,7 @@ function showListBpkEmployeeVO()
 		}
 		else
 		{
-			cell.innerHTML = aBpkEmployeeVO.employeeName;
+			cell.innerHTML = "<a href=\"CalendarMonth.jsp?employeeId="+aBpkEmployeeVO.employeeId+"\" target=\"_top\">"+aBpkEmployeeVO.employeeName+"</a>";
 		}
 		cell.width = "16%";
 
@@ -169,6 +271,7 @@ function showListBpkEmployeeVO()
 		cell.innerText = " ";
 		cell.width = "10%";
 
+		/*** ReNew ยังไม่ต้องใช้ 
 		if(isReNew)
 		{
 			if(lineStyle==lineOdd)
@@ -176,7 +279,8 @@ function showListBpkEmployeeVO()
 			else 
 				lineStyle = lineOdd;
 		}
-		row.className = lineStyle;
+		*/
+		row.className = i%2==0 ? lineOdd : lineEven;
 
 		previousEmpName = aBpkEmployeeVO.employeeName;
 	}
@@ -235,30 +339,23 @@ function setEableNavigatorPrev(enabled)
 </script>
 
 </head>
-<body marginwidth="0" marginheight="0" topmargin="0" leftmargin="0">
+<body marginwidth="0" marginheight="0" topmargin="0" leftmargin="0" onLoad="onLoad();">
 
 <!-- table tab -->
-<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="2">
 	<tr>
-		<td>
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-				<tr width="100%" >
-					<td id="tdListDoctor" class="bgHilite" width="250px" height="20px">&nbsp;<b>ตารางออกตรวจแพทย์</b>
-					</td>
-				</tr>
-			</table>
-		</td>
+		<td><jsp:include page="inc/header.inc.jsp" flush="false"/></td>
 	</tr>
 	<tr>
 		<td>
-			<table width="100%" style="height:40px" border="0" cellspacing="0" cellpadding="0">
+			<table width="85%" class="bgFormLabelTop" border="0" cellspacing="0" cellpadding="0">
 				<tr> 
-					<td style="vertical-align:middle; height:40px">&nbsp;
-						แพทย์:&nbsp;<input id="listDoctor_txtDoctorEid" type="text" class="txtAutoComplete" style="width:170px" employee_eid="" onKeyUp="listDoctor_txtDoctorEid_OnKeyUp();">&nbsp;&nbsp;&nbsp;&nbsp;
-						คลินิก:&nbsp;<input id="listDoctor_txtClinic" type="text" class="txtBorder" style="width:170px" onKeyUp="listDoctor_txtClinic_OnKeyUp();">&nbsp;&nbsp;&nbsp;&nbsp;
-						ความชำนาญ:&nbsp;<input id="listDoctor_txtSpecialty" type="text" class="txtBorder" style="width:170px" onKeyUp="listDoctor_txtSpecialty_OnKeyUp();">&nbsp;&nbsp;&nbsp;&nbsp;
-						<input type="radio" name="radoptionWithSchedule" id="radoptionWithSchedule" checked>เฉพาะที่มีตาราง&nbsp;&nbsp;
-						<input type="radio" name="radoptionWithSchedule" id="radoptionWithoutSchedule">ทั้งหมด&nbsp;
+					<td style="vertical-align:middle; height:32px">&nbsp;
+						แพทย์:&nbsp;<input id="listDoctor_txtDoctor" type="text" placeholder=" ชื่อ - นามสกุล " class="txtBorder" style="width:170px;height:24px;vertical-align:middle" employee_eid="" onKeyUp="listDoctor_txtDoctor_OnKeyUp();"/>&nbsp;&nbsp;&nbsp;&nbsp;
+						ศูนย์การแพทย์:&nbsp;<input id="listDoctor_txtClinic" type="text" placeholder=" ศูนย์การแพทย์ " class="txtBorder" style="width:170px;height:24px;vertical-align:middle" onKeyUp="listDoctor_txtClinic_OnKeyUp();"/>&nbsp;&nbsp;&nbsp;&nbsp;
+						ความเชี่ยวชาญ:&nbsp;<input id="listDoctor_txtSpecialty" type="text" placeholder=" ความเชี่ยวชาญ " class="txtBorder" style="width:170px;height:24px;vertical-align:middle" onKeyUp="listDoctor_txtSpecialty_OnKeyUp();"/>&nbsp;&nbsp;&nbsp;&nbsp;
+						<input type="radio" name="radoptionWithSchedule" id="radoptionWithSchedule" checked/>เฉพาะที่มีตาราง&nbsp;&nbsp;
+						<input type="radio" name="radoptionWithSchedule" id="radoptionWithoutSchedule"/>ทั้งหมด&nbsp;
 					</td>
 				</tr>
 			</table>
@@ -266,18 +363,18 @@ function setEableNavigatorPrev(enabled)
 	</tr>
 	<tr>
 		<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<input id="listDoctor_btnSearch" type="button" class="btnStyleL" value="ค้น" onclick="listDoctor_btnSearch_OnClick();">&nbsp;
-			<input id="listDoctor_btnClearKeyWord" type="button" class="btnStyleL" value="ล้าง" onclick="listDoctor_btnClearKeyWord_onclick();">&nbsp;
-			<input type="button" id="btnFirst" value="|<" onClick="btnFirst_onClick();"  class="btnStyleS" disabled>
-			<input type="button" id="btnPrev" onClick="btnPrev_onClick();" value="<"  class="btnStyleS" disabled>
+			<input id="listDoctor_btnSearch" type="button" class="btnStyleL" value="ค้น" onclick="listDoctor_btnSearch_OnClick();"/>&nbsp;
+			<input id="listDoctor_btnClearKeyWord" type="button" class="btnStyleL" value="ล้าง" onclick="listDoctor_btnClearKeyWord_onclick();"/>&nbsp;
+			<input type="button" id="btnFirst" value="|<" onClick="btnFirst_onClick();"  class="btnStyleNavigator" disabled/>
+			<input type="button" id="btnPrev" onClick="btnPrev_onClick();" value="<"  class="btnStyleNavigator" disabled/>
 			<select id="listDoctor_cmbPage" onChange="listDoctor_cmbPage_onChange();">
 				<jsp:include page="inc/cmbPage.inc.jsp" flush="false"/>
 			</select>
 			<select id="listDoctor_cmbLimitPage" onChange="listDoctor_cmbLimitPage_onChange();">
 				<jsp:include page="inc/cmbLimitPage.inc.jsp" flush="true" />
 			</select>
-			<input type="button" id="btnNext" onClick="btnNext_onClick();" value=">"  class="btnStyleS" disabled>
-			<input type="button" id="btnLast" value=">|" onClick="btnLast_onClick();"  class="btnStyleS" disabled>
+			<input type="button" id="btnNext" onClick="btnNext_onClick();" value=">"  class="btnStyleNavigator" disabled/>
+			<input type="button" id="btnLast" value=">|" onClick="btnLast_onClick();"  class="btnStyleNavigator" disabled/>
 		</td>
 	</tr>
 	<tr><td>&nbsp;</td></tr>

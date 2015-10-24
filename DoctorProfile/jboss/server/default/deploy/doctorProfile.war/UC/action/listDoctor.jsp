@@ -25,29 +25,40 @@ var aBpkEmployeeVO = null;
 	try
 	{
 		ServletRequestThai req = new ServletRequestThai(request);
-		String filterEmpId = (String)req.getParameterThai("filter_empId");
-		String filterEmployeename = (String)req.getParameterThai("filter_employeeName");
+		String filterEmployeeName = (String)req.getParameterThai("filter_employeeName");
 		String filterClinic = (String)req.getParameterThai("filter_clinic");
 		String filterSpecialty = (String)req.getParameterThai("filter_specialty");
 		String filterOptionWithSchedule = (String)req.getParameterThai("filter_optionWithSchedule");
 
 		String filterSearchCount = (String)req.getParameterThai("filter_searchCount");
 		String filterSearchPage = (String)req.getParameterThai("filter_searchPage");
+
+		Utility.printCoreDebug(this, "filterEmployeeName = "+filterEmployeeName);
+		Utility.printCoreDebug(this, "filterClinic = "+filterClinic);
+		Utility.printCoreDebug(this, "filterSpecialty = "+filterSpecialty);
+		Utility.printCoreDebug(this, "filterOptionWithSchedule = "+filterOptionWithSchedule);
+		Utility.printCoreDebug(this, "filterSearchCount = "+filterSearchCount);
+		Utility.printCoreDebug(this, "filterSearchPage = "+filterSearchPage);
+
+		session.setAttribute("filter_employeeName", filterEmployeeName);
+		session.setAttribute("filter_clinic", filterClinic);
+		session.setAttribute("filter_specialty", filterSpecialty);
+		session.setAttribute("filter_optionWithSchedule", filterOptionWithSchedule);
+
+		session.setAttribute("filter_searchCount", filterSearchCount);
+		session.setAttribute("filter_searchPage", filterSearchPage);
+		BpkUtility.printDebug(this, "Set value "+filterSearchPage+" to session 'filter_searchPage'");
+
 		HashMap result;
 				
 		DoctorProfileDAO aDAO = DAOFactory.newDoctorProfileDAO();
+
 		HashMap param = new HashMap();
-		param.put("employeeId", filterEmpId);
-		param.put("employeeName", filterEmployeename);
-
+		param.put("employeeName", filterEmployeeName);
 		param.put("clinicDescription", filterClinic);
-		
 		param.put("specialityDescription", filterSpecialty);
-		
 		param.put("optionWithSchedule", filterOptionWithSchedule);
-
 		param.put("count", filterSearchCount);
-
 		param.put("page", filterSearchPage);
 
 		result = aDAO.listDoctor(param);
@@ -116,6 +127,7 @@ var aBpkEmployeeVO = null;
 <%
 			}
 %>
+			// เลือก ComboBox ส่วนของหน้าต่างๆใหม่ โดยคำนวณจากหน้าทั้งหมด
 			var cmbObj = top.mainFrame.listDoctor_cmbPage;
 			var pageCount = "<%=pageCount%>";
 			while(cmbObj.options.length)
@@ -141,8 +153,8 @@ var aBpkEmployeeVO = null;
 		}
 		else
 		{
-			System.out.println("Result Status = "+status);
 %>
+			top.mainFrame.showListBpkEmployeeVO();
 			top.statusFrame.repStatus("ไม่พบข้อมูล");
 <%
 		}

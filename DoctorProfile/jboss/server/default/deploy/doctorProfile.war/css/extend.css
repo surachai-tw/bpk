@@ -119,43 +119,84 @@ legend {font-weight:bold; color:blue}
 	text-align:right;
 }
 
+.btnStyleNavigator
+{
+	border-top: 1px solid #32A69D;
+	border-right: 1px solid #32A69D;
+	border-bottom: 1px solid #32A69D;
+	border-left: 1px solid #32A69D;
+	height: 24px;
+	width: 24px;
+	color: #32BA9D;
+	background: #FFFFFF;
+	font-weight: bold;
+}
+
 .btnStyle
 {
-	border-top: 1px solid #DDDDDD;
-	border-right: 1px solid #666666;
-	border-bottom: 1px solid #666666;
-	border-left: 1px solid #DDDDDD;
-	height: 21px;
+	border-top: 1px solid #337AB7;
+	border-right: 1px solid #337AB7;
+	border-bottom: 1px solid #337AB7;
+	border-left: 1px solid #337AB7;
+	height: 24px;
+	color: white;
+	background: #337AB7;
+	font-weight: bold;
+}
+
+.btnStyleBackAfterSearch
+{
+	border-top: 1px solid #DADADA;
+	border-right: 1px solid #DADADA;
+	border-bottom: 1px solid #DADADA;
+	border-left: 1px solid #DADADA;
+	height: 24px;
+	background: #F3F3F3;
+	font-weight: bold;
+}
+
+.btnStyle:hover
+{
+	background: #286090;
 }
 
 .btnStyleS
 {
-	border-top: 1px solid #DDDDDD;
-	border-right: 1px solid #666666;
-	border-bottom: 1px solid #666666;
-	border-left: 1px solid #DDDDDD;
+	border-top: 1px solid #337AB7;
+	border-right: 1px solid #337AB7;
+	border-bottom: 1px solid #337AB7;
+	border-left: 1px solid #337AB7;
 	width: 15px;
-	height: 21px;
+	height: 24px;
+	color: white;
+	background: #337AB7;
+	font-weight: bold;
 }
 
 .btnStyleM
 {
-	border-top: 1px solid #DDDDDD;
-	border-right: 1px solid #666666;
-	border-bottom: 1px solid #666666;
-	border-left: 1px solid #DDDDDD;
+	border-top: 1px solid #337AB7;
+	border-right: 1px solid #337AB7;
+	border-bottom: 1px solid #337AB7;
+	border-left: 1px solid #337AB7;
 	width: 25px;
-	height: 21px;
+	height: 24px;
+	color: white;
+	background: #337AB7;
+	font-weight: bold;
 }
 
 .btnStyleL
 {
-	border-top: 1px solid #DDDDDD;
-	border-right: 1px solid #666666;
-	border-bottom: 1px solid #666666;
-	border-left: 1px solid #DDDDDD;
+	border-top: 1px solid #337AB7;
+	border-right: 1px solid #337AB7;
+	border-bottom: 1px solid #337AB7;
+	border-left: 1px solid #337AB7;
 	width: 40px;
-	height: 21px;
+	height: 24px;
+	color: white;
+	background: #337AB7;
+	font-weight: bold;
 }
 
 .borderSize1 {
@@ -163,7 +204,6 @@ legend {font-weight:bold; color:blue}
 	border-right: 1px solid #CCCCCC;
 	border-bottom: 1px solid #CCCCCC;
 	border-left: 1px solid #666666;
-
 }
 
 .lblOdd {
@@ -247,6 +287,22 @@ legend {font-weight:bold; color:blue}
 	color: #000000; 
 	background: #E6E6FF; 
 	font-size: 14px; 
+}
+
+.doctorHeader {  
+	font-style: bold; 
+	color: #337AB7; 
+	background: #FFFFFF; 
+	font-size: 18px; 
+}
+
+.slotsAppointment {  
+	border: 1px solid #DB7972;
+	font-style: normal; 
+	color: #8984A5; 
+	background: #F0D0CE; 
+	font-size: 14px; 
+	cursor: pointer;
 }
 
 .contentHeader { 
@@ -500,6 +556,7 @@ background: #E6E6FF;
 
 .bgFormLabelTop
 { 
+	font-size:14px;
 	font-style: normal; 
 	color: #000000; 
 	background: #F1F1F1; 
@@ -539,7 +596,8 @@ background: #E6E6FF;
 .bgHilite 
 {
     color: #FFFFFF;
-	background-color: #637DB5;
+	background-color: #32A69D;
+	font-weight: bold;
 }
 
 .bgHiliteSelected

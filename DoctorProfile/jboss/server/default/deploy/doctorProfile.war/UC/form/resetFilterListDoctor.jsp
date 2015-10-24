@@ -23,7 +23,7 @@ function loadForm()
 
 </head>
 <body onload="loadForm();">
-<form name="form" id="form" action="action/listDoctor.jsp" method="POST">
+<form name="form" id="form" action="action/resetFilterListDoctor.jsp" method="POST">
 
 	<input type="hidden" name="filter_employeeName" id="filter_employeeName"/>
 	<input type="hidden" name="filter_clinic" id="filter_clinic"/>

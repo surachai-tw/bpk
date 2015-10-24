@@ -3,10 +3,16 @@
 <%
 	String uc = request.getParameter("UC");
 	System.out.println(session.getAttribute(HttpSessionVariable.USERID)+"@"+request.getRemoteAddr()+", "+uc);
-	if(uc.equals("listDoctor"))
+	if("listDoctor".equals(uc))
 	{
 %>
 <jsp:include page="form/listDoctor.jsp" flush="false"/>
+<%
+	}
+	else if("resetFilterListDoctor".equals(uc))
+	{
+%>
+<jsp:include page="form/resetFilterListDoctor.jsp" flush="false"/>
 <%
 	}
 	else

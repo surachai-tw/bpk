@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=WINDOWS-874"%>
 <%@ page import="com.iMed.iMedCore.utility.*"%>
+<!DOCTYPE html>
 <html>
 <head>
 <title>รายชื่อแพทย์</title>
@@ -8,7 +9,7 @@
 <!--
 
 // For filter 
-var filter_empId;
+var filter_employeeName;
 var filter_clinic;
 var filter_specialty;
 var filter_optionWithSchedule;

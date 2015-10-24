@@ -1,8 +1,11 @@
 package com.bpk.dao;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -10,6 +13,7 @@ import com.bpk.dto.BpkEmployeeVO;
 import com.bpk.dto.ResultFlag;
 import com.bpk.utility.BpkUtility;
 import com.bpk.utility.Sorter;
+import com.iMed.iMedCore.utility.fix.FixDayOfWeek;
 
 public class DoctorProfileDAO
 {
@@ -247,6 +251,7 @@ public class DoctorProfileDAO
 			}
 
 			// Group day in 1 line
+			BpkUtility.printDebug(this, "Group to line");
 			listBpkEmployeeVO = BpkEmployeeVO.groupToLine(listBpkEmployeeVO);
 			
 			// Replace double day, if setup wrong 
@@ -347,11 +352,12 @@ public class DoctorProfileDAO
 			sql.append(" FROM doctor_schedule ");
 			sql.append(" INNER JOIN bpk_fix_day_of_week dayofweek ON doctor_schedule.fix_day_of_week = dayofweek.bpk_fix_day_of_week_id ");
 			sql.append(" WHERE doctor_schedule.employee_id = '").append(pEmployeeId).append("'");
-			sql.append(" ORDER BY dayofweek.display_order ");
+			sql.append(" ORDER BY dayofweek.display_order, start_time, end_time ");
 			BpkUtility.printDebug(this, sql.toString());
 
 			conn = DAOFactory.getConnection();
 			stmt = conn.createStatement();
+			// BpkUtility.printDebug(this, sql.toString());
 			rst = stmt.executeQuery(sql.toString());
 
 			for (; rst.next();)
@@ -364,6 +370,7 @@ public class DoctorProfileDAO
 				tmpBpkEmployeeVO.setStartTime(rst.getString("start_time"));
 				tmpBpkEmployeeVO.setEndTime(rst.getString("end_time"));
 				
+				BpkUtility.printDebug(this, tmpBpkEmployeeVO.getDayId()+" "+tmpBpkEmployeeVO.getDayName()+" "+tmpBpkEmployeeVO.getStartTime());
 				listBpkEmployeeVO.add(tmpBpkEmployeeVO);
 			}
 			
@@ -391,6 +398,166 @@ public class DoctorProfileDAO
 			rst = null;
 			stmt = null;
 			conn = null;
+		}
+		return result;
+	}
+	
+	/***
+	 * 
+	 * @param chkDate อยู่ในรูปแบบของ yyyy-mm-dd และเป็น ค.ศ.
+	 * @param listBpkEmployeeVO ข้อมูลของ EmployeeVO 1 คนเท่านั้น 
+	 * @return
+	 */
+	public String getTimeInRange(String chkDate, List listBpkEmployeeVO)
+	{
+		// BpkUtility.printDebug(this, "chkDate = "+chkDate+", listBpkEmployeeVO.size() = "+listBpkEmployeeVO.size());
+		StringBuilder result = new StringBuilder();
+		List listTimeInRange = new ArrayList();
+		if(listBpkEmployeeVO!=null && listBpkEmployeeVO.size()>0)
+		{
+			Calendar aCal = null;
+			try
+			{
+				aCal = Calendar.getInstance(new Locale("en", "US"));
+				Date date = BpkUtility.getDateFromString(chkDate);
+				aCal.setTime(date);
+				
+				int dayOfWeek = aCal.get(Calendar.DAY_OF_WEEK);
+				String day = null;
+				switch (dayOfWeek)
+				{
+					case Calendar.SUNDAY:
+						day = FixDayOfWeek.SUNDAY;
+						break;
+						
+					case Calendar.MONDAY:
+						day = FixDayOfWeek.MONDAY;
+						break;
+						
+					case Calendar.TUESDAY:
+						day = FixDayOfWeek.TUESDAY;
+						break;
+						
+					case Calendar.WEDNESDAY:
+						day = FixDayOfWeek.WEDNESDAY;
+						break;
+						
+					case Calendar.THURSDAY:
+						day = FixDayOfWeek.THURSDAY;
+						break;
+						
+					case Calendar.FRIDAY:
+						day = FixDayOfWeek.FRIDAY;
+						break;
+						
+					case Calendar.SATURDAY:
+						day = FixDayOfWeek.SATURDAY;
+						break;
+	
+					default:
+						day = "";
+				}
+				
+				for(int i=0, sizei=listBpkEmployeeVO.size(); i<sizei; i++)
+				{
+					BpkEmployeeVO tmpBpkEmployeeVO = (BpkEmployeeVO)listBpkEmployeeVO.get(i);
+					if(tmpBpkEmployeeVO!=null && day.equals(tmpBpkEmployeeVO.getDayId()))
+					{
+						listTimeInRange.add(tmpBpkEmployeeVO);
+					}
+				}
+			}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			finally
+			{
+				aCal = null;
+			}
+		}
+		
+		// ส่งออกไป ด้วย String ของเวลา คั่นด้วย + 
+		String separator = "+";
+		for(int i=0, sizei=listTimeInRange.size(); i<sizei; i++)
+		{
+			BpkEmployeeVO tmpBpkEmployeeVO = (BpkEmployeeVO)listTimeInRange.get(i);
+			
+			result.append(tmpBpkEmployeeVO.getStartTime()).append(" - ").append(tmpBpkEmployeeVO.getEndTime()).append(" ").append(tmpBpkEmployeeVO.getClinicDescription()).append(separator);
+		}
+		if(result.length()>0)
+			result = result.deleteCharAt(result.length()-1);
+		// BpkUtility.printDebug(this, "result = "+result.toString());
+		return result.toString();
+	}
+	
+	/**
+	 * ขอข้อมูลของ Employee
+	 * @param employeeId
+	 * @return
+	 */
+	public HashMap getEmployeeDetail(String employeeId)
+	{
+		HashMap result = new HashMap();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rst = null;
+		StringBuilder sql = null;
+		try
+		{
+			sql = new StringBuilder("SELECT ");
+			sql.append("  COALESCE(spc.qualification, '') qualification, ");
+			sql.append("  COALESCE(spc.educational, '') educational, ");
+			sql.append("  COALESCE(spc.institute, '') institute, ");
+			sql.append("  COALESCE(spc.board, '') board, ");
+			sql.append("  COALESCE(spc.specialty, '') specialty, ");
+			sql.append("  COALESCE(spc.others, '') others, ");
+			sql.append("  COALESCE(e.profession_code, '') license_no, ");
+			sql.append("  e.employee_id, ");
+			sql.append("  bpkget_employee_name(e.employee_id) AS employee_name ");
+			sql.append("FROM employee AS e ");
+			sql.append("LEFT JOIN bpk_employee_doctor AS spc ON e.employee_id=spc.employee_id ");
+			sql.append("WHERE e.employee_id='").append(employeeId).append("'");
+			conn = DAOFactory.getConnection();
+			stmt = conn.createStatement();
+			BpkUtility.printDebug(this, sql.toString());
+			rst = stmt.executeQuery(sql.toString());
+			
+			if(rst.next())
+			{
+				BpkEmployeeVO aBpkEmployeeVO = new BpkEmployeeVO();
+				aBpkEmployeeVO.setQualification(rst.getString("qualification"));
+				aBpkEmployeeVO.setEducational(rst.getString("educational"));
+				aBpkEmployeeVO.setInstitute(rst.getString("institute"));
+				aBpkEmployeeVO.setBoard(rst.getString("board"));
+				aBpkEmployeeVO.setSpecialty(rst.getString("specialty"));
+				aBpkEmployeeVO.setOthers(rst.getString("others"));
+				aBpkEmployeeVO.setLicenseNo(rst.getString("license_no"));
+				aBpkEmployeeVO.setEmployeeId(employeeId);				
+				aBpkEmployeeVO.setEmployeeName(rst.getString("employee_name"));
+
+				result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
+				result.put(ResultFlag.RESULT_DATA, aBpkEmployeeVO);
+			}
+			else
+			{
+				result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);
+			}
+			
+			rst.close();
+			stmt.close();
+			conn.close();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		finally
+		{
+			sql = null;
+			conn = null;
+			stmt = null;
+			rst = null;
 		}
 		return result;
 	}

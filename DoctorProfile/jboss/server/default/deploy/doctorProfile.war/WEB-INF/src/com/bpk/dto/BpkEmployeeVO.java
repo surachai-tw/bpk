@@ -248,11 +248,19 @@ public class BpkEmployeeVO implements Serializable, JSONVO
 		}
 	}
 	
-	/** รวบให้เวลาเดียวกันแต่คนละวันที่ เป็นบันทัดเดียวกัน */
+	/** รวบให้เวลาเดียวกันแต่คนละวันที่ เป็นบรรทัดเดียวกัน */
 	public static List<BpkEmployeeVO> groupToLine(List<BpkEmployeeVO> listBpkEmployeeVO)
 	{
 		if(listBpkEmployeeVO!=null && listBpkEmployeeVO.size()>1)
 		{
+			if("d26578".equals(((BpkEmployeeVO)listBpkEmployeeVO.get(0)).getEmployeeId()))
+			{
+				for(int i=1; i<listBpkEmployeeVO.size(); i++)
+				{
+					BpkEmployeeVO tmpBpkEmployeeVO = (BpkEmployeeVO)listBpkEmployeeVO.get(i);
+					BpkUtility.printDebug(new BpkEmployeeVO(), tmpBpkEmployeeVO.getDayId()+". "+tmpBpkEmployeeVO.getDayName()+", "+tmpBpkEmployeeVO.getStartTime()+" - "+tmpBpkEmployeeVO.getEndTime());
+				}
+			}
 			try
 			{
 				BpkEmployeeVO prevBpkEmployeeVO = null;

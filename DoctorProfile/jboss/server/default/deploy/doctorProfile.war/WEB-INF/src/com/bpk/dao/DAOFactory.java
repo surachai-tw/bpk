@@ -23,7 +23,7 @@ public class DAOFactory {
 
         try
     	{
-    		System.out.println("user.dir = "+System.getProperty("user.dir"));
+    		// System.out.println("user.dir = "+System.getProperty("user.dir"));
             in = new BufferedReader(new FileReader(new File(connectionFile)));
             for (int i = 0; (line = in.readLine()) != null && i < 9; i++)
             {

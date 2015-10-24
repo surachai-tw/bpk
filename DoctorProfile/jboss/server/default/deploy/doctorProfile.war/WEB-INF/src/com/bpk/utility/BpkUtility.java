@@ -183,6 +183,39 @@ public class BpkUtility {
         return "";
     }
 
+    public static String convertDate2StdFormat(java.util.Date aDate)
+    {
+        if(aDate != null)
+        {
+            Calendar aCal = Calendar.getInstance(new Locale("en", "US"));
+            StringBuffer stdDate = new StringBuffer();
+
+            try
+            {
+                aCal.setTime(aDate);
+
+                int year = aCal.get(Calendar.YEAR);
+                int month = aCal.get(Calendar.MONTH) + 1;
+                int date = aCal.get(Calendar.DAY_OF_MONTH);
+
+                String newDate = stdDate.append(nf4.format(year)).append("-").append(nf2.format(month)).append("-").append(nf2.format(date)).toString();
+                // System.out.println(newDate);
+                
+                return newDate;
+            }
+            catch(Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                aCal = null;
+            }
+            return stdDate.toString();
+        }
+        return "";
+    }
+    
     /** แปลงข้อมูลจาก yyyy-mm-dd String ให้เป็น Date
      * ส่งค่าออกเป็น ค.ศ. เสมอ
      */
