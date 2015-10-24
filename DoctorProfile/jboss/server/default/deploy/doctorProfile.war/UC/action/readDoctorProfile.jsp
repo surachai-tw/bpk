@@ -62,11 +62,15 @@ var aBpkEmployeeVO = null;
 		param.put("page", filterSearchPage);
 
 		result = aDAO.listDoctor(param);
+
 		// BpkUtility.printDebug(this, "result = "+result);
 
 		String status = (String)result.get(ResultFlag.STATUS);
 		if(ResultFlag.STATUS_SUCCESS.equals(status))
 		{
+			// String pageCurrent = (String)result.get(EventNames.PAGE_CURRENT);
+			// String pageCount = (String)result.get(EventNames.PAGE_COUNT);
+
 			List listBpkEmployeeVO = (List)result.get(ResultFlag.RESULT_DATA);
 			if(Utility.isNotNull(listBpkEmployeeVO))
 			{

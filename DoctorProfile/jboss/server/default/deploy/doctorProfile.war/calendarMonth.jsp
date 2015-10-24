@@ -14,19 +14,26 @@
 <%@ page import="com.bpk.dto.BpkEmployeeVO"%>
 <html>
 <head>
-  <title> Calendar </title>
-  <jsp:include page="inc/charset.jsp" flush="false"/>
-  <link type="text/css" rel="stylesheet" href="css/extend.css" />
 <%
-		String viewDate = request.getParameter("viewDate");
 		String employeeId = request.getParameter("employeeId");
+		String viewDate = request.getParameter("viewDate");
+		BpkUtility.printDebug(this, "employeeId = "+employeeId);
+		BpkUtility.printDebug(this, "viewDate = "+viewDate);
+
+		// ขอขอ้มูลของ Employee
+		DoctorProfileDAO aDAO = DAOFactory.newDoctorProfileDAO();
+		HashMap resultDetail = aDAO.getEmployeeDetail(employeeId);
+		BpkEmployeeVO aBpkEmployeeVO = null;
+		if(ResultFlag.STATUS_SUCCESS.equals(resultDetail.get(ResultFlag.STATUS)))
+		{
+			aBpkEmployeeVO = (BpkEmployeeVO)resultDetail.get(ResultFlag.RESULT_DATA);
+		}
+
 		Calendar aCal = Calendar.getInstance(new Locale("en", "US"));
 		aCal.setLenient(true);
 		// สำหรับใช้แสดงผลที่หัวปฏิทิน
 		Calendar aCalMonth = Calendar.getInstance(new Locale("en", "US")); 
 		aCalMonth.setLenient(true);
-		BpkUtility.printDebug(this, "viewDate = "+viewDate);
-		BpkUtility.printDebug(this, "employeeId = "+employeeId);
 		if(viewDate!=null && viewDate.length()==10)
 		{
 			aCal.set(Calendar.YEAR, Integer.parseInt(viewDate.substring(0, 4)));
@@ -35,30 +42,17 @@
 
 			aCalMonth.setTime(aCal.getTime());
 		}
-
-		// เรียกใช้ DAO 
-		DoctorProfileDAO aDAO = DAOFactory.newDoctorProfileDAO();
-		HashMap resultDetail = aDAO.getEmployeeDetail(employeeId);
-		BpkEmployeeVO aBpkEmployeeVO = null;
-		if(ResultFlag.STATUS_SUCCESS.equals(resultDetail.get(ResultFlag.STATUS)))
-		{
-			aBpkEmployeeVO = (BpkEmployeeVO)resultDetail.get(ResultFlag.RESULT_DATA);
-		}
 %>
+  <title> ปฏิทินการทำงาน -  <%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getEmployeeName() : ""%></title>
+  <jsp:include page="inc/charset.jsp" flush="false"/>
+  <link type="text/css" rel="stylesheet" href="css/extend.css" />
+  <script type="text/javascript" src="js/bpkUtility.js"></script>
   <script type="text/javascript">
   <!--
 
-	/**
-	* ใช้ตรวจสอบการมีอยู่ของรูปภาพ
-	*/
-	function imageExists(image_url)
+	function btnEditDetail_OnClick()
 	{
-		var http = new XMLHttpRequest();
-
-		http.open('HEAD', image_url, false);
-		http.send();
-
-		return http.status != 404;
+		location.href = "editDoctorProfile.jsp?employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
 	}
 
 	function btnBack_OnClick()
@@ -68,7 +62,7 @@
 
 	function btnToday_OnClick()
 	{
-		location.href = "CalendarMonth.jsp?viewDate=<%=Utility.getCurrentDate()%>&employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
+		location.href = "calendarMonth.jsp?viewDate=<%=Utility.getCurrentDate()%>&employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
 	}
 
 	function btnPrevMonth_OnClick()
@@ -89,7 +83,7 @@
 		aPrevCal.set(Calendar.DAY_OF_MONTH, 1);
 		aPrevCal.set(Calendar.MONTH, chkPrevMonth);
 %>
-		location.href = "CalendarMonth.jsp?viewDate=<%=new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aPrevCal.getTime())%>&employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
+		location.href = "calendarMonth.jsp?viewDate=<%=new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aPrevCal.getTime())%>&employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
 	}
 
 	function btnNextMonth_OnClick()
@@ -110,7 +104,7 @@
 		aNextCal.set(Calendar.DAY_OF_MONTH, 1);
 		aNextCal.set(Calendar.MONTH, chkNextMonth);
 %>
-		location.href = "CalendarMonth.jsp?viewDate=<%=new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aNextCal.getTime())%>&employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
+		location.href = "calendarMonth.jsp?viewDate=<%=new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aNextCal.getTime())%>&employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
 	}
 
 	function clearTableData()
@@ -342,7 +336,7 @@
 			{
 %>			displayColor = "lightgray";
 <%			}
-			String timeInRange = aDAO.getTimeInRange(BpkUtility.convertDate2StdFormat(aCalStart.getTime()), listBpkEmployeeVO);
+			String timeInRange = DoctorProfileDAO.getTimeInRange(BpkUtility.convertDate2StdFormat(aCalStart.getTime()), listBpkEmployeeVO);
 %>
 			cell.innerHTML = getDayDisplay("<%=date%>", "<%=timeInRange%>", displayColor);
 <%
@@ -368,7 +362,7 @@
 		}
 		catch (e)
 		{
-			alert("imgDoctor exception e = "+e);
+			alert("imgDoctor exception e = "+e.message);
 		}
 	}
 
@@ -389,7 +383,7 @@
 				<table width="100%" height="100%" border="0" cellspacing="2" cellpadding="0">
 					<tr><td class="doctorHeader" style="height:32px">&nbsp;<%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getEmployeeName() : ""%></td></tr>
 					<tr><td style="width:105px;height:105px;vertical-align:bottom;text-align:right"><%=aBpkEmployeeVO!=null ? "<img id=\"imgDoctor\" src=\"../doctorProfileImage/"+aBpkEmployeeVO.getEmployeeId()+".jpg\"/>" : "&nbsp;"%></td></tr>
-					<tr><td style="height:21px"><b><%=aBpkEmployeeVO!=null ? "License:&nbsp;"+aBpkEmployeeVO.getLicenseNo() : ""%></b><%=aBpkEmployeeVO!=null && aBpkEmployeeVO.getLicenseNo()!=null && !"".equals(aBpkEmployeeVO.getLicenseNo()) ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "" %><b><%=aBpkEmployeeVO!=null ? "User:&nbsp;"+aBpkEmployeeVO.getEmployeeId() : ""%></b></td></tr>
+					<tr><td style="height:21px"><b><%=aBpkEmployeeVO!=null && aBpkEmployeeVO.getLicenseNo()!=null && !"".equals(aBpkEmployeeVO.getLicenseNo()) ? "License:&nbsp;"+aBpkEmployeeVO.getLicenseNo() : ""%></b><%=aBpkEmployeeVO!=null && aBpkEmployeeVO.getLicenseNo()!=null && !"".equals(aBpkEmployeeVO.getLicenseNo()) ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "" %><b><%=aBpkEmployeeVO!=null ? "User:&nbsp;"+aBpkEmployeeVO.getEmployeeId() : ""%></b></td></tr>
 					<tr><td style="height:21px"><%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getQualification() : ""%></td></tr>
 					<tr><td style="height:21px"><%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getEducational() : ""%>&nbsp;<%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getInstitute() : ""%></td></tr>
 					<tr><td style="height:21px"><%=aBpkEmployeeVO!=null ? aBpkEmployeeVO.getBoard() : ""%></td></tr>

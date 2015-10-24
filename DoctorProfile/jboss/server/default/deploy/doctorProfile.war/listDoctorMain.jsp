@@ -227,7 +227,7 @@ function showListBpkEmployeeVO()
 		}
 		else
 		{
-			cell.innerHTML = "<a href=\"CalendarMonth.jsp?employeeId="+aBpkEmployeeVO.employeeId+"\" target=\"_top\">"+aBpkEmployeeVO.employeeName+"</a>";
+			cell.innerHTML = "<a href=\"calendarMonth.jsp?employeeId="+aBpkEmployeeVO.employeeId+"\" target=\"_top\">"+aBpkEmployeeVO.employeeName+"</a>";
 		}
 		cell.width = "16%";
 
@@ -383,8 +383,8 @@ function setEableNavigatorPrev(enabled)
 			<table width="100%" style="border-top: solid 1px #CDCDCD; height:21px" cellspacing="0" cellpadding="0">
 				<tr align="center" class="contentHeader">
 					<td width="16%"><b>แพทย์</b></td>
-					<td width="16%"><b>คลินิก</b></td>
-					<td width="29%"><b>ความชำนาญ</b></td>
+					<td width="16%"><b>ศูนย์การแพทย์</b></td>
+					<td width="29%"><b>ความเชี่ยวชาญ</b></td>
 					<td width="18%"><b>วันในสัปดาห์</b></td>
 					<td width="6%"><b>เริ่มเวลา</b></td>
 					<td width="6%"><b>ถึงเวลา</b></td>

@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=Windows-874"%>
-<%@ page import="com.iMed.iMedCore.utility.*"%>
+<%@ page import="com.iMed.iMedCore.utility.HttpSessionVariable"%>
 <%
 	String uc = request.getParameter("UC");
 	System.out.println(session.getAttribute(HttpSessionVariable.USERID)+"@"+request.getRemoteAddr()+", "+uc);
@@ -20,8 +20,8 @@
 %>
 <script language="JavaScript">
 <!--
-	alert("Bad Usecase command");
-	location.href = "../formFilter.jsp";
+	alert("Bad use case command");
+	location.href = "../listDoctorJSP.jsp";
 //-->
 </script>
 <%

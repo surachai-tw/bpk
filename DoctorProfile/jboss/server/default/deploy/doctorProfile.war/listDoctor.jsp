@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=WINDOWS-874"%>
-<%@ page import="com.iMed.iMedCore.utility.*"%>
+<%@ page import="com.bpk.utility.BpkUtility"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,8 +22,16 @@ var listBpkEmployeeVO = new Array();
 //-->
 </script>
 </head>
+<%
+	String debug = System.getProperty("bpk.debug");
+	String frameHeight = "100%,0,15";
 
-<frameset rows="70%,20%,15" frameborder="NO" border="0" framespacing="0">
+	if(BpkUtility.isTrue(debug))
+	{
+		frameHeight = "70%,20%,15";
+	}
+%>
+<frameset rows="<%=frameHeight%>" frameborder="NO" border="0" framespacing="0">
   <frame src="listDoctorMain.jsp" name="mainFrame" id="mainFrame" scrolling="yes">
   <frame src="listDoctorJSP.jsp" name="listDoctorJSPFrame" id="listDoctorJSPFrame" 
 	scrolling="yes" noresize>

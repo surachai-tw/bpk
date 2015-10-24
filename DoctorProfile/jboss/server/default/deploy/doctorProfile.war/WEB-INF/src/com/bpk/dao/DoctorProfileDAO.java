@@ -9,11 +9,14 @@ import java.util.Locale;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
+
+import com.bpk.dto.BpkClinicVO;
 import com.bpk.dto.BpkEmployeeVO;
 import com.bpk.dto.ResultFlag;
 import com.bpk.utility.BpkUtility;
 import com.bpk.utility.Sorter;
 import com.iMed.iMedCore.utility.fix.FixDayOfWeek;
+import com.iMed.iMedCore.utility.fix.FixServicePointGroup;
 
 public class DoctorProfileDAO
 {
@@ -58,6 +61,58 @@ public class DoctorProfileDAO
 			conn = null;
 		}
 		return listDay;
+	}
+	
+	public HashMap listAllClinic()
+	{
+		HashMap result = new HashMap();
+		List<BpkClinicVO> listBpkClinicVO = new ArrayList<BpkClinicVO>();
+		StringBuilder sql = null;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rst = null;
+		try
+		{
+			sql = new StringBuilder("SELECT max(base_service_point_id) AS spid, trim(replace(replace(replace(description, '..', ''), 'ห้องตรวจ', ''), 'จุดซักประวัติ', '')) AS clinic_description ");
+			sql.append(" FROM base_service_point WHERE fix_service_point_group_id IN ('").append(FixServicePointGroup.DOCTOR).append("', '").append(FixServicePointGroup.NURSE_OPD).append("')");
+			sql.append(" GROUP BY trim(replace(replace(replace(description, '..', ''), 'ห้องตรวจ', ''), 'จุดซักประวัติ', ''))");
+			sql.append(" ORDER BY trim(replace(replace(replace(description, '..', ''), 'ห้องตรวจ', ''), 'จุดซักประวัติ', '')) COLLATE \"th_TH\"");
+
+			conn = DAOFactory.getConnection();
+			stmt = conn.createStatement();
+			BpkUtility.printDebug(this, sql.toString());
+			rst = stmt.executeQuery(sql.toString());
+			
+			for(;rst.next();)
+			{
+				BpkClinicVO aBpkClinicVO = new BpkClinicVO();
+				
+				aBpkClinicVO.setSpId(rst.getString("spid"));
+				aBpkClinicVO.setClinicDescription(rst.getString("clinic_description"));
+				
+				listBpkClinicVO.add(aBpkClinicVO);
+			}
+			
+			rst.close();
+			stmt.close();
+			conn.close();
+			
+			result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
+			result.put(ResultFlag.RESULT_DATA, listBpkClinicVO);
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		finally
+		{
+			sql = null;
+			rst = null;
+			stmt = null;
+			conn = null;
+		}
+
+		return result;
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -140,7 +195,8 @@ public class DoctorProfileDAO
 			if(pDoctor!=null && !"".equals(pDoctor))
 			{
 				String[] aDoctor = BpkUtility.splitString(pDoctor, " ");				
-				sql.append(" AND (");
+				sql.append(" AND ( (");
+				// ส่วนของชื่อ ให้ค้นในรูปแบบที่ Split คำก่อนค้น
 				for(int i=0; i<aDoctor.length; i++)
 				{
 					sql.append("tmp.employee_name LIKE '%").append(aDoctor[i]).append("%' ");
@@ -149,6 +205,28 @@ public class DoctorProfileDAO
 						sql.append(" AND ");
 				}
 				sql.append(") ");				
+
+				// ส่วนของ username
+				sql.append(" OR (");
+				for(int i=0; i<aDoctor.length; i++)
+				{
+					sql.append("tmp.employee_id LIKE '%").append(aDoctor[i]).append("%' ");
+					
+					if(i+1<aDoctor.length)
+						sql.append(" OR ");
+				}
+				sql.append(") ");				
+
+				// ส่วนของเลข ว. หรือ License No 
+				sql.append(" OR (");
+				for(int i=0; i<aDoctor.length; i++)
+				{
+					sql.append("tmp.license_no LIKE '%").append(aDoctor[i]).append("%' ");
+					
+					if(i+1<aDoctor.length)
+						sql.append(" OR ");
+				}
+				sql.append(") ) ");				
 			}
 			
 			// sql.append("AND tmp.specialty LIKE '%").append(pSpeciality).append("%' ");
@@ -408,7 +486,7 @@ public class DoctorProfileDAO
 	 * @param listBpkEmployeeVO ข้อมูลของ EmployeeVO 1 คนเท่านั้น 
 	 * @return
 	 */
-	public String getTimeInRange(String chkDate, List listBpkEmployeeVO)
+	public static String getTimeInRange(String chkDate, List listBpkEmployeeVO)
 	{
 		// BpkUtility.printDebug(this, "chkDate = "+chkDate+", listBpkEmployeeVO.size() = "+listBpkEmployeeVO.size());
 		StringBuilder result = new StringBuilder();

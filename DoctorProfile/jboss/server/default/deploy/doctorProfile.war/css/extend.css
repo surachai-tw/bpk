@@ -32,6 +32,7 @@ legend {font-weight:bold; color:blue}
 	border-left: 1px ridge #999999;
 	text-align: right;
 	background-color: #FFFFFF;
+	height: 24px;
 }
 
 .txtNoBorderNumber
@@ -81,6 +82,7 @@ legend {font-weight:bold; color:blue}
 	border-bottom: 1px solid #CCCCCC;
 	border-left: 1px ridge #999999;
 	background-color:#D1D1D1;
+	color: #000000;
 }
 
 .txtStyleAdmin
@@ -130,6 +132,7 @@ legend {font-weight:bold; color:blue}
 	color: #32BA9D;
 	background: #FFFFFF;
 	font-weight: bold;
+	cursor: pointer;
 }
 
 .btnStyle
@@ -142,6 +145,7 @@ legend {font-weight:bold; color:blue}
 	color: white;
 	background: #337AB7;
 	font-weight: bold;
+	cursor: pointer;
 }
 
 .btnStyleBackAfterSearch
@@ -150,9 +154,25 @@ legend {font-weight:bold; color:blue}
 	border-right: 1px solid #DADADA;
 	border-bottom: 1px solid #DADADA;
 	border-left: 1px solid #DADADA;
+	text-align: center;
 	height: 24px;
 	background: #F3F3F3;
 	font-weight: bold;
+	cursor: pointer;
+}
+
+.btnStyleAddRemove
+{
+	border-top: 1px solid #5BC0DE;
+	border-right: 1px solid #5BC0DE;
+	border-bottom: 1px solid #5BC0DE;
+	border-left: 1px solid #5BC0DE;
+	text-align: center;
+	height: 24px;
+	background: #5BC0DE;
+	color: white;
+	font-weight: bold;
+	cursor: pointer;
 }
 
 .btnStyle:hover
@@ -850,6 +870,39 @@ sup {font-size: 10px; font-family: Tahoma, Verdana, Segoe, sans-serif;}
 	border-bottom: solid 1px #ADADAD;
 	border-left: solid 1px #ADADAD;
 	border-right: solid 1px #DEDEDE;
+}
+
+.tabBpkEnable
+{
+	font-size:16px;
+	font-weight:bold;
+	color: #32A69D;
+	text-align: center;
+	vertical-align: middle;
+	height: 40px;
+	cursor: pointer;
+	background: url("bgTabEnable.png") repeat;	
+	border-bottom: solid 1px #E6E6E6;
+}
+
+.tabBpkDisable
+{
+	font-size:16px;
+	color: #FFFFFF;
+	text-align: center;
+	vertical-align: middle;
+	height: 40px;
+	cursor: pointer;
+	background: url("bgTabDisable.png") repeat;	
+	border-bottom: solid 1px #32A69D;
+}
+
+.divBpkRelative
+{
+    position: relative;
+    width: 640px;
+    height: 480px;
+    border: 1px solid #32A69D;
 }
 
 /*Tab Slider*/
