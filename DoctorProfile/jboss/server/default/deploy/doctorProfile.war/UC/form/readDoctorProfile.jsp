@@ -8,7 +8,7 @@ function loadForm()
 {
 	var form = document.getElementById("form");
 
-	form.elements["employeeId"].value = top.employeeId;
+	form.elements["employeeId"].value = top.aBpkEmployeeVO.employeeId;
 
 	form.submit();
 }

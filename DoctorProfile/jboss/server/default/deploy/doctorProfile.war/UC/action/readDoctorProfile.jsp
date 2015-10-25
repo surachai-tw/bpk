@@ -14,147 +14,83 @@
 <script type="text/javascript" src="../../js/coreobject/BpkEmployeeVO.js"></script>
 <script language="JavaScript">
 <!--
-var page_current;
-var page_count;
 
-top.listBpkEmployeeVO = new Array();
-
-var aBpkEmployeeVO = null;
+var aBpkEmployeeVO = top.aBpkEmployeeVO;
 
 <%
+	DoctorProfileDAO aDAO = null;
 	try
 	{
 		ServletRequestThai req = new ServletRequestThai(request);
-		String filterEmployeeName = (String)req.getParameterThai("filter_employeeName");
-		String filterClinic = (String)req.getParameterThai("filter_clinic");
-		String filterSpecialty = (String)req.getParameterThai("filter_specialty");
-		String filterOptionWithSchedule = (String)req.getParameterThai("filter_optionWithSchedule");
+		String employeeId = (String)req.getParameterThai("employeeId");
+		Utility.printCoreDebug(this, "employeeId = "+employeeId);
 
-		String filterSearchCount = (String)req.getParameterThai("filter_searchCount");
-		String filterSearchPage = (String)req.getParameterThai("filter_searchPage");
-
-		Utility.printCoreDebug(this, "filterEmployeeName = "+filterEmployeeName);
-		Utility.printCoreDebug(this, "filterClinic = "+filterClinic);
-		Utility.printCoreDebug(this, "filterSpecialty = "+filterSpecialty);
-		Utility.printCoreDebug(this, "filterOptionWithSchedule = "+filterOptionWithSchedule);
-		Utility.printCoreDebug(this, "filterSearchCount = "+filterSearchCount);
-		Utility.printCoreDebug(this, "filterSearchPage = "+filterSearchPage);
-
-		session.setAttribute("filter_employeeName", filterEmployeeName);
-		session.setAttribute("filter_clinic", filterClinic);
-		session.setAttribute("filter_specialty", filterSpecialty);
-		session.setAttribute("filter_optionWithSchedule", filterOptionWithSchedule);
-
-		session.setAttribute("filter_searchCount", filterSearchCount);
-		session.setAttribute("filter_searchPage", filterSearchPage);
-		BpkUtility.printDebug(this, "Set value "+filterSearchPage+" to session 'filter_searchPage'");
-
-		HashMap result;
-				
-		DoctorProfileDAO aDAO = DAOFactory.newDoctorProfileDAO();
-
+		aDAO = DAOFactory.newDoctorProfileDAO();
 		HashMap param = new HashMap();
-		param.put("employeeName", filterEmployeeName);
-		param.put("clinicDescription", filterClinic);
-		param.put("specialityDescription", filterSpecialty);
-		param.put("optionWithSchedule", filterOptionWithSchedule);
-		param.put("count", filterSearchCount);
-		param.put("page", filterSearchPage);
-
-		result = aDAO.listDoctor(param);
+		param.put("employeeId".toUpperCase(), employeeId);
+		HashMap result = aDAO.readDoctorProfile(param);
 
 		// BpkUtility.printDebug(this, "result = "+result);
 
 		String status = (String)result.get(ResultFlag.STATUS);
 		if(ResultFlag.STATUS_SUCCESS.equals(status))
 		{
-			// String pageCurrent = (String)result.get(EventNames.PAGE_CURRENT);
-			// String pageCount = (String)result.get(EventNames.PAGE_COUNT);
-
-			List listBpkEmployeeVO = (List)result.get(ResultFlag.RESULT_DATA);
-			if(Utility.isNotNull(listBpkEmployeeVO))
+			Object aObj = result.get(ResultFlag.RESULT_DATA);
+			if(aObj!=null && aObj instanceof BpkEmployeeVO)
 			{
-				for(int i=0, sizei=listBpkEmployeeVO.size(); i<sizei; i++)
+				BpkEmployeeVO aBpkEmployeeVO = (BpkEmployeeVO)aObj;
+%>				
+				aBpkEmployeeVO.employeeId = "<%=aBpkEmployeeVO.getEmployeeId()%>";
+				aBpkEmployeeVO.employeeName = "<%=aBpkEmployeeVO.getEmployeeName()%>";
+				aBpkEmployeeVO.licenseNo = "<%=aBpkEmployeeVO.getLicenseNo()%>";
+				aBpkEmployeeVO.qualification = "<%=aBpkEmployeeVO.getQualification()%>";
+				aBpkEmployeeVO.educational = "<%=aBpkEmployeeVO.getEducational()%>";
+				aBpkEmployeeVO.institute = "<%=aBpkEmployeeVO.getInstitute()%>";
+				aBpkEmployeeVO.board = "<%=aBpkEmployeeVO.getBoard()%>";
+				aBpkEmployeeVO.specialty = "<%=aBpkEmployeeVO.getSpecialty()%>";
+				aBpkEmployeeVO.others = "<%=aBpkEmployeeVO.getOthers()%>";
+<%
+				/*
+				BpkUtility.printDebug(this, "aBpkEmployeeVO.getEmployeeId() = "+aBpkEmployeeVO.getEmployeeId());
+				BpkUtility.printDebug(this, "aBpkEmployeeVO.getEmployeeName() = "+aBpkEmployeeVO.getEmployeeName());
+				BpkUtility.printDebug(this, "aBpkEmployeeVO.getLicenseNo() = "+aBpkEmployeeVO.getLicenseNo());
+				BpkUtility.printDebug(this, "aBpkEmployeeVO.getQualification() = "+aBpkEmployeeVO.getQualification());
+				BpkUtility.printDebug(this, "aBpkEmployeeVO.getEducational() = "+aBpkEmployeeVO.getEducational());
+				BpkUtility.printDebug(this, "aBpkEmployeeVO.getInstitute() = "+aBpkEmployeeVO.getInstitute());
+				BpkUtility.printDebug(this, "aBpkEmployeeVO.getBoard() = "+aBpkEmployeeVO.getBoard());
+				BpkUtility.printDebug(this, "aBpkEmployeeVO.getSpecialty() = "+aBpkEmployeeVO.getSpecialty());
+				BpkUtility.printDebug(this, "aBpkEmployeeVO.getOthers() = "+aBpkEmployeeVO.getOthers());
+				*/
+
+				List listBpkEmployeeVO = aBpkEmployeeVO.getAllSlot();
+				if(Utility.isNotNull(listBpkEmployeeVO))
 				{
-					BpkEmployeeVO tmpBpkEmployeeVO = (BpkEmployeeVO)listBpkEmployeeVO.get(i);
+					for(int i=0, sizei=listBpkEmployeeVO.size(); i<sizei; i++)
+					{
+						BpkEmployeeVO tmpBpkEmployeeVO = (BpkEmployeeVO)listBpkEmployeeVO.get(i);
 %>
-					aBpkEmployeeVO = new BpkEmployeeVO();
-					aBpkEmployeeVO.employeeName = "<%=tmpBpkEmployeeVO.getEmployeeName()%>";
-					aBpkEmployeeVO.specialty = "<%=tmpBpkEmployeeVO.getSpecialty()%>";
-					aBpkEmployeeVO.clinicDescription = "<%=tmpBpkEmployeeVO.getClinicDescription()%>";
-					aBpkEmployeeVO.dayName = "<%=tmpBpkEmployeeVO.getDayName()%>";
-					aBpkEmployeeVO.startTime = "<%=tmpBpkEmployeeVO.getStartTime()%>";
-					aBpkEmployeeVO.endTime = "<%=tmpBpkEmployeeVO.getEndTime()%>";
-					aBpkEmployeeVO.employeeId = "<%=tmpBpkEmployeeVO.getEmployeeId()%>";
+						tmpBpkEmployeeVO.employeeId = "<%=employeeId%>";
 
-					top.listBpkEmployeeVO[<%=i%>] = aBpkEmployeeVO;
-<%
+						tmpBpkEmployeeVO.dayId = "<%=tmpBpkEmployeeVO.getDayId()%>";
+						tmpBpkEmployeeVO.dayName = "<%=tmpBpkEmployeeVO.getDayName()%>";
+						tmpBpkEmployeeVO.clinicDescription = "<%=tmpBpkEmployeeVO.getClinicDescription()%>";
+						tmpBpkEmployeeVO.startTime = "<%=tmpBpkEmployeeVO.getStartTime()%>";
+						tmpBpkEmployeeVO.endTime = "<%=tmpBpkEmployeeVO.getEndTime()%>";
+						tmpBpkEmployeeVO.limitNumAppoint = "<%=tmpBpkEmployeeVO.getLimitNumAppoint()%>";
+						listBpkEmployeeVO[<%=i%>] = tmpBpkEmployeeVO;
+<%			
+					}
 				}
-			}
-
-			Integer totalRec = (Integer)result.get(ResultFlag.TOTAL_RECORD);
-			if(Integer.parseInt(filterSearchCount)==0)
-				filterSearchCount = "1";
-			int pageCount = (int)Math.ceil((double)totalRec.intValue()/Integer.parseInt(filterSearchCount));
-			if(pageCount==0)
-				pageCount = 1;
-
-			// กรณีที่ยังมีจำนวนที่เหลืออยู่ไม่ได้แสดงผล
-			if(Integer.parseInt(filterSearchPage)<pageCount-1)
-			{
-%>
-				top.mainFrame.setEableNavigatorNext(true);
+%>				
+				top.mainFrame.setDataToForm();
+				top.mainFrame.setSlotToForm();
+				top.statusFrame.repStatusSuccess("จบการทำงาน");
 <%
 			}
-			else
-			{
-%>
-				top.mainFrame.setEableNavigatorNext(false);
-<%
-			}
-
-			// กรณีที่เป็นหน้า 2 เป็นต้นไป ให้ย้อนกลับไปได้
-			if(Integer.parseInt(filterSearchPage)>0 && listBpkEmployeeVO.size()>0)
-			{
-%>
-				top.mainFrame.setEableNavigatorPrev(true);
-<%
-			}
-			else
-			{
-%>
-				top.mainFrame.setEableNavigatorPrev(false);
-<%
-			}
-%>
-			// เลือก ComboBox ส่วนของหน้าต่างๆใหม่ โดยคำนวณจากหน้าทั้งหมด
-			var cmbObj = top.mainFrame.listDoctor_cmbPage;
-			var pageCount = "<%=pageCount%>";
-			while(cmbObj.options.length)
-			{
-				cmbObj.remove(0);
-			}
-			if(pageCount>1)
-			{
-				for(i=0; i<pageCount; i++)
-				{
-					var option = document.createElement("option");
-					option.text = (i+1)+" / "+pageCount;
-					option.value = i;
-					cmbObj.add(option, i);
-				}
-				cmbObj.selectedIndex = <%=Integer.parseInt(filterSearchPage)%>;
-			}
-			
-			// alert("check method = "+top.mainFrame.ifrmListDoctor);
-			top.mainFrame.showListBpkEmployeeVO();
-			top.statusFrame.repStatusSuccess("จบการทำงาน");
-<%
-		}
+		}		
 		else
 		{
 %>
-			top.mainFrame.showListBpkEmployeeVO();
 			top.statusFrame.repStatus("ไม่พบข้อมูล");
 <%
 		}
@@ -165,9 +101,9 @@ var aBpkEmployeeVO = null;
 	}
 	finally
 	{
+		aDAO = null;
 %>
-
-	window.location = "../../listDoctorJSP.jsp";
+	window.location = "../../editDoctorProfileJSP.jsp";
 
 //-->
 </script>

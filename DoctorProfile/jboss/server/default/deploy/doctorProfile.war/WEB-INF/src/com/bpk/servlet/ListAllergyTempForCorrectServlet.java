@@ -9,11 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
 import com.bpk.dao.AllergyDAO;
-import com.bpk.dao.DoctorProfileDAO;
 import com.bpk.dto.BpkAllergyTempVO;
 import com.bpk.dto.ParameterFlag;
 import com.bpk.dto.ResultFlag;
-import com.bpk.utility.BpkUtility;
 
 @SuppressWarnings("serial")
 public class ListAllergyTempForCorrectServlet extends HttpServlet {
@@ -23,7 +21,8 @@ public class ListAllergyTempForCorrectServlet extends HttpServlet {
         doGet(request, response);
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
     	// response.setContentType("text/javascript; charset=TIS-620");
@@ -31,7 +30,7 @@ public class ListAllergyTempForCorrectServlet extends HttpServlet {
         PrintWriter out = response.getWriter() ;
 
         AllergyDAO aDAO = new AllergyDAO();
-        HashMap param = new HashMap();
+		HashMap param = new HashMap();
         String limit = request.getParameter("limit");
         if(limit==null)
         	limit = "1000";

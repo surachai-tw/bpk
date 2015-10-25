@@ -13,8 +13,7 @@ public class DAOFactory {
 	// private static String connectionFile = new String("D:/AngularJS/jboss-4.2.3.GA/server/default/deploy/doctorProfile.war/WEB-INF/classes/connection.properties");
 	private static String connectionFile = new String("../server/default/deploy/doctorProfile.war/WEB-INF/classes/connection.properties");
 
-    @SuppressWarnings("resource")
-	static Connection getConnection()
+    static Connection getConnection()
     {
     	Connection conn = null;
         BufferedReader in = null;

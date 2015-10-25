@@ -15,7 +15,7 @@ import com.bpk.utility.BpkUtility;
 public class AllergyDAO {
 
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public HashMap listAllergyTempForCorrect(HashMap param)
 	{
 		HashMap result = new HashMap();

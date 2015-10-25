@@ -1,6 +1,7 @@
 package com.bpk.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.bpk.utility.BpkUtility;
@@ -17,6 +18,37 @@ public class BpkEmployeeVO implements Serializable, JSONVO
 	private String board;
 	private String specialty;
 	private String others;
+	
+	@SuppressWarnings("rawtypes")
+	private List listBpkEmployeeVO;
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void addSlot(BpkEmployeeVO newBpkEmployeeVO)
+	{
+		if(listBpkEmployeeVO==null)
+			listBpkEmployeeVO = new ArrayList();
+		listBpkEmployeeVO.add(newBpkEmployeeVO);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void addSlot(List listBpkEmployeeVO)
+	{
+		if(listBpkEmployeeVO==null)
+			listBpkEmployeeVO = new ArrayList();
+		listBpkEmployeeVO.addAll(listBpkEmployeeVO);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public void removeAllSlot()
+	{
+		listBpkEmployeeVO = new ArrayList();
+	}	
+	
+	@SuppressWarnings("rawtypes")
+	public List getAllSlot()
+	{
+		return this.listBpkEmployeeVO;
+	}
 	
 	public String getLicenseNo()
 	{
@@ -89,6 +121,7 @@ public class BpkEmployeeVO implements Serializable, JSONVO
 	{
 		this.institute = bpkInstituteId;
 	}
+	/*
 	public String getInstituteDescription()
 	{
 		return BpkUtility.getValidateString(board);
@@ -97,6 +130,7 @@ public class BpkEmployeeVO implements Serializable, JSONVO
 	{
 		this.board = instituteDescription;
 	}
+	*/
 
 	private String employeeId;
 	private String employeeName;
@@ -104,7 +138,20 @@ public class BpkEmployeeVO implements Serializable, JSONVO
 	private String dayName;
 	private String startTime;
 	private String endTime;
+	private String limitNumAppoint;
 	
+	public String getLimitNumAppoint()
+	{
+		String num = BpkUtility.getValidateString(limitNumAppoint);
+		
+		return BpkUtility.isNumeric(num) ? num : "0";
+	}
+
+	public void setLimitNumAppoint(String limitNumAppoint)
+	{
+		this.limitNumAppoint = limitNumAppoint;
+	}
+
 	private String dayDisplayOrder;
 	
 	public String getDayDisplayOrder()
@@ -153,24 +200,32 @@ public class BpkEmployeeVO implements Serializable, JSONVO
 	public void setBpkClinicId(String bpkClinicId) {
 		this.bpkClinicId = bpkClinicId;
 	}
+	
 	public String getClinicDescription() {
 		return BpkUtility.getValidateString(clinicDescription);
 	}
 	public void setClinicDescription(String clinicDescription) {
 		this.clinicDescription = clinicDescription;
 	}
+	
+	/*
 	public String getBpkSpecialityId() {
 		return BpkUtility.getValidateString(qualification);
 	}
 	public void setBpkSpecialityId(String bpkSpecialityId) {
 		this.qualification = bpkSpecialityId;
 	}
+	*/
+	
+	/*
 	public String getSpecialityDescription() {
 		return BpkUtility.getValidateString(educational);
 	}
 	public void setSpecialityDescription(String specialityDescription) {
 		this.educational = specialityDescription;
 	}
+	*/
+	
 	public String getEmployeeId() {
 		return BpkUtility.getValidateString(employeeId);
 	}
@@ -215,8 +270,6 @@ public class BpkEmployeeVO implements Serializable, JSONVO
 		
 		aBpkEmployeeVO.setBpkClinicId("1");
 		aBpkEmployeeVO.setClinicDescription("อายุรกรรม");
-		aBpkEmployeeVO.setBpkSpecialityId("2");
-		aBpkEmployeeVO.setSpecialityDescription("อายุรศาสตร์");
 		aBpkEmployeeVO.setEmployeeId("3");
 		aBpkEmployeeVO.setEmployeeName("นพ.ทดสอบ");
 		

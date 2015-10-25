@@ -15,6 +15,7 @@ function BpkEmployeeVO()
 	this.dayName = " ";
 	this.startTime = "";
 	this.endTime = "";
+	this.limitNumAppoint = "";
 
 	this.reset = function ()
 	{
@@ -33,5 +34,6 @@ function BpkEmployeeVO()
 		this.dayName = " ";
 		this.startTime = "";
 		this.endTime = "";
+		this.limitNumAppoint = "";
 	}
 }

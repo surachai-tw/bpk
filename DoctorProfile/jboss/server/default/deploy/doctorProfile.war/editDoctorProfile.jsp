@@ -15,14 +15,6 @@
 <script language="javascript">
 <!--
 
-// For filter 
-var filter_employeeName;
-var filter_clinic;
-var filter_specialty;
-var filter_optionWithSchedule;
-var filter_searchPage;
-var filter_searchCount;
-
 // สำหรับส่วนของข้อมูลทั่วไป
 var aBpkEmployeeVO = new BpkEmployeeVO();
 // สำหรับเก็บข้อมูลใน Table 
@@ -42,6 +34,7 @@ if(ResultFlag.STATUS_SUCCESS.equals(resultDetail.get(ResultFlag.STATUS)))
 	aBpkEmployeeVO.employeeName = "<%=aBpkEmployeeVO.getEmployeeName()%>";
 
 	aBpkEmployeeVO.employeeId = "<%=aBpkEmployeeVO.getEmployeeId()%>";
+
 	aBpkEmployeeVO.licenseNo = "<%=aBpkEmployeeVO.getLicenseNo()%>";
 	aBpkEmployeeVO.qualification = "<%=aBpkEmployeeVO.getQualification()%>";
 	aBpkEmployeeVO.educational = "<%=aBpkEmployeeVO.getEducational()%>";
@@ -62,20 +55,23 @@ if(ResultFlag.STATUS_SUCCESS.equals(resultList.get(ResultFlag.STATUS)))
 	if(listBpkEmployeeVO!=null)
 	{
 %>
-	var tmpBpkEmployeeVO = new BpkEmployeeVO();
+	var tmpBpkEmployeeVO = null;
 <%
 		for(int i=0, sizei=listBpkEmployeeVO.size(); i<sizei; i++)
 		{
 			BpkEmployeeVO tmpBpkEmployeeVO = (BpkEmployeeVO)listBpkEmployeeVO.get(i);
-%>
+			BpkUtility.printDebug(this, "tmpBpkEmployeeVO.getDayName() = "+tmpBpkEmployeeVO.getDayName());
+%>			
+			tmpBpkEmployeeVO = new BpkEmployeeVO();
 			tmpBpkEmployeeVO.employeeId = "<%=employeeId%>";
+
 			tmpBpkEmployeeVO.dayId = "<%=tmpBpkEmployeeVO.getDayId()%>";
 			tmpBpkEmployeeVO.dayName = "<%=tmpBpkEmployeeVO.getDayName()%>";
 			tmpBpkEmployeeVO.clinicDescription = "<%=tmpBpkEmployeeVO.getClinicDescription()%>";
 			tmpBpkEmployeeVO.startTime = "<%=tmpBpkEmployeeVO.getStartTime()%>";
 			tmpBpkEmployeeVO.endTime = "<%=tmpBpkEmployeeVO.getEndTime()%>";
+			tmpBpkEmployeeVO.limitNumAppoint = "<%=tmpBpkEmployeeVO.getLimitNumAppoint()%>";
 			listBpkEmployeeVO[<%=i%>] = tmpBpkEmployeeVO;
-
 <%			
 		}
 	}

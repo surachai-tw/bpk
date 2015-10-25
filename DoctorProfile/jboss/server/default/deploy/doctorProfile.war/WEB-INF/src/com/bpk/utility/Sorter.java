@@ -76,7 +76,7 @@ public class Sorter
    /** Quick Sort String[] */
    protected void qSort(String a[], int sortType, int lo0, int hi0) throws Exception
    {
-      if(sortType==this.ASCENDING)
+      if(sortType==Sorter.ASCENDING)
       {
 	  int lo = lo0;
 	  int hi = hi0;
@@ -127,7 +127,7 @@ public class Sorter
 		qSort( a, sortType, lo, hi0 );
 	  }
       }
-      else if(sortType==this.DESCENDING)
+      else if(sortType==Sorter.DESCENDING)
       {
 	  int lo = lo0;
 	  int hi = hi0;
@@ -183,7 +183,7 @@ public class Sorter
    /** Quick Sort double[] */
    protected void qSort(int a[], int sortType, int lo0, int hi0) throws Exception
    {
-      if(sortType==this.ASCENDING)
+      if(sortType==Sorter.ASCENDING)
       {
 	  int lo = lo0;
 	  int hi = hi0;
@@ -234,7 +234,7 @@ public class Sorter
 		qSort( a, sortType, lo, hi0 );
 	  }
       }
-      else if(sortType==this.DESCENDING)
+      else if(sortType==Sorter.DESCENDING)
       {
 	  int lo = lo0;
 	  int hi = hi0;
@@ -288,20 +288,21 @@ public class Sorter
    }
 
   /** Sort */
+  @SuppressWarnings("rawtypes")
   public void sort(List listData, String index[], int sortType) throws Exception
   {
-      if(listData!=null && listData.size()>1)
-      {
-	try
-	{
-	  qSort(listData, index, sortType, 0, listData.size()-1);
-	  //bSort(listData, index, sortType);
-	}
-	catch(Exception ex)
-	{
-	    throw ex;
-	}
-      }
+    if(listData!=null && listData.size()>1)
+    {
+		try
+		{
+		  qSort(listData, index, sortType, 0, listData.size()-1);
+		  //bSort(listData, index, sortType);
+		}
+		catch(Exception ex)
+		{
+		    throw ex;
+		}
+    }
   }
 
   /** Sort */
@@ -322,41 +323,44 @@ public class Sorter
   }
 
   /** Sort */
+  @SuppressWarnings("rawtypes")
   public void sort(List listData, double index[], int sortType) throws Exception
   {
-      if(listData!=null && listData.size()>1)
-      {
-	try
-	{
-	  qSort(listData, index, sortType, 0, listData.size()-1);
-	  //bSort(listData, index, sortType);
-	}
-	catch(Exception ex)
-	{
-	    throw ex;
-	}
-      }
+    if(listData!=null && listData.size()>1)
+    {
+		try
+		{
+		  qSort(listData, index, sortType, 0, listData.size()-1);
+		  //bSort(listData, index, sortType);
+		}
+		catch(Exception ex)
+		{
+		    throw ex;
+		}
+    }
   }
 
   /** Bubble sort แบบใช้ index */
+  @SuppressWarnings("rawtypes")
   protected void bSort(List listData, String index[], int sortType) throws Exception
   {
     for (int i = 0; i < index.length; i++)
     {
       for (int j = i + 1; j < index.length; j++)
       {
-	if (compare(index[i], index[j]) == sortType)
-	{
-	  swap(listData, index, i, j);
-	}
+		if (compare(index[i], index[j]) == sortType)
+		{
+		  swap(listData, index, i, j);
+		}
       }
     }
   }
 
   /** Quick Sort */
+  @SuppressWarnings("rawtypes")
   protected void qSort(List listData, String index[], int sortType, int lo0, int hi0) throws Exception
   {
-      if(sortType==this.ASCENDING)
+      if(sortType==Sorter.ASCENDING)
       {
 	  int lo = lo0;
 	  int hi = hi0;
@@ -407,7 +411,7 @@ public class Sorter
 		qSort( listData, index, sortType, lo, hi0 );
 	  }
       }
-      else if(sortType==this.DESCENDING)
+      else if(sortType==Sorter.DESCENDING)
       {
 	  int lo = lo0;
 	  int hi = hi0;
@@ -463,7 +467,7 @@ public class Sorter
   /** Quick Sort */
   protected void qSort(Object data[], String index[], int sortType, int lo0, int hi0) throws Exception
   {
-      if(sortType==this.ASCENDING)
+      if(sortType==Sorter.ASCENDING)
       {
 	  int lo = lo0;
 	  int hi = hi0;
@@ -514,7 +518,7 @@ public class Sorter
 		qSort( data, index, sortType, lo, hi0 );
 	  }
       }
-      else if(sortType==this.DESCENDING)
+      else if(sortType==Sorter.DESCENDING)
       {
 	  int lo = lo0;
 	  int hi = hi0;
@@ -568,109 +572,110 @@ public class Sorter
   }
 
   /** Quick Sort */
+  @SuppressWarnings("rawtypes")
   protected void qSort(List listData, double index[], int sortType, int lo0, int hi0) throws Exception
   {
-      if(sortType==this.ASCENDING)
+      if(sortType==Sorter.ASCENDING)
       {
-	  int lo = lo0;
-	  int hi = hi0;
-	  double mid;
-
-	  if (hi0 > lo0)
-	  {
-
-	     /* Arbitrarily establishing partition element as the midpoint of
-	      * the array.
-	      */
-	     mid = index[( lo0 + hi0 ) / 2];
-
-	     // loop through the array until indices cross
-	     while(lo <= hi)
-	     {
-		/* find the first element that is greater than or equal to
-		 * the partition element starting from the left Index.
-		 */
-		 while((lo<hi0) && (compare(index[lo], mid)<0))
-		     ++lo;
-
-		/* find an element that is smaller than or equal to
-		 * the partition element starting from the right Index.
-		 */
-		 while((hi>lo0) && (compare(index[hi], mid)>0))
-		     --hi;
-
-		// if the indexes have not crossed, swap
-		if(lo <= hi)
-		{
-		   swap(listData, index, lo, hi);
-		   ++lo;
-		   --hi;
-		}
-	     }
-
-	     /* If the right index has not reached the left side of array
-	      * must now sort the left partition.
-	      */
-	     if( lo0 < hi )
-		qSort( listData, index, sortType, lo0, hi );
-
-	     /* If the left index has not reached the right side of array
-	      * must now sort the right partition.
-	      */
-	     if( lo < hi0 )
-		qSort( listData, index, sortType, lo, hi0 );
-	  }
+		  int lo = lo0;
+		  int hi = hi0;
+		  double mid;
+	
+		  if (hi0 > lo0)
+		  {
+	
+		     /* Arbitrarily establishing partition element as the midpoint of
+		      * the array.
+		      */
+		     mid = index[( lo0 + hi0 ) / 2];
+	
+		     // loop through the array until indices cross
+		     while(lo <= hi)
+		     {
+				/* find the first element that is greater than or equal to
+				 * the partition element starting from the left Index.
+				 */
+				 while((lo<hi0) && (compare(index[lo], mid)<0))
+				     ++lo;
+		
+				/* find an element that is smaller than or equal to
+				 * the partition element starting from the right Index.
+				 */
+				 while((hi>lo0) && (compare(index[hi], mid)>0))
+				     --hi;
+		
+				 // if the indexes have not crossed, swap
+				 if(lo <= hi)
+				 {
+					   swap(listData, index, lo, hi);
+					   ++lo;
+					   --hi;
+				 }
+		     }
+	
+		     /* If the right index has not reached the left side of array
+		      * must now sort the left partition.
+		      */
+		     if( lo0 < hi )
+				qSort( listData, index, sortType, lo0, hi );
+		
+		     /* If the left index has not reached the right side of array
+		      * must now sort the right partition.
+		      */
+		     if( lo < hi0 )
+				qSort( listData, index, sortType, lo, hi0 );
+		  }
       }
-      else if(sortType==this.DESCENDING)
+      else if(sortType==Sorter.DESCENDING)
       {
-	  int lo = lo0;
-	  int hi = hi0;
-	  double mid;
-
-	  if (hi0 > lo0)
-	  {
-
-	     /* Arbitrarily establishing partition element as the midpoint of
-	      * the array.
-	      */
-	     mid = index[ ( lo0 + hi0 ) / 2 ];
-
-	     // loop through the array until indices cross
-	     while(lo <= hi)
-	     {
-		/* find the first element that is greater than or equal to
-		 * the partition element starting from the left Index.
-		 */
-		 while((lo<hi0) && (compare(index[lo], mid)>0))
-		     ++lo;
-
-		/* find an element that is smaller than or equal to
-		 * the partition element starting from the right Index.
-		 */
-		 while((hi>lo0) && (compare(index[hi], mid)<0))
-		     --hi;
-
-		// if the indexes have not crossed, swap
-		if(lo <= hi)
-		{
-		   swap(listData, index, lo, hi);
-		   ++lo;
-		   --hi;
-		}
-	     }
-
-	     /* If the right index has not reached the left side of array
-	      * must now sort the left partition.
-	      */
-	     if( lo0 < hi )
-		qSort( listData, index, sortType, lo0, hi );
-
-	     /* If the left index has not reached the right side of array
-	      * must now sort the right partition.
-	      */
-	     if( lo < hi0 )
-		qSort( listData, index, sortType, lo, hi0 );
-	  }
+		  int lo = lo0;
+		  int hi = hi0;
+		  double mid;
+	
+		  if (hi0 > lo0)
+		  {
+	
+		     /* Arbitrarily establishing partition element as the midpoint of
+		      * the array.
+		      */
+		     mid = index[ ( lo0 + hi0 ) / 2 ];
+	
+		     // loop through the array until indices cross
+		     while(lo <= hi)
+		     {
+				/* find the first element that is greater than or equal to
+				 * the partition element starting from the left Index.
+				 */
+				 while((lo<hi0) && (compare(index[lo], mid)>0))
+				     ++lo;
+		
+				/* find an element that is smaller than or equal to
+				 * the partition element starting from the right Index.
+				 */
+				 while((hi>lo0) && (compare(index[hi], mid)<0))
+				     --hi;
+		
+				// if the indexes have not crossed, swap
+				if(lo <= hi)
+				{
+				   swap(listData, index, lo, hi);
+				   ++lo;
+				   --hi;
+				}
+		     }
+	
+		     /* If the right index has not reached the left side of array
+		      * must now sort the left partition.
+		      */
+		     if( lo0 < hi )
+		    	 qSort( listData, index, sortType, lo0, hi );
+	
+		     /* If the left index has not reached the right side of array
+		      * must now sort the right partition.
+		      */
+		     if( lo < hi0 )
+		    	 qSort( listData, index, sortType, lo, hi0 );
+		  }
       }
   }
 
@@ -693,6 +698,7 @@ public class Sorter
   }
 
   /** Sort แบบใช้ index */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   private void swap(List listData, String index[], int i, int j)
   {
     String T;
@@ -740,6 +746,7 @@ public class Sorter
   }
 
   /** Sort แบบใช้ index */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   private void swap(List listData,  double index[], int i, int j)
   {
     double T;
@@ -754,8 +761,6 @@ public class Sorter
   /** เปรียบเทียบตัวเลข */
   private int compare(double a1, double a2)
   {
-    int result = 0;
-
     if(a1==a2)
       return 0;
     else if(a1 < a2)
