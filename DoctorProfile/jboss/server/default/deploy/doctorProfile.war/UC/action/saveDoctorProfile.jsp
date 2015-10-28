@@ -30,7 +30,6 @@
 		String specialty = (String)req.getParameterThai("specialty");
 		String others = (String)req.getParameterThai("others");
 
-
 		Utility.printCoreDebug(this, "employeeId = "+employeeId);
 		Utility.printCoreDebug(this, "licenseNo = "+licenseNo);
 		Utility.printCoreDebug(this, "qualification = "+qualification);
@@ -39,10 +38,6 @@
 		Utility.printCoreDebug(this, "board = "+board);
 		Utility.printCoreDebug(this, "specialty = "+specialty);
 		Utility.printCoreDebug(this, "others = "+others);
-
-		HashMap result;
-				
-		DoctorProfileDAO aDAO = DAOFactory.newDoctorProfileDAO();
 
 		HashMap param = new HashMap();
 		BpkEmployeeVO aBpkEmployeeVO = new BpkEmployeeVO();
@@ -54,6 +49,30 @@
 		aBpkEmployeeVO.setBoard(board);
 		aBpkEmployeeVO.setSpecialty(specialty);
 		aBpkEmployeeVO.setOthers(others);
+
+		List listBpkEmployeeVODayId = req.getParameterValuesThai("dayId");
+		List listBpkEmployeeVOBpkClinicId = req.getParameterValuesThai("bpkClinicId");
+		List listBpkEmployeeVOStartTime = req.getParameterValuesThai("startTime");
+		List listBpkEmployeeVOEndTime = req.getParameterValuesThai("endTime");
+		List listBpkEmployeeVOLimitNumAppoint = req.getParameterValuesThai("limitNumAppoint");
+		if(Utility.isNotNull(listBpkEmployeeVODayId))
+		{
+			for(int i=0, sizei=listBpkEmployeeVODayId.size(); i<sizei; i++)
+			{
+				BpkEmployeeVO tmpBpkEmployeeVO = new BpkEmployeeVO();
+				tmpBpkEmployeeVO.setDayId(BpkUtility.getValidateString(listBpkEmployeeVODayId.get(i)));
+				tmpBpkEmployeeVO.setBpkClinicId(BpkUtility.getValidateString(listBpkEmployeeVOBpkClinicId.get(i)));
+				tmpBpkEmployeeVO.setStartTime(BpkUtility.getValidateString(listBpkEmployeeVOStartTime.get(i)));
+				tmpBpkEmployeeVO.setEndTime(BpkUtility.getValidateString(listBpkEmployeeVOEndTime.get(i)));
+				tmpBpkEmployeeVO.setLimitNumAppoint(BpkUtility.getValidateString(listBpkEmployeeVOLimitNumAppoint.get(i)));
+			
+				aBpkEmployeeVO.addSlot(tmpBpkEmployeeVO);
+			}
+		}
+
+		HashMap result;
+				
+		DoctorProfileDAO aDAO = DAOFactory.newDoctorProfileDAO();
 		param.put("bpkEmployeeVO".toUpperCase(), aBpkEmployeeVO);
 
 		result = aDAO.saveDoctorProfile(param);

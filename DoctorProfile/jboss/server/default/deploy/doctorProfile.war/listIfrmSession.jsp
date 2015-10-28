@@ -3,6 +3,7 @@
 <head>
 <jsp:include page="inc/charset.jsp" flush="false"/>
 <link type="text/css" rel="stylesheet" href="css/extend.css">
+<script type="text/javascript" src="js/iMedUtility.js"></script>
 <script type="text/javascript" src="js/TableUtility.js"></script>
 <script LANGUAGE="JavaScript">
 <!--

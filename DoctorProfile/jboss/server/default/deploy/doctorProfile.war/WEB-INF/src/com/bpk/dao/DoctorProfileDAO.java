@@ -15,6 +15,7 @@ import com.bpk.dto.BpkEmployeeVO;
 import com.bpk.dto.ResultFlag;
 import com.bpk.utility.BpkUtility;
 import com.bpk.utility.Sorter;
+import com.iMed.iMedCore.utility.XPersistent;
 import com.iMed.iMedCore.utility.fix.FixDayOfWeek;
 import com.iMed.iMedCore.utility.fix.FixServicePointGroup;
 
@@ -686,6 +687,7 @@ public class DoctorProfileDAO
 		Statement stmt = null;
 		ResultSet rst = null;
 		StringBuilder sql = null;
+		int rec = 0;
 		try
 		{
 			if (param != null)
@@ -696,66 +698,110 @@ public class DoctorProfileDAO
 				{
 					BpkEmployeeVO aBpkEmployeeVO = (BpkEmployeeVO) aObj;
 
-					// Check ว่ามีอยู่แล้วหรือไม่ ถ้ามีแล้ว จะเป็น Update
-					// ถ้าไม่มีอยู่ก่อน จะเป็น Insert
-					sql = new StringBuilder("SELECT bpk_employee_doctor_id FROM bpk_employee_doctor WHERE employee_id='")
-							.append(aBpkEmployeeVO.getEmployeeId()).append("' ORDER BY bpk_employee_doctor_id DESC LIMIT 1");
-
-					conn = DAOFactory.getConnection();
-					stmt = conn.createStatement();
-					BpkUtility.printDebug(this, sql.toString());
-					rst = stmt.executeQuery(sql.toString());
-					if (rst.next())
+					if(aBpkEmployeeVO!=null)
 					{
-						bpkEmployeeDoctorId = rst.getString("bpk_employee_doctor_id");
-					}
-					rst.close();
-					stmt.close();
-
-					// ส่วนของ License ต้อง Update ใน table เก่าของ iMed
-					sql = new StringBuilder("UPDATE employee SET profession_code='").append(aBpkEmployeeVO.getLicenseNo()).append("' WHERE employee_id='")
-							.append(aBpkEmployeeVO.getEmployeeId()).append("'");
-					stmt = conn.createStatement();
-					BpkUtility.printDebug(this, sql.toString());
-					int rec = stmt.executeUpdate(sql.toString());
-
-					if (bpkEmployeeDoctorId != null && !"".equals(bpkEmployeeDoctorId))
-					{
-						// กรณีที่มีข้อมูลแล้ว จะเป็นการ Update
-
-						// ส่วนอื่นๆ ต้อง Update ใน table ของ bpk
-						sql = new StringBuilder("UPDATE bpk_employee_doctor SET ");
-						sql.append(" qualification = '").append(aBpkEmployeeVO.getQualification()).append("', ");
-						sql.append(" educational = '").append(aBpkEmployeeVO.getEducational()).append("', ");
-						sql.append(" institute = '").append(aBpkEmployeeVO.getInstitute()).append("', ");
-						sql.append(" board = '").append(aBpkEmployeeVO.getBoard()).append("', ");
-						sql.append(" specialty = '").append(aBpkEmployeeVO.getSpecialty()).append("', ");
-						sql.append(" others = '").append(aBpkEmployeeVO.getOthers()).append("'");
-						sql.append(" WHERE bpk_employee_doctor_id='").append(bpkEmployeeDoctorId).append("'");
-
+						conn = DAOFactory.getConnection();
+						stmt = conn.createStatement();
+						stmt.executeUpdate("BEGIN");
+						
+						///////////////////////////////////////////////////////////
+						// TABLE bpk_employee_doctor
+						///////////////////////////////////////////////////////////
+						// Check ว่ามี bpk_employee_doctor อยู่แล้วหรือไม่ ถ้ามีแล้ว จะเป็น Update
+						// ถ้าไม่มีอยู่ก่อน จะเป็น Insert
+						sql = new StringBuilder("SELECT bpk_employee_doctor_id FROM bpk_employee_doctor WHERE employee_id='")
+								.append(aBpkEmployeeVO.getEmployeeId()).append("' ORDER BY bpk_employee_doctor_id DESC LIMIT 1");
+	
 						BpkUtility.printDebug(this, sql.toString());
-						rec += stmt.executeUpdate(sql.toString());
-					}
-					else
-					{
-						// ไม่มีอยู่ก่อน จะเป็น Insert
-						sql = new StringBuilder(
-								"INSERT INTO bpk_employee_doctor(employee_id, qualification, educational, institute, board, specialty, others) VALUES('");
-						sql.append(aBpkEmployeeVO.getEmployeeId()).append("', '");
-						sql.append(aBpkEmployeeVO.getQualification()).append("', '");
-						sql.append(aBpkEmployeeVO.getEducational()).append("', '");
-						sql.append(aBpkEmployeeVO.getInstitute()).append("', '");
-						sql.append(aBpkEmployeeVO.getBoard()).append("', '");
-						sql.append(aBpkEmployeeVO.getSpecialty()).append("', '");
-						sql.append(aBpkEmployeeVO.getOthers()).append("')");
-
+						rst = stmt.executeQuery(sql.toString());
+						if (rst.next())
+						{
+							bpkEmployeeDoctorId = rst.getString("bpk_employee_doctor_id");
+						}
+						rst.close();
+						stmt.close();
+	
+						// ส่วนของ License ต้อง Update ใน table เก่าของ iMed
+						sql = new StringBuilder("UPDATE employee SET profession_code='").append(aBpkEmployeeVO.getLicenseNo()).append("' WHERE employee_id='")
+								.append(aBpkEmployeeVO.getEmployeeId()).append("'");
+						stmt = conn.createStatement();
 						BpkUtility.printDebug(this, sql.toString());
-						rec += stmt.executeUpdate(sql.toString());
-					}
-					stmt.close();
-					conn.close();
+						rec = stmt.executeUpdate(sql.toString());
+						BpkUtility.printDebug(this, rec+" rows effected");
 
-					if (rec == 2)
+						if (bpkEmployeeDoctorId != null && !"".equals(bpkEmployeeDoctorId))
+						{
+							// กรณีที่มีข้อมูลแล้ว จะเป็นการ Update
+	
+							// ส่วนอื่นๆ ต้อง Update ใน table ของ bpk
+							sql = new StringBuilder("UPDATE bpk_employee_doctor SET ");
+							sql.append(" qualification = '").append(aBpkEmployeeVO.getQualification()).append("', ");
+							sql.append(" educational = '").append(aBpkEmployeeVO.getEducational()).append("', ");
+							sql.append(" institute = '").append(aBpkEmployeeVO.getInstitute()).append("', ");
+							sql.append(" board = '").append(aBpkEmployeeVO.getBoard()).append("', ");
+							sql.append(" specialty = '").append(aBpkEmployeeVO.getSpecialty()).append("', ");
+							sql.append(" others = '").append(aBpkEmployeeVO.getOthers()).append("'");
+							sql.append(" WHERE bpk_employee_doctor_id='").append(bpkEmployeeDoctorId).append("'");
+	
+							BpkUtility.printDebug(this, sql.toString());
+							rec = stmt.executeUpdate(sql.toString());
+							BpkUtility.printDebug(this, rec+" rows effected");
+						}
+						else
+						{
+							// ไม่มีอยู่ก่อน จะเป็น Insert
+							sql = new StringBuilder(
+									"INSERT INTO bpk_employee_doctor(employee_id, qualification, educational, institute, board, specialty, others) VALUES('");
+							sql.append(aBpkEmployeeVO.getEmployeeId()).append("', '");
+							sql.append(aBpkEmployeeVO.getQualification()).append("', '");
+							sql.append(aBpkEmployeeVO.getEducational()).append("', '");
+							sql.append(aBpkEmployeeVO.getInstitute()).append("', '");
+							sql.append(aBpkEmployeeVO.getBoard()).append("', '");
+							sql.append(aBpkEmployeeVO.getSpecialty()).append("', '");
+							sql.append(aBpkEmployeeVO.getOthers()).append("')");
+	
+							BpkUtility.printDebug(this, sql.toString());
+							rec = stmt.executeUpdate(sql.toString());
+							BpkUtility.printDebug(this, rec+" rows effected");
+						}
+						
+						///////////////////////////////////////////////////////////
+						// TABLE doctor_schedule 
+						///////////////////////////////////////////////////////////
+						// การทำงานจะเป็นรูปแบบของการลบออกก่อน แล้วเพิ่มเข้าไปใหม่เสมอ 
+						sql = new StringBuilder("DELETE FROM doctor_schedule WHERE employee_id='").append(aBpkEmployeeVO.getEmployeeId()).append("'");
+						BpkUtility.printDebug(this, sql.toString());
+						rec = stmt.executeUpdate(sql.toString());
+						BpkUtility.printDebug(this, rec+" rows effected");
+						
+						List listSlotBpkEmployeeVO = aBpkEmployeeVO.getAllSlot();
+						if(listSlotBpkEmployeeVO!=null)
+						{
+							for(int i=0, sizei=listSlotBpkEmployeeVO.size(); i<sizei; i++)
+							{
+								BpkEmployeeVO tmpBpkEmployeeVO = (BpkEmployeeVO)listSlotBpkEmployeeVO.get(i);								
+								
+								sql = new StringBuilder("INSERT INTO doctor_schedule(doctor_schedule_id, employee_id, spid, fix_day_of_week, start_time, end_time, limit_num_appoint) VALUES('");
+								sql.append(XPersistent.generateObjectID()).append("', '");
+								sql.append(aBpkEmployeeVO.getEmployeeId()).append("', '");
+								sql.append(tmpBpkEmployeeVO.getBpkClinicId()).append("', '");
+								sql.append(tmpBpkEmployeeVO.getDayId()).append("', '");
+								sql.append(tmpBpkEmployeeVO.getStartTime()).append(":00', '");
+								sql.append(tmpBpkEmployeeVO.getEndTime()).append(":00', '");
+								sql.append(tmpBpkEmployeeVO.getLimitNumAppoint()).append("')");
+								BpkUtility.printDebug(this, sql.toString());
+								rec = stmt.executeUpdate(sql.toString());
+								BpkUtility.printDebug(this, rec+" rows effected");								
+							}
+						}
+						
+						stmt.executeUpdate("COMMIT");
+						rec = 1;
+						stmt.close();
+						conn.close();
+					}
+					
+					if (rec>0)
 					{
 						result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
 					}
@@ -777,6 +823,16 @@ public class DoctorProfileDAO
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
+			try
+			{
+				stmt.executeUpdate("ROLLBACK");
+				stmt.close();
+				conn.close();
+			}
+			catch(Exception ex2)
+			{
+				ex2.printStackTrace();
+			}
 		}
 		finally
 		{

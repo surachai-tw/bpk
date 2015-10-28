@@ -316,6 +316,11 @@ legend {font-weight:bold; color:blue}
 	font-size: 18px; 
 }
 
+.bgCalMonthNowDate
+{
+	background: #EAEAEA;
+}
+
 .slotsAppointment {  
 	border: 1px solid #DB7972;
 	font-style: normal; 

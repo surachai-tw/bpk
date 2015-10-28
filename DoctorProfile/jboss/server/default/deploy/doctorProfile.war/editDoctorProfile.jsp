@@ -19,6 +19,8 @@
 var aBpkEmployeeVO = new BpkEmployeeVO();
 // สำหรับเก็บข้อมูลใน Table 
 var listBpkEmployeeVO = new Array();
+// สำหรับเก็บข้อมูลก่อน Save
+var newSlotBpkEmployeeVO = new Array();
 <%
 // ขอขอ้มูลของ Employee
 DoctorProfileDAO aDAO = DAOFactory.newDoctorProfileDAO();

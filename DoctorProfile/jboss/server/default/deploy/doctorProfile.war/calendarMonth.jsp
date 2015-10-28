@@ -30,6 +30,8 @@
 		}
 
 		Calendar aCal = Calendar.getInstance(new Locale("en", "US"));
+		String nowDate = Utility.getDateStringFromDate(aCal.getTime());
+		BpkUtility.printDebug(this, "nowDate = "+nowDate);
 		aCal.setLenient(true);
 		// สำหรับใช้แสดงผลที่หัวปฏิทิน
 		Calendar aCalMonth = Calendar.getInstance(new Locale("en", "US")); 
@@ -169,17 +171,25 @@
 		cell.width = "12%";
 	}
 
-	function getDayDisplay(date, slots, displayColor)
+	function getDayDisplay(date, month, slots, displayColor)
 	{
-		var display = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">";
+		var display = "<table border=\"0\" cellspacing=\"1\" cellpadding=\"0\" width=\"100%\"";
+		
+		display += ">";
 		display += ("<tr><td style=\"color:"+displayColor+"\">");
-		display += date;
+		display += ("&nbsp;"+date);
+		if(date==1)
+			display += (" "+month);
 		display += "</td></tr>";		
 		for(var i=0; i<5; i++)
 		{
 			if(slots.indexOf('+')==-1)
 			{
-				display += "<tr><td class=\"slotsAppointment\">";
+				display += "<tr><td";
+				if(slots!=null && slots!="")
+					display += " class=\"slotsAppointment\">";
+				else
+					display += ">";
 				display += slots;
 				display += "</td></tr>";
 				break;
@@ -190,7 +200,11 @@
 				slots = slots.substring(slots.indexOf('+')+1);
 				if(line!=null && line!="")
 				{
-					display += "<tr><td class=\"slotsAppointment\">";
+					display += "<tr><td";
+					if(line!=null && line!="")
+						display += " class=\"slotsAppointment\">";
+					else
+						display += ">";
 					display += line;
 					display += "</td></tr>";
 				}
@@ -306,6 +320,7 @@
 %>			displayColor = "black";
 <%
 			int date = aCalStart.get(Calendar.DAY_OF_MONTH);
+			int month = aCalStart.get(Calendar.MONTH);
 			int day = aCalStart.get(Calendar.DAY_OF_WEEK);
 			int startMonth = aCalStart.get(Calendar.MONTH);
 			int thisMonth = aCalMonth.get(Calendar.MONTH);
@@ -337,8 +352,18 @@
 %>			displayColor = "lightgray";
 <%			}
 			String timeInRange = DoctorProfileDAO.getTimeInRange(BpkUtility.convertDate2StdFormat(aCalStart.getTime()), listBpkEmployeeVO);
+
+			// วันปัจจุบันให้ทำให้เห็นชัด
+			if(nowDate.equals(Utility.getDateStringFromDate(aCalStart.getTime())))
+			{
 %>
-			cell.innerHTML = getDayDisplay("<%=date%>", "<%=timeInRange%>", displayColor);
+			cell.style.backgroundColor = "#EAEAEA";
+			cell.style.border = "solid 1px #666666";
+<%			
+			}
+%>
+			
+			cell.innerHTML = getDayDisplay("<%=date%>", getThaiMonth(<%=month%>), "<%=timeInRange%>", displayColor);
 <%
 			i = i+1;
 			aCalStart.set(Calendar.DAY_OF_YEAR, i);

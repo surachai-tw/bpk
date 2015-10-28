@@ -4,6 +4,7 @@
 <html>
 <head>
 <jsp:include page="inc/charset.jsp" flush="false"/>
+<script type="text/javascript" src="js/bpkUtility.js"></script>
 <link type="text/css" rel="stylesheet" href="css/extend.css" />
 
 <script language="JavaScript">
@@ -49,7 +50,7 @@ function onLoad()
 	// ส่วนนี้ ต้องการให้เลือกหน้าที่เคยเลือกไว้ให้ด้วย แต่ยังไม่ work
 	try
 	{
-		listDoctor_cmbPage.value = tmp_listDoctor_cmbPage!=null && tmp_listDoctor_cmbPage!="" ? tmp_listDoctor_cmbPage : 0;	
+		listDoctor_cmbPage.value = (tmp_listDoctor_cmbPage!=null && tmp_listDoctor_cmbPage!="" ? tmp_listDoctor_cmbPage : 0);	
 	}
 	catch (e)
 	{
@@ -71,7 +72,7 @@ function onLoad()
 
 	try
 	{
-		listDoctor_cmbLimitPage.value = tmp_listDoctor_cmbLimitPage!=null && tmp_listDoctor_cmbLimitPage!="" ? tmp_listDoctor_cmbLimitPage : "20";
+		listDoctor_cmbLimitPage.value = (tmp_listDoctor_cmbLimitPage!=null && tmp_listDoctor_cmbLimitPage!="" ? tmp_listDoctor_cmbLimitPage : "20");
 	}
 	catch (e)
 	{
@@ -87,18 +88,35 @@ function listDoctor_findDoctor()
 
 	try
 	{
-		top.filter_searchPage = listDoctor_cmbPage.options[listDoctor_cmbPage.selectedIndex].value;
+		top.filter_searchPage = listDoctor_cmbPage.value;
 	}
 	catch (e)
 	{
+		try
+		{
+			// การขอค่าแบบนี้ใช้กับ IE แบบไม่เลือก Compatibility View ไม่ได้
+			top.filter_searchPage = listDoctor_cmbPage.options[listDoctor_cmbPage.selectedIndex].value;
+		}
+		catch (f)
+		{
+			alert("searchPage, e = "+e+", f = "+f);
+		}
 	}
 	
 	try
 	{
-		top.filter_searchCount = listDoctor_cmbLimitPage.options[listDoctor_cmbLimitPage.selectedIndex].value;
+		top.filter_searchCount = listDoctor_cmbLimitPage.value;
 	}
 	catch (e)
 	{
+		try
+		{
+			top.filter_searchCount = listDoctor_cmbLimitPage.options[listDoctor_cmbLimitPage.selectedIndex].value;
+		}
+		catch (f)
+		{
+			alert("searchCount, e = "+e+", f = "+f);
+		}
 	}
 
 	top.statusFrame.repWorkStatus("กำลังทำการค้นหารายชื่อแพทย์...");
@@ -183,8 +201,23 @@ function listDoctor_txtSpecialty_OnKeyUp()
 
 function clearTableData()
 {
-	var tbl = ifrmListDoctor.tblBpkEmployeeVO;
-	// var tbl = document.getElementById("ifrmListDoctor.tblBpkEmployeeVO");
+	var tbl = null;
+	if(isCompatView())
+	{
+		tbl = ifrmListDoctor.tblBpkEmployeeVO;
+	}
+	else
+	{
+		try
+		{
+			var ifrmdocument = ifrmListDoctor.contentWindow;
+			tbl = ifrmdocument.getElementById("tblBpkEmployeeVO");
+		}
+		catch (e)
+		{
+			tbl = ifrmListDoctor.tblBpkEmployeeVO;
+		}
+	}
 	for( ; tbl.rows.length > 0; )
 		tbl.deleteRow(0);
 }
@@ -196,7 +229,23 @@ var lineEven = "lineEven";
 function showListBpkEmployeeVO()
 {
 	clearTableData();
-	var tblBpkEmployeeVO = ifrmListDoctor.tblBpkEmployeeVO;
+	var tbl = null;
+	if(isCompatView())
+	{
+		tbl = ifrmListDoctor.tblBpkEmployeeVO;
+	}
+	else
+	{
+		try
+		{
+			var ifrmdocument = ifrmListDoctor.contentWindow;
+			tbl = ifrmdocument.getElementById("tblBpkEmployeeVO");
+		}
+		catch (e)
+		{
+			tbl = ifrmListDoctor.tblBpkEmployeeVO;
+		}
+	}
 	var listBpkEmployeeVO = top.listBpkEmployeeVO;
 	var size = listBpkEmployeeVO.length;
 	var previousEmpName = "";
@@ -205,7 +254,7 @@ function showListBpkEmployeeVO()
 	for(var i=0; i<size; i++)
 	{
 		var aBpkEmployeeVO = listBpkEmployeeVO[i];
-		var row = tblBpkEmployeeVO.insertRow();
+		var row = tbl.insertRow();
 		row.aBpkEmployeeVO = aBpkEmployeeVO;
 		row.employee_id = aBpkEmployeeVO.employeeId;
 		row.height = 21;

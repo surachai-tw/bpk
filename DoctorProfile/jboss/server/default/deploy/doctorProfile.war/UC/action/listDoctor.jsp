@@ -142,7 +142,6 @@ var aBpkEmployeeVO = null;
 				cmbObj.selectedIndex = <%=Integer.parseInt(filterSearchPage)%>;
 			}
 			
-			// alert("check method = "+top.mainFrame.ifrmListDoctor);
 			top.mainFrame.showListBpkEmployeeVO();
 			top.statusFrame.repStatusSuccess("จบการทำงาน");
 <%
