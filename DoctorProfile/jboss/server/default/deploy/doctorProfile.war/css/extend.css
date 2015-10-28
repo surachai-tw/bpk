@@ -161,6 +161,19 @@ legend {font-weight:bold; color:blue}
 	cursor: pointer;
 }
 
+.btnStyleClose
+{
+	border-top: 1px solid #FFFFFF;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	border-left: 1px solid #FFFFFF;
+	text-align: center;
+	height: 24px;
+	background: #FFFFFF;
+	font-weight: bold;
+	cursor: pointer;
+}
+
 .btnStyleAddRemove
 {
 	border-top: 1px solid #5BC0DE;
@@ -316,9 +329,28 @@ legend {font-weight:bold; color:blue}
 	font-size: 18px; 
 }
 
-.bgCalMonthNowDate
+.slotHeaderDate
+{  
+	color: #337AB7; 
+	background: #FFFFFF; 
+	font-size: 14px; 
+}
+
+.slotHeaderClinic
+{  
+	color: #DB7972; 
+	background: #FFFFFF; 
+	font-size: 16px; 
+}
+
+.divBpkBalloon
 {
-	background: #EAEAEA;
+	position: absolute;
+	width: 360px;
+	height: 150px;
+	background: #FFFFFF; 
+	border: 1px solid #CCCCCC;
+	z-index: 1;
 }
 
 .slotsAppointment {  
@@ -905,7 +937,7 @@ sup {font-size: 10px; font-family: Tahoma, Verdana, Segoe, sans-serif;}
 .divBpkRelative
 {
     position: relative;
-    width: 640px;
+    width: 800px;
     height: 480px;
     border: 1px solid #32A69D;
 }

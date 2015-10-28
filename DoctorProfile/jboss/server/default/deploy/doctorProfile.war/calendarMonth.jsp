@@ -52,6 +52,15 @@
   <script type="text/javascript">
   <!--
 
+	function btnMakeAppointment_onClick()
+	{
+	}
+
+	function btnClose_OnClick()
+	{
+		divBalloon.style.display = "none";
+	}
+
 	function btnEditDetail_OnClick()
 	{
 		location.href = "editDoctorProfile.jsp?employeeId=<%=aBpkEmployeeVO.getEmployeeId()%>";
@@ -171,15 +180,39 @@
 		cell.width = "12%";
 	}
 
-	function getDayDisplay(date, month, slots, displayColor)
+	function showBalloonDisplay(date, rangeOfTime, clinicDescription, appNum, limitNum)
 	{
+		var dd = date.substring(date.lastIndexOf('-', date.length-1)+1);
+		var mm = date.substring(date.indexOf('-', 0)+1, date.lastIndexOf('-', date.length-1));
+		var yyyy = date.substring(0, date.indexOf('-', 0));
+
+		divBalloon.style.display = "";
+		lblSelectedDateTime.innerText = parseInt(dd, 10)+" "+getThaiMonth(parseInt(mm, 10)-1)+" "+(parseInt(yyyy, 10)+543)+", "+rangeOfTime;
+		lblSelectedClinic.innerText = clinicDescription;		
+		lblCountWorkload.innerText = "จำนวนการนัดหมายทั้งหมด " + appNum + " / " + limitNum;
+
+		var e = window.event;
+		var posX = e.clientX;
+		var posY = e.clientY;
+		// var height = document.body.clientHeight;
+
+		divBalloon.style.left = posX;
+		divBalloon.style.top = posY;
+	}
+
+	function getDayDisplay(date, slots, displayColor, appNum, limitNum)
+	{
+		var dd = date.substring(date.lastIndexOf('-', date.length-1)+1);
+		var mm = date.substring(date.indexOf('-', 0)+1, date.lastIndexOf('-', date.length-1));
+		var yyyy = date.substring(0, date.indexOf('-', 0));
+
 		var display = "<table border=\"0\" cellspacing=\"1\" cellpadding=\"0\" width=\"100%\"";
 		
 		display += ">";
 		display += ("<tr><td style=\"color:"+displayColor+"\">");
-		display += ("&nbsp;"+date);
-		if(date==1)
-			display += (" "+month);
+		display += ("&nbsp;"+parseInt(dd, 10));
+		if(parseInt(dd, 10)==1)
+			display += (" "+getThaiMonth(parseInt(mm, 10)-1));
 		display += "</td></tr>";		
 		for(var i=0; i<5; i++)
 		{
@@ -187,10 +220,14 @@
 			{
 				display += "<tr><td";
 				if(slots!=null && slots!="")
-					display += " class=\"slotsAppointment\">";
+				{
+					display += " class=\"slotsAppointment\"";
+					display += (" onClick=\"showBalloonDisplay('"+date+"', '"+slots.substring(0, slots.indexOf('^', 0))+"', '"+slots.substring(slots.indexOf('^', 0)+1)+"', "+appNum+", "+limitNum+");\"");
+					display += ">";
+				}
 				else
 					display += ">";
-				display += slots;
+				display += slots.replace('^', ' ');
 				display += "</td></tr>";
 				break;
 			}
@@ -202,10 +239,14 @@
 				{
 					display += "<tr><td";
 					if(line!=null && line!="")
-						display += " class=\"slotsAppointment\">";
+					{
+						display += " class=\"slotsAppointment\"";
+						display += (" onClick=\"showBalloonDisplay('"+date+"', '"+line.substring(0, line.indexOf('^', 0))+"', '"+line.substring(line.indexOf('^', 0)+1)+"', "+appNum+", "+limitNum+");\"");
+						display += ">";
+					}
 					else
 						display += ">";
-					display += line;
+					display += line.replace('^', ' ');
 					display += "</td></tr>";
 				}
 				else
@@ -216,32 +257,7 @@
 				}
 			}
 		}
-		/*
-		if(slots!=null && slots!="")
-		{
-			display += "<tr><td class=\"slotsAppointment\">";
-			display += slots;
-			display += "</td></tr>";
-		}
-		else
-		{
-			display += "<tr><td>";
-			display += "&nbsp;";
-			display += "</td></tr>";
-		}
-		display += "<tr><td>";
-		display += "&nbsp;";
-		display += "</td></tr>";
-		display += "<tr><td>";
-		display += "&nbsp;";
-		display += "</td></tr>";
-		display += "<tr><td>";
-		display += "&nbsp;";
-		display += "</td></tr>";
-		display += "<tr><td>";
-		display += "&nbsp;";
-		display += "</td></tr>";
-		*/
+
 		display += "</table>";
 		return display;
 	}
@@ -319,8 +335,7 @@
 		{
 %>			displayColor = "black";
 <%
-			int date = aCalStart.get(Calendar.DAY_OF_MONTH);
-			int month = aCalStart.get(Calendar.MONTH);
+			String date = Utility.getDateStringFromDate(aCalStart.getTime());
 			int day = aCalStart.get(Calendar.DAY_OF_WEEK);
 			int startMonth = aCalStart.get(Calendar.MONTH);
 			int thisMonth = aCalMonth.get(Calendar.MONTH);
@@ -363,7 +378,7 @@
 			}
 %>
 			
-			cell.innerHTML = getDayDisplay("<%=date%>", getThaiMonth(<%=month%>), "<%=timeInRange%>", displayColor);
+			cell.innerHTML = getDayDisplay("<%=date%>", "<%=timeInRange%>", displayColor, 0, 0);
 <%
 			i = i+1;
 			aCalStart.set(Calendar.DAY_OF_YEAR, i);
@@ -436,7 +451,7 @@
 						<td width="100%" style="height:32px">
 							<table border="0" cellspacing="0" cellpadding="4" width="100%">
 								<tr>
-									<td style="vertical-align:middle"><a href="#"><div id="btnBack" onClick="btnBack_OnClick();" class="btnStyleBackAfterSearch" style="vertical-align:middle;width:72px;"><center><img src="css/back.png"/></center></div></a></td>
+									<td style="vertical-align:middle"><div id="btnBack" onClick="btnBack_OnClick();" class="btnStyleBackAfterSearch" style="vertical-align:middle;width:72px;"><center><img src="css/back.png"/></center></div></td>
 									<td style="vertical-align:middle"><input type="button" id="btnToday" 
 										 onClick="btnToday_OnClick();"
 										 value="วันนี้" class="btnStyle" style="vertical-align:middle;width:72px;"/></td>
@@ -456,7 +471,20 @@
 							</table>
 						</td>
 					</tr>
-					<tr><td width="100%"><table id="tblCalendarMonth" class="tableShow" width="100%" height="100%" border="1" cellspacing="0" cellpadding="0"/></td></tr>
+					<tr><td width="100%" style="height:480px">
+					<div id="divBalloon" class="divBpkBalloon" style="display:none">
+						<table width="100%" height="100%" border="0" cellspacing="2" cellpadding="0">
+							<tr><td style="text-align:right; height:24px"><img id="btnClose" onClick="btnClose_OnClick();" class="btnStyleClose" style="vertical-align:middle;width:24px;" src="css/close.png"/></td></tr>
+							<tr><td id="lblSelectedDateTime" class="slotHeaderDate">&nbsp;</td></tr>
+							<tr><td id="lblSelectedClinic" class="slotHeaderClinic">&nbsp;</td></tr>
+							<tr><td id="lblCountWorkload" style="align:left">&nbsp;</td></tr>
+							<tr><td style="text-align:right"><input type="button" id="btnMakeAppointment" value=" ทำนัด " class="btnStyle" onClick="btnMakeAppointment_onClick();">&nbsp;</td></tr>
+						</table>
+					</div>
+					<div id="divCalendarMonth" width="100%" style="height:480px">
+						<table id="tblCalendarMonth" class="tableShow" width="100%" height="100%" border="1" cellspacing="0" cellpadding="0"/>
+					</div>
+						</td></tr>
 				</table>
 			</td>
 			</tr>

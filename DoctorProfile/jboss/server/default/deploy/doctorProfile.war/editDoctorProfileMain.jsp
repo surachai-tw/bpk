@@ -43,7 +43,7 @@ function clearTableSlot()
 		try
 		{
 			var ifrmdocument = ifrmSession.contentWindow;
-			tbl = ifrmdocument;
+			tbl = ifrmdocument.tblBpkEmployeeVO;
 		}
 		catch(e)
 		{

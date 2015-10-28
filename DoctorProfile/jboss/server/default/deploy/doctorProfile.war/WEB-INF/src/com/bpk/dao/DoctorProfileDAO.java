@@ -595,7 +595,7 @@ public class DoctorProfileDAO
 		{
 			BpkEmployeeVO tmpBpkEmployeeVO = (BpkEmployeeVO) listTimeInRange.get(i);
 
-			result.append(tmpBpkEmployeeVO.getStartTime()).append(" - ").append(tmpBpkEmployeeVO.getEndTime()).append(" ")
+			result.append(tmpBpkEmployeeVO.getStartTime()).append(" - ").append(tmpBpkEmployeeVO.getEndTime()).append("^")
 					.append(tmpBpkEmployeeVO.getClinicDescription()).append(separator);
 		}
 		if (result.length() > 0)
