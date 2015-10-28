@@ -351,6 +351,7 @@ legend {font-weight:bold; color:blue}
 	background: #FFFFFF; 
 	border: 1px solid #CCCCCC;
 	z-index: 1;
+	box-shadow: 2px 2px 0.1px 0.1px lightgray;	
 }
 
 .slotsAppointment {  
