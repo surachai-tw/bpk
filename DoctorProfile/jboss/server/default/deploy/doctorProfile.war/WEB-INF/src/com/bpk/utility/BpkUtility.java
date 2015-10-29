@@ -336,8 +336,12 @@ public class BpkUtility
 
 	public static void printDebug(Object objDebug, String text)
 	{
-		objDebug = objDebug != null ? "[BPK DEBUG " + objDebug.getClass().getSimpleName() + "], " : "[BPK DEBUG NULL], ";
-		System.out.println(objDebug + text);
+		String debug = System.getProperty("bpk.debug");
+		if(BpkUtility.isTrue(debug))
+		{		
+			objDebug = objDebug != null ? "[BPK DEBUG " + objDebug.getClass().getSimpleName() + "], " : "[BPK DEBUG NULL], ";
+			System.out.println(objDebug + text);
+		}
 	}
 
 	public static boolean isTrue(String flag)

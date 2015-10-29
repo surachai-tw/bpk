@@ -15,7 +15,12 @@
 <script language="JavaScript">
 <!--
 
+top.aBpkEmployeeVO = new BpkEmployeeVO();
+top.listBpkEmployeeVO = new Array();
+
 var aBpkEmployeeVO = top.aBpkEmployeeVO;
+var listBpkEmployeeVO = top.listBpkEmployeeVO;
+var tmpBpkEmployeeVO = null;
 
 <%
 	DoctorProfileDAO aDAO = null;
@@ -23,7 +28,7 @@ var aBpkEmployeeVO = top.aBpkEmployeeVO;
 	{
 		ServletRequestThai req = new ServletRequestThai(request);
 		String employeeId = (String)req.getParameterThai("employeeId");
-		Utility.printCoreDebug(this, "employeeId = "+employeeId);
+		BpkUtility.printDebug(this, "employeeId = "+employeeId);
 
 		aDAO = DAOFactory.newDoctorProfileDAO();
 		HashMap param = new HashMap();
@@ -69,6 +74,7 @@ var aBpkEmployeeVO = top.aBpkEmployeeVO;
 					{
 						BpkEmployeeVO tmpBpkEmployeeVO = (BpkEmployeeVO)listBpkEmployeeVO.get(i);
 %>
+						tmpBpkEmployeeVO = new BpkEmployeeVO();
 						tmpBpkEmployeeVO.employeeId = "<%=employeeId%>";
 
 						tmpBpkEmployeeVO.dayId = "<%=tmpBpkEmployeeVO.getDayId()%>";

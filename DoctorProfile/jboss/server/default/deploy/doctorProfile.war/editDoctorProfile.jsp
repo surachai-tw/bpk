@@ -27,11 +27,13 @@ DoctorProfileDAO aDAO = DAOFactory.newDoctorProfileDAO();
 
 String employeeId = request.getParameter("employeeId");
 BpkUtility.printDebug(this, "employeeId = "+employeeId);
-HashMap resultDetail = aDAO.getEmployeeDetail(employeeId);
+HashMap param = new HashMap();
+param.put("employeeId".toUpperCase(), employeeId);
+HashMap result = aDAO.readDoctorProfile(param);
 BpkEmployeeVO aBpkEmployeeVO = null;
-if(ResultFlag.STATUS_SUCCESS.equals(resultDetail.get(ResultFlag.STATUS)))
+if(ResultFlag.STATUS_SUCCESS.equals(result.get(ResultFlag.STATUS)))
 {
-	aBpkEmployeeVO = (BpkEmployeeVO)resultDetail.get(ResultFlag.RESULT_DATA);
+	aBpkEmployeeVO = (BpkEmployeeVO)result.get(ResultFlag.RESULT_DATA);
 %>
 	aBpkEmployeeVO.employeeName = "<%=aBpkEmployeeVO.getEmployeeName()%>";
 
@@ -45,15 +47,8 @@ if(ResultFlag.STATUS_SUCCESS.equals(resultDetail.get(ResultFlag.STATUS)))
 	aBpkEmployeeVO.specialty = "<%=aBpkEmployeeVO.getSpecialty()%>";
 	aBpkEmployeeVO.others = "<%=aBpkEmployeeVO.getOthers()%>";
 <%
-}
 
-HashMap param = new HashMap();
-param.put("employeeId", employeeId);
-HashMap resultList = aDAO.getSlotDoctor(param);
-if(ResultFlag.STATUS_SUCCESS.equals(resultList.get(ResultFlag.STATUS)))
-{
-	List listBpkEmployeeVO = (List)resultList.get(ResultFlag.RESULT_DATA);
-
+	List listBpkEmployeeVO = aBpkEmployeeVO.getAllSlot();
 	if(listBpkEmployeeVO!=null)
 	{
 %>
@@ -78,6 +73,7 @@ if(ResultFlag.STATUS_SUCCESS.equals(resultList.get(ResultFlag.STATUS)))
 		}
 	}
 }
+
 
 %>
 

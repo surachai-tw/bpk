@@ -200,7 +200,7 @@
 		divBalloon.style.top = posY;
 	}
 
-	function getDayDisplay(date, slots, displayColor, appNum, limitNum)
+	function getDayDisplay(date, slots, displayColor, appNum)
 	{
 		var dd = date.substring(date.lastIndexOf('-', date.length-1)+1);
 		var mm = date.substring(date.indexOf('-', 0)+1, date.lastIndexOf('-', date.length-1));
@@ -222,12 +222,13 @@
 				if(slots!=null && slots!="")
 				{
 					display += " class=\"slotsAppointment\"";
-					display += (" onClick=\"showBalloonDisplay('"+date+"', '"+slots.substring(0, slots.indexOf('^', 0))+"', '"+slots.substring(slots.indexOf('^', 0)+1)+"', "+appNum+", "+limitNum+");\"");
+					display += (" onClick=\"showBalloonDisplay('"+date+"', '"+slots.substring(0, slots.indexOf('^', 0))+"', '"+slots.substring(slots.indexOf('^', 0)+1, slots.lastIndexOf('^', slots.length-1))+"', "+appNum+", "+slots.substring(slots.lastIndexOf('^', slots.length-1)+1)+");\"");
 					display += ">";
 				}
 				else
 					display += ">";
-				display += slots.replace('^', ' ');
+				var innerText = slots.substring(0, slots.lastIndexOf('^', slots.length-1));
+				display += innerText.replace('^', ' ');
 				display += "</td></tr>";
 				break;
 			}
@@ -241,12 +242,13 @@
 					if(line!=null && line!="")
 					{
 						display += " class=\"slotsAppointment\"";
-						display += (" onClick=\"showBalloonDisplay('"+date+"', '"+line.substring(0, line.indexOf('^', 0))+"', '"+line.substring(line.indexOf('^', 0)+1)+"', "+appNum+", "+limitNum+");\"");
+						display += (" onClick=\"showBalloonDisplay('"+date+"', '"+line.substring(0, line.indexOf('^', 0))+"', '"+line.substring(line.indexOf('^', 0)+1, line.lastIndexOf('^', line.length-1))+"', "+appNum+", "+line.substring(line.lastIndexOf('^', line.length-1)+1)+");\"");
 						display += ">";
 					}
 					else
 						display += ">";
-					display += line.replace('^', ' ');
+					var innerText = line.substring(0, line.lastIndexOf('^', line.length-1));
+					display += innerText.replace('^', ' ');
 					display += "</td></tr>";
 				}
 				else
@@ -312,9 +314,10 @@
 		// รายการข้อมูลของวันที่นัดได้ทั้งหมดของหมอแต่ละคน
 		List listBpkEmployeeVO = null;
 		HashMap param = new HashMap();
-		param.put("employeeId", employeeId);
-		param.put("startDate", new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aCalStart.getTime()));
-		param.put("endDate", new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aCalEnd.getTime()));
+		BpkUtility.printDebug(this, "Check employeeId = "+employeeId);
+		param.put("employeeId".toUpperCase(), employeeId);
+		param.put("startDate".toUpperCase(), new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aCalStart.getTime()));
+		param.put("endDate".toUpperCase(), new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aCalEnd.getTime()));
 		HashMap result = aDAO.getSlotDoctor(param);
 		if(ResultFlag.STATUS_SUCCESS.equals(result.get(ResultFlag.STATUS)))
 		{
@@ -377,8 +380,7 @@
 <%			
 			}
 %>
-			
-			cell.innerHTML = getDayDisplay("<%=date%>", "<%=timeInRange%>", displayColor, 0, 0);
+			cell.innerHTML = getDayDisplay("<%=date%>", "<%=timeInRange%>", displayColor, 0);
 <%
 			i = i+1;
 			aCalStart.set(Calendar.DAY_OF_YEAR, i);
@@ -459,10 +461,10 @@
 										<table border="0" cellspacing="0" cellpadding="1">
 											<tr><td><input type="button" id="btnPrevMonth" 
 														onClick="btnPrevMonth_OnClick();"
-														value=" < " class="btnStyle" style="width:24px"/></td>
+														value="<" class="btnStyleNavigator"/></td>
 												<td><input type="button" id="btnNextMonth" 
 														onClick="btnNextMonth_OnClick();"
-														value=" > " class="btnStyle" style="width:24px"/></td></tr>
+														value=">" class="btnStyleNavigator"/></td></tr>
 										 </table></td>
 									<td width="80%" class="bgFormLabelTop" style="vertical-align:middle"><b>&nbsp;<%=new SimpleDateFormat("MMMM yyyy", new Locale("th", "TH")).format(aCalMonth.getTime())%></b></td>
 									<td style="vertical-align:middle"><input type="button" id="btnDay" value="1 วัน" class="btnStyle" style="width:64px"/></td>

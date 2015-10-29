@@ -33,6 +33,9 @@ function txtUsername_OnKeyUp()
 
 function clearTableSlot()
 {
+	// เริ่มจาก 0 ใหม่ 
+	runningId = 0;
+
 	var tbl = null;
 	if(isCompatView())
 	{
@@ -67,7 +70,7 @@ function setSlotToForm()
 			btnAdd_OnClick(tmpBpkEmployeeVO);
 
 			// Set ค่าให้ textbox ของ time
-			setComboboxElementForDay(i, tmpBpkEmployeeVO.dayName);
+			setComboboxElementForDay(i, tmpBpkEmployeeVO.day);
 			setComboboxElementForClinic(i, tmpBpkEmployeeVO.clinicDescription);
 			setTexboxStartTime(i, tmpBpkEmployeeVO.startTime);
 			setTexboxEndTime(i, tmpBpkEmployeeVO.endTime);
@@ -80,17 +83,20 @@ function setDataToForm()
 {
 	var aBpkEmployeeVO = top.aBpkEmployeeVO;
 
-	txtUsername.value = aBpkEmployeeVO.employeeId;
-	txtEmployeeName.value = aBpkEmployeeVO.employeeName;
-	txtLicense.value = aBpkEmployeeVO.licenseNo;
-	txtQualification.value = aBpkEmployeeVO.qualification;
-	txtEducational.value = aBpkEmployeeVO.educational;
-	txtInstitute.value = aBpkEmployeeVO.institute;
-	txtBoard.value = aBpkEmployeeVO.board;
-	txtSpecialty.value = aBpkEmployeeVO.specialty;
-	txtOthers.value = aBpkEmployeeVO.others;
+	if(aBpkEmployeeVO!=null)
+	{
+		txtUsername.value = aBpkEmployeeVO.employeeId;
+		txtEmployeeName.value = aBpkEmployeeVO.employeeName;
+		txtLicense.value = aBpkEmployeeVO.licenseNo;
+		txtQualification.value = aBpkEmployeeVO.qualification;
+		txtEducational.value = aBpkEmployeeVO.educational;
+		txtInstitute.value = aBpkEmployeeVO.institute;
+		txtBoard.value = aBpkEmployeeVO.board;
+		txtSpecialty.value = aBpkEmployeeVO.specialty;
+		txtOthers.value = aBpkEmployeeVO.others;
 
-	txtUsername.disabled = true;
+		txtUsername.disabled = true;
+	}
 }
 
 function btnResetDoctorProfile_OnClick()
@@ -117,53 +123,33 @@ function btnResetDoctorProfile_OnClick()
 function btnSaveDoctorProfile_OnClick()
 {
 	var aBpkEmployeeVO = top.aBpkEmployeeVO;
+	var eid = Trim(txtUsername.value);
 
-	aBpkEmployeeVO.employeeId = txtUsername.value;
-	aBpkEmployeeVO.licenseNo = txtLicense.value;
-	aBpkEmployeeVO.qualification = txtQualification.value;
-	aBpkEmployeeVO.educational = txtEducational.value;
-	aBpkEmployeeVO.institute = txtInstitute.value;
-	aBpkEmployeeVO.board = txtBoard.value;
-	aBpkEmployeeVO.specialty = txtSpecialty.value;
-	aBpkEmployeeVO.others = txtOthers.value;
-
-	top.newSlotBpkEmployeeVO = new Array();
-	var newSlotBpkEmployeeVO = top.newSlotBpkEmployeeVO;
-	for(var i=0, j=0; i<runningId; i++)
+	if(eid!=null && eid!="")
 	{
-		try
+		aBpkEmployeeVO.employeeId = eid;
+		aBpkEmployeeVO.licenseNo = txtLicense.value;
+		aBpkEmployeeVO.qualification = txtQualification.value;
+		aBpkEmployeeVO.educational = txtEducational.value;
+		aBpkEmployeeVO.institute = txtInstitute.value;
+		aBpkEmployeeVO.board = txtBoard.value;
+		aBpkEmployeeVO.specialty = txtSpecialty.value;
+		aBpkEmployeeVO.others = txtOthers.value;
+
+		top.newSlotBpkEmployeeVO = new Array();
+		var newSlotBpkEmployeeVO = top.newSlotBpkEmployeeVO;
+		for(var i=0, j=0; i<runningId; i++)
 		{
-			var selDay = null;
-			var selClinic = null;
-			var txtStartTimeHh = null;
-			var txtStartTimeMm = null;
-			var txtEndTimeHh = null;
-			var txtEndTimeMm = null;
-			var txtLimitNumAppoint = null;
-			if(isCompatView())
+			try
 			{
-				selDay = eval("ifrmSession.selDay"+i);
-				selClinic = eval("ifrmSession.selClinic"+i);
-				txtStartTimeHh = eval("ifrmSession.txtStartTimeHh"+i);
-				txtStartTimeMm = eval("ifrmSession.txtStartTimeMm"+i);
-				txtEndTimeHh = eval("ifrmSession.txtEndTimeHh"+i);
-				txtEndTimeMm = eval("ifrmSession.txtEndTimeMm"+i);
-				txtLimitNumAppoint = eval("ifrmSession.txtLimitNumAppoint"+i);
-			}
-			else
-			{
-				try
-				{
-					var ifrmdocument = ifrmSession.contentWindow;
-					selDay = eval("ifrmdocument.selDay"+i);
-					selClinic = eval("ifrmdocument.selClinic"+i);
-					txtStartTimeHh = eval("ifrmdocument.txtStartTimeHh"+i);
-					txtStartTimeMm = eval("ifrmdocument.txtStartTimeMm"+i);
-					txtEndTimeHh = eval("ifrmdocument.txtEndTimeHh"+i);
-					txtEndTimeMm = eval("ifrmdocument.txtEndTimeMm"+i);
-					txtLimitNumAppoint = eval("ifrmdocument.txtLimitNumAppoint"+i);
-				}
-				catch (e)
+				var selDay = null;
+				var selClinic = null;
+				var txtStartTimeHh = null;
+				var txtStartTimeMm = null;
+				var txtEndTimeHh = null;
+				var txtEndTimeMm = null;
+				var txtLimitNumAppoint = null;
+				if(isCompatView())
 				{
 					selDay = eval("ifrmSession.selDay"+i);
 					selClinic = eval("ifrmSession.selClinic"+i);
@@ -173,31 +159,59 @@ function btnSaveDoctorProfile_OnClick()
 					txtEndTimeMm = eval("ifrmSession.txtEndTimeMm"+i);
 					txtLimitNumAppoint = eval("ifrmSession.txtLimitNumAppoint"+i);
 				}
-			}
+				else
+				{
+					try
+					{
+						var ifrmdocument = ifrmSession.contentWindow;
+						selDay = eval("ifrmdocument.selDay"+i);
+						selClinic = eval("ifrmdocument.selClinic"+i);
+						txtStartTimeHh = eval("ifrmdocument.txtStartTimeHh"+i);
+						txtStartTimeMm = eval("ifrmdocument.txtStartTimeMm"+i);
+						txtEndTimeHh = eval("ifrmdocument.txtEndTimeHh"+i);
+						txtEndTimeMm = eval("ifrmdocument.txtEndTimeMm"+i);
+						txtLimitNumAppoint = eval("ifrmdocument.txtLimitNumAppoint"+i);
+					}
+					catch (e)
+					{
+						selDay = eval("ifrmSession.selDay"+i);
+						selClinic = eval("ifrmSession.selClinic"+i);
+						txtStartTimeHh = eval("ifrmSession.txtStartTimeHh"+i);
+						txtStartTimeMm = eval("ifrmSession.txtStartTimeMm"+i);
+						txtEndTimeHh = eval("ifrmSession.txtEndTimeHh"+i);
+						txtEndTimeMm = eval("ifrmSession.txtEndTimeMm"+i);
+						txtLimitNumAppoint = eval("ifrmSession.txtLimitNumAppoint"+i);
+					}
+				}
 
-			if(selDay!=null && selDay!="")
+				if(selDay!=null && selDay!="")
+				{
+					var tmpBpkEmployeeVO = new BpkEmployeeVO();
+					tmpBpkEmployeeVO.employeeId = aBpkEmployeeVO.employeeId;
+					tmpBpkEmployeeVO.dayId = selDay.value;
+					tmpBpkEmployeeVO.bpkClinicId = selClinic.value;
+					tmpBpkEmployeeVO.startTime = txtStartTimeHh.value+":"+txtStartTimeMm.value;
+					tmpBpkEmployeeVO.endTime = txtEndTimeHh.value+":"+txtEndTimeMm.value;
+					tmpBpkEmployeeVO.limitNumAppoint = txtLimitNumAppoint.value;
+					
+					newSlotBpkEmployeeVO[j] = tmpBpkEmployeeVO;
+					j++;
+				}
+			}
+			catch (e)
 			{
-				var tmpBpkEmployeeVO = new BpkEmployeeVO();
-				tmpBpkEmployeeVO.employeeId = aBpkEmployeeVO.employeeId;
-				tmpBpkEmployeeVO.dayId = selDay.value;
-				tmpBpkEmployeeVO.bpkClinicId = selClinic.value;
-				tmpBpkEmployeeVO.startTime = txtStartTimeHh.value+":"+txtStartTimeMm.value;
-				tmpBpkEmployeeVO.endTime = txtEndTimeHh.value+":"+txtEndTimeMm.value;
-				tmpBpkEmployeeVO.limitNumAppoint = txtLimitNumAppoint.value;
-				
-				newSlotBpkEmployeeVO[j] = tmpBpkEmployeeVO;
-				j++;
+				alert(e+' at btnSaveDoctorProfile_OnClick()');
 			}
 		}
-		catch (e)
-		{
-			alert(e+' at btnSaveDoctorProfile_OnClick()');
-		}
-	}
 
-	top.statusFrame.repWorkStatus("กำลังบันทึกข้อมูลแพทย์...");
-	top.editDoctorProfileJSPFrame.UCForm.UC.value = "saveDoctorProfile";
-	top.editDoctorProfileJSPFrame.UCForm.submit();
+		top.statusFrame.repWorkStatus("กำลังบันทึกข้อมูลแพทย์...");
+		top.editDoctorProfileJSPFrame.UCForm.UC.value = "saveDoctorProfile";
+		top.editDoctorProfileJSPFrame.UCForm.submit();
+	}
+	else
+	{
+		top.statusFrame.repStatus("กรุณาระบุข้อมูลผู้ใช้งาน");
+	}
 }
 
 function getComboboxElementForDay(id)
@@ -234,20 +248,24 @@ function setComboboxElementForDay(id, day)
 			{
 				selDay = eval("ifrmSession.selDay"+id);
 			}
-		}		
-		for(var i=0; i<selDay.options.length; i++)
+		}
+		
+		if(selDay!=null)
 		{
-			if(selDay.options[i].text==day)
+			for(var i=0; i<selDay.options.length; i++)
 			{
-				selDay.selectedIndex = i;
-				break;
+				if(selDay.options[i].text==day)
+				{
+					selDay.selectedIndex = i;
+					break;
+				}
 			}
 		}
 	}
 	catch (e)
 	{
 		alert(e+' at setComboboxElementForDay(id, day)');
-	}	
+	}
 }
 
 function getComboboxElementForClinic(id)
@@ -699,12 +717,7 @@ function onLoad()
 {
 	tabGeneral_onClick();
 
-	var aBpkEmployeeVO = top.aBpkEmployeeVO;
-	if(aBpkEmployeeVO!=null)
-	{
-		setDataToForm();
-	}
-
+	setDataToForm();
 	setSlotToForm();
 }
 

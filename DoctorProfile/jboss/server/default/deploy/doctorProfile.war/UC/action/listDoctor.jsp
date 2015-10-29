@@ -33,12 +33,12 @@ var aBpkEmployeeVO = null;
 		String filterSearchCount = (String)req.getParameterThai("filter_searchCount");
 		String filterSearchPage = (String)req.getParameterThai("filter_searchPage");
 
-		Utility.printCoreDebug(this, "filterEmployeeName = "+filterEmployeeName);
-		Utility.printCoreDebug(this, "filterClinic = "+filterClinic);
-		Utility.printCoreDebug(this, "filterSpecialty = "+filterSpecialty);
-		Utility.printCoreDebug(this, "filterOptionWithSchedule = "+filterOptionWithSchedule);
-		Utility.printCoreDebug(this, "filterSearchCount = "+filterSearchCount);
-		Utility.printCoreDebug(this, "filterSearchPage = "+filterSearchPage);
+		BpkUtility.printDebug(this, "filterEmployeeName = "+filterEmployeeName);
+		BpkUtility.printDebug(this, "filterClinic = "+filterClinic);
+		BpkUtility.printDebug(this, "filterSpecialty = "+filterSpecialty);
+		BpkUtility.printDebug(this, "filterOptionWithSchedule = "+filterOptionWithSchedule);
+		BpkUtility.printDebug(this, "filterSearchCount = "+filterSearchCount);
+		BpkUtility.printDebug(this, "filterSearchPage = "+filterSearchPage);
 
 		session.setAttribute("filter_employeeName", filterEmployeeName);
 		session.setAttribute("filter_clinic", filterClinic);

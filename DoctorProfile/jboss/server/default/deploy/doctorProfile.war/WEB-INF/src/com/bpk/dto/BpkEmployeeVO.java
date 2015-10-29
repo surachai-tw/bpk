@@ -31,11 +31,11 @@ public class BpkEmployeeVO implements Serializable, JSONVO
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void addSlot(List listBpkEmployeeVO)
+	public void addSlot(List newListBpkEmployeeVO)
 	{
-		if(listBpkEmployeeVO==null)
-			listBpkEmployeeVO = new ArrayList();
-		listBpkEmployeeVO.addAll(listBpkEmployeeVO);
+		if(this.listBpkEmployeeVO==null)
+			this.listBpkEmployeeVO = new ArrayList();
+		this.listBpkEmployeeVO.addAll(newListBpkEmployeeVO);
 	}
 	
 	@SuppressWarnings("rawtypes")

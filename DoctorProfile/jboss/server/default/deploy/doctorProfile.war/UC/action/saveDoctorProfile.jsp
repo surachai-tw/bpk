@@ -30,14 +30,14 @@
 		String specialty = (String)req.getParameterThai("specialty");
 		String others = (String)req.getParameterThai("others");
 
-		Utility.printCoreDebug(this, "employeeId = "+employeeId);
-		Utility.printCoreDebug(this, "licenseNo = "+licenseNo);
-		Utility.printCoreDebug(this, "qualification = "+qualification);
-		Utility.printCoreDebug(this, "educational = "+educational);
-		Utility.printCoreDebug(this, "institute = "+institute);
-		Utility.printCoreDebug(this, "board = "+board);
-		Utility.printCoreDebug(this, "specialty = "+specialty);
-		Utility.printCoreDebug(this, "others = "+others);
+		BpkUtility.printDebug(this, "employeeId = "+employeeId);
+		BpkUtility.printDebug(this, "licenseNo = "+licenseNo);
+		BpkUtility.printDebug(this, "qualification = "+qualification);
+		BpkUtility.printDebug(this, "educational = "+educational);
+		BpkUtility.printDebug(this, "institute = "+institute);
+		BpkUtility.printDebug(this, "board = "+board);
+		BpkUtility.printDebug(this, "specialty = "+specialty);
+		BpkUtility.printDebug(this, "others = "+others);
 
 		HashMap param = new HashMap();
 		BpkEmployeeVO aBpkEmployeeVO = new BpkEmployeeVO();

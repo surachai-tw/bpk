@@ -26,6 +26,10 @@ public class DoctorProfileDAO
 	{
 	}
 
+	/**
+	 * ส่วนของ Day ให้เอาจาดส่วนเพิ่มขยาย bpk_fix_day_of_week
+	 * @return
+	 */
 	public List<String> listDayDescription()
 	{
 		StringBuilder sql = new StringBuilder("SELECT description FROM bpk_fix_day_of_week ORDER BY display_order");
@@ -37,7 +41,7 @@ public class DoctorProfileDAO
 		{
 			conn = DAOFactory.getConnection();
 			stmt = conn.createStatement();
-			// BpkUtility.printDebug(this, sql.toString());
+			BpkUtility.printDebug(this, "listDayDescription, "+sql.toString());
 			rst = stmt.executeQuery(sql.toString());
 
 			for (; rst.next();)
@@ -63,6 +67,11 @@ public class DoctorProfileDAO
 		return listDay;
 	}
 
+	/**
+	 * ส่วนของ ชื่อ Clinic ให้รวบส่วนของ คัดกรอง และ ห้องตรวจ เป็น 1 เดียวกัน 
+	 * ส่วนของ Primary Key ให้ใช้ maximum Primary Key 
+	 * @return HashMap 
+	 */
 	@SuppressWarnings(
 	{ "unchecked", "rawtypes" })
 	public HashMap listAllClinic()
@@ -84,7 +93,7 @@ public class DoctorProfileDAO
 
 			conn = DAOFactory.getConnection();
 			stmt = conn.createStatement();
-			BpkUtility.printDebug(this, sql.toString());
+			BpkUtility.printDebug(this, "listAllClinic, "+sql.toString());
 			rst = stmt.executeQuery(sql.toString());
 
 			for (; rst.next();)
@@ -119,6 +128,11 @@ public class DoctorProfileDAO
 		return result;
 	}
 
+	/**
+	 * List รายชื่อหมอ 
+	 * @param param
+	 * @return HashMap 
+	 */
 	@SuppressWarnings("rawtypes")
 	public HashMap listDoctor(HashMap param)
 	{
@@ -142,6 +156,13 @@ public class DoctorProfileDAO
 			pOptionWithSchedule = BpkUtility.getValidateString(param.get("optionWithSchedule"));
 			pCount = BpkUtility.getValidateString(param.get("count"));
 			pPage = BpkUtility.getValidateString(param.get("page"));
+
+			BpkUtility.printDebug(this, "listDoctor PARAM pClinic = "+pClinic);
+			BpkUtility.printDebug(this, "listDoctor PARAM pSpeciality = "+pSpeciality);
+			BpkUtility.printDebug(this, "listDoctor PARAM pDoctor = "+pDoctor);
+			BpkUtility.printDebug(this, "listDoctor PARAM pOptionWithSchedule = "+pOptionWithSchedule);
+			BpkUtility.printDebug(this, "listDoctor PARAM pCount = "+pCount);
+			BpkUtility.printDebug(this, "listDoctor PARAM pPage = "+pPage);
 
 			/**
 			 * คิดว่าไม่น่าจะได้ใช้ pDayInWeekMon =
@@ -286,7 +307,9 @@ public class DoctorProfileDAO
 
 			conn = DAOFactory.getConnection();
 			stmt = conn.createStatement();
-			rst = stmt.executeQuery("SELECT Count(*) cnt FROM (" + sql.toString() + ") AS tmp");
+			String sqlCount = "SELECT Count(*) cnt FROM (" + sql.toString() + ") AS tmp";
+			BpkUtility.printDebug(this, "listDoctor, "+sqlCount.toString());
+			rst = stmt.executeQuery(sqlCount);
 			if (rst.next())
 			{
 				int records = rst.getInt("cnt");
@@ -300,7 +323,7 @@ public class DoctorProfileDAO
 			// sql.append(" LIMIT 400");
 			sql.append(" LIMIT ").append(pCount).append(" OFFSET ").append(Integer.parseInt(pPage) * Integer.parseInt(pCount));
 
-			BpkUtility.printDebug(this, sql.toString());
+			BpkUtility.printDebug(this, "listDoctor, "+sql.toString());
 			rst = stmt.executeQuery(sql.toString());
 
 			for (; rst.next();)
@@ -346,7 +369,7 @@ public class DoctorProfileDAO
 			}
 
 			// Group day in 1 line
-			BpkUtility.printDebug(this, "Group to line");
+			BpkUtility.printDebug(this, "listDoctor, group each same time to 1 line");
 			listBpkEmployeeVO = BpkEmployeeVO.groupToLine(listBpkEmployeeVO);
 
 			// Replace double day, if setup wrong
@@ -395,7 +418,7 @@ public class DoctorProfileDAO
 			 * .getDayDisplayOrder
 			 * ()).append(tmpBpkEmployeeVO.getStartTime()).toString()); }
 			 */
-			BpkUtility.printDebug(this, "After Sort listBpkEmployeeVO.size() = " + listBpkEmployeeVO.size());
+			BpkUtility.printDebug(this, "listDoctor, after sort listBpkEmployeeVO.size() = " + listBpkEmployeeVO.size());
 
 			if (listBpkEmployeeVO != null && listBpkEmployeeVO.size() > 0)
 			{
@@ -446,9 +469,13 @@ public class DoctorProfileDAO
 		{
 			if (param != null)
 			{
-				pEmployeeId = BpkUtility.getValidateString(param.get("employeeId"));
-				pStartDate = BpkUtility.getValidateString(param.get("startDate"));
-				pEndDate = BpkUtility.getValidateString(param.get("endDate"));
+				pEmployeeId = BpkUtility.getValidateString(param.get("employeeId".toUpperCase()));
+				pStartDate = BpkUtility.getValidateString(param.get("startDate".toUpperCase()));
+				pEndDate = BpkUtility.getValidateString(param.get("endDate".toUpperCase()));
+				
+				BpkUtility.printDebug(this, "getSlotDoctor PARAM pEmployeeId = "+pEmployeeId);
+				BpkUtility.printDebug(this, "getSlotDoctor PARAM pStartDate = "+pStartDate);
+				BpkUtility.printDebug(this, "getSlotDoctor PARAM pEndDate = "+pEndDate);
 			}
 
 			sql = new StringBuilder(
@@ -461,7 +488,7 @@ public class DoctorProfileDAO
 
 			conn = DAOFactory.getConnection();
 			stmt = conn.createStatement();
-			// BpkUtility.printDebug(this, sql.toString());
+			BpkUtility.printDebug(this, "getSlotDoctor, "+sql.toString());
 			rst = stmt.executeQuery(sql.toString());
 
 			for (; rst.next();)
@@ -510,7 +537,9 @@ public class DoctorProfileDAO
 	}
 
 	/***
-	 * 
+	 * ตรวจสอบว่า วันที่ที่ให้มา อยู่ในช่วงเวลาที่ตรงกับ Slot ที่อยู่ใน List listBpkEmployeeVO หรือไม่ 
+	 * ถ้าตรงให้ส่งเฉพาะ Slot นั้นออกไป ในรูปแบบของ range และ Clinic (คั่น range กับ Clinic ด้วย ^) 
+	 * ถ้าตรงมากกว่า 1 ช่วง ให้คั่นด้วยเครื่องหมาย + 
 	 * @param chkDate
 	 *            อยู่ในรูปแบบของ yyyy-mm-dd และเป็น ค.ศ.
 	 * @param listBpkEmployeeVO
@@ -521,8 +550,7 @@ public class DoctorProfileDAO
 	{ "unchecked", "rawtypes" })
 	public static String getTimeInRange(String chkDate, List listBpkEmployeeVO)
 	{
-		// BpkUtility.printDebug(this,
-		// "chkDate = "+chkDate+", listBpkEmployeeVO.size() = "+listBpkEmployeeVO.size());
+		BpkUtility.printDebug(new DoctorProfileDAO(), "static getTimeInRange PARAM chkDate = "+chkDate+", listBpkEmployeeVO.size() = "+(listBpkEmployeeVO!=null ? listBpkEmployeeVO.size() : null));
 		StringBuilder result = new StringBuilder();
 		List listTimeInRange = new ArrayList();
 		if (listBpkEmployeeVO != null && listBpkEmployeeVO.size() > 0)
@@ -596,7 +624,9 @@ public class DoctorProfileDAO
 			BpkEmployeeVO tmpBpkEmployeeVO = (BpkEmployeeVO) listTimeInRange.get(i);
 
 			result.append(tmpBpkEmployeeVO.getStartTime()).append(" - ").append(tmpBpkEmployeeVO.getEndTime()).append("^")
-					.append(tmpBpkEmployeeVO.getClinicDescription()).append(separator);
+					.append(tmpBpkEmployeeVO.getClinicDescription()).append("^")
+					.append(tmpBpkEmployeeVO.getLimitNumAppoint())
+					.append(separator);
 		}
 		if (result.length() > 0)
 			result = result.deleteCharAt(result.length() - 1);
@@ -606,6 +636,8 @@ public class DoctorProfileDAO
 
 	/**
 	 * ขอข้อมูลของ Employee
+	 * มีข้อมูลจาก employee เดิม และ 
+	 * bpk_employee_doctor ซึ่งเป็นส่วนเพิ่มขยาย 
 	 * 
 	 * @param employeeId
 	 * @return
@@ -614,6 +646,7 @@ public class DoctorProfileDAO
 	{ "rawtypes", "unchecked" })
 	public HashMap getEmployeeDetail(String employeeId)
 	{
+		BpkUtility.printDebug(this, "getEmployeeDetail, PARAM employeeId = "+employeeId);
 		HashMap result = new HashMap();
 		Connection conn = null;
 		Statement stmt = null;
@@ -636,7 +669,7 @@ public class DoctorProfileDAO
 			sql.append("WHERE e.employee_id='").append(employeeId).append("'");
 			conn = DAOFactory.getConnection();
 			stmt = conn.createStatement();
-			BpkUtility.printDebug(this, sql.toString());
+			BpkUtility.printDebug(this, "getEmployeeDetail, "+sql.toString());
 			rst = stmt.executeQuery(sql.toString());
 
 			if (rst.next())
@@ -678,6 +711,14 @@ public class DoctorProfileDAO
 		return result;
 	}
 
+	/**
+	 * บันทึกส่วนของ employee.profession_code 
+	 * และส่วนเพิ่มขยาย bpk_employee_doctor 
+	 * รวมถึงส่วนของ doctor_schedule, ส่วนของ doctor_schedule จะลบออกทั้งหมดของ employeeId นั้นๆ และเพิ่มเข้าไปใหม่เสมอ 
+	 * 
+	 * @param param
+	 * @return
+	 */
 	@SuppressWarnings(
 	{ "rawtypes", "unchecked" })
 	public HashMap saveDoctorProfile(HashMap param)
@@ -696,6 +737,7 @@ public class DoctorProfileDAO
 				Object aObj = param.get("bpkEmployeeVO".toUpperCase());
 				if (aObj != null && aObj instanceof BpkEmployeeVO)
 				{
+					
 					BpkEmployeeVO aBpkEmployeeVO = (BpkEmployeeVO) aObj;
 
 					if(aBpkEmployeeVO!=null)
@@ -844,6 +886,11 @@ public class DoctorProfileDAO
 		return result;
 	}
 
+	/**
+	 * เรียกใช้ทั้ง getEmployeeDetail และ getSlotDoctor 
+	 * @param param
+	 * @return
+	 */
 	@SuppressWarnings(
 	{ "unchecked", "rawtypes" })
 	public HashMap readDoctorProfile(HashMap param)
@@ -871,7 +918,7 @@ public class DoctorProfileDAO
 							{
 								BpkEmployeeVO aBpkEmployeeVO = (BpkEmployeeVO) aObj1;
 
-								if (ResultFlag.STATUS_SUCCESS.equals(tmpRst2.get(ResultFlag.STATUS)))
+								if (tmpRst2!=null && ResultFlag.STATUS_SUCCESS.equals(tmpRst2.get(ResultFlag.STATUS)))
 								{
 									Object aObj2 = tmpRst2.get(ResultFlag.RESULT_DATA);
 									if (aObj2 != null && aObj2 instanceof List)

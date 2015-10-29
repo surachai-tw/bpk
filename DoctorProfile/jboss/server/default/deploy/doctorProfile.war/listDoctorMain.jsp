@@ -6,7 +6,6 @@
 <jsp:include page="inc/charset.jsp" flush="false"/>
 <script type="text/javascript" src="js/bpkUtility.js"></script>
 <link type="text/css" rel="stylesheet" href="css/extend.css" />
-
 <script language="JavaScript">
 <!--
 
@@ -386,11 +385,8 @@ function setEableNavigatorPrev(enabled)
 
 //-->
 </script>
-
 </head>
 <body marginwidth="0" marginheight="0" topmargin="0" leftmargin="0" onLoad="onLoad();">
-
-<!-- table tab -->
 <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="2">
 	<tr>
 		<td><jsp:include page="inc/header.inc.jsp" flush="false"/></td>
@@ -428,7 +424,7 @@ function setEableNavigatorPrev(enabled)
 	</tr>
 	<tr><td>&nbsp;</td></tr>
 	<tr>
-		<td style="height:21px">
+		<td>
 			<table width="100%" style="border-top: solid 1px #CDCDCD; height:21px" cellspacing="0" cellpadding="0">
 				<tr align="center" class="contentHeader">
 					<td width="16%"><b>á¾·Âì</b></td>
@@ -442,14 +438,13 @@ function setEableNavigatorPrev(enabled)
 			</table>
 		</td>
 	</tr>
-		<tr>
-		<td class="bgForm" style="padding-top:2px; height:100%">
-			<div id="divListDoctor" style="height:100%">
-				<iframe id="ifrmListDoctor" src="listIfrmDoctor.jsp" width="100%" style="height:100%" frameborder="no"></iframe>
-			</div>
-		</td>
+	<tr>
+	<td height="*">
+		<div id="divListDoctor" height="100%">
+			<iframe id="ifrmListDoctor" src="listIfrmDoctor.jsp" width="100%" height="100%" frameborder="no"></iframe>
+		</div>
+	</td>
 	</tr>
 </table>
-
 </body>
 </html>

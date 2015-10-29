@@ -146,6 +146,8 @@ legend {font-weight:bold; color:blue}
 	background: #337AB7;
 	font-weight: bold;
 	cursor: pointer;
+	text-align: center;
+	vertical-align: middle;
 }
 
 .btnStyleBackAfterSearch
