@@ -127,7 +127,7 @@
 	function drawCalendarMonthHeader()
 	{
 		var row = tblCalendarMonth.insertRow();
-		row.style.height = "8";
+		row.style.height = "21px";
 		var cell = row.insertCell();
 		cell.innerText = "อาทิตย์";
 		cell.style.color = "red";
@@ -272,13 +272,19 @@
 		aCalStart.setLenient(true);
 		aCalStart.setTime(aCal.getTime());
 
-		// ลดไปทีละ 1 วัน จนเจอวันอาทิตย์ 
+		// ใช้วันที่ปัจจุบันของเดือนเป็นตัวตั้งและลดไปทีละ 1 วัน 
+		// จนเจอวันอาทิตย์ แรกของปฏิทิน (อาจจะเป็นเดือนก่อนหน้าก็ได้)
 		chkCalStart:
-		for(int i=aCalStart.get(Calendar.DAY_OF_YEAR); ; )
+		for(int i=aCalStart.get(Calendar.DAY_OF_YEAR);;)
 		{
+			if((aCalStart.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY && aCalStart.get(Calendar.MONTH)!=aCal.get(Calendar.MONTH)) || (aCalStart.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY && aCalStart.get(Calendar.DAY_OF_MONTH)==1))
+			{
+				break chkCalStart;
+			}
+
 			if(i-1<0)
 			{
-				// aCalStart.set(Calendar.YEAR, aCalStart.get(Calendar.YEAR)-1);
+				aCalStart.set(Calendar.YEAR, aCal.get(Calendar.YEAR)-1);
 				aCalStart.set(Calendar.MONTH, Calendar.DECEMBER);
 				aCalStart.set(Calendar.DAY_OF_MONTH, 31);
 				i = aCalStart.get(Calendar.DAY_OF_YEAR);
@@ -287,11 +293,6 @@
 			{
 				aCalStart.set(Calendar.DAY_OF_YEAR, --i);
 			}
-
-			if(aCalStart.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY && aCalStart.get(Calendar.MONTH)!=aCal.get(Calendar.MONTH))
-			{
-				break chkCalStart;
-			}
 		}
 
 		// วันสุดท้ายต้องเป็นวันเสาร์ 
@@ -299,10 +300,49 @@
 		aCalEnd.setLenient(true);
 		aCalEnd.setTime(aCal.getTime());
 		aCalEnd.set(Calendar.DAY_OF_MONTH, 27);
-		// เพิ่มไปทีละ 1 วัน จนเจอวันเสาร์ แต่ต้องเลยวันในเดือนไปแล้ว 
+		// ใช้วันที่ 27 ของเดือนเป็นตัวตั้งและเพิ่มไปทีละ 1 วัน 
+		// เพิ่มไปทีละ 1 วัน จนเจอวันอาทิตย์ แต่ต้องเลยวันในเดือนไปแล้ว 
 		chkCalEnd:
-		for(int i=aCalEnd.get(Calendar.DAY_OF_YEAR); ; )
+		for(int i=aCalEnd.get(Calendar.DAY_OF_YEAR);;)
 		{
+			if(aCalEnd.get(Calendar.YEAR)!=aCalMonth.get(Calendar.YEAR))
+			{
+				if(aCalEnd.get(Calendar.DAY_OF_WEEK)==Calendar.MONDAY)
+				{
+					aCalEnd.set(Calendar.DAY_OF_MONTH, aCalEnd.get(Calendar.DAY_OF_MONTH)+6);
+					break;
+				}
+				else if(aCalEnd.get(Calendar.DAY_OF_WEEK)==Calendar.TUESDAY)
+				{
+					aCalEnd.set(Calendar.DAY_OF_MONTH, aCalEnd.get(Calendar.DAY_OF_MONTH)+5);
+					break;
+				}
+				else if(aCalEnd.get(Calendar.DAY_OF_WEEK)==Calendar.WEDNESDAY)
+				{
+					aCalEnd.set(Calendar.DAY_OF_MONTH, aCalEnd.get(Calendar.DAY_OF_MONTH)+4);
+					break;
+				}
+				else if(aCalEnd.get(Calendar.DAY_OF_WEEK)==Calendar.THURSDAY)
+				{
+					aCalEnd.set(Calendar.DAY_OF_MONTH, aCalEnd.get(Calendar.DAY_OF_MONTH)+3);
+					break;
+				}
+				else if(aCalEnd.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY)
+				{
+					aCalEnd.set(Calendar.DAY_OF_MONTH, aCalEnd.get(Calendar.DAY_OF_MONTH)+2);
+					break;
+				}
+				else if(aCalEnd.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY)
+				{
+					aCalEnd.set(Calendar.DAY_OF_MONTH, aCalEnd.get(Calendar.DAY_OF_MONTH)+1);
+					break;
+				}
+				else if(aCalEnd.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY)
+				{
+					break;
+				}
+			}
+
 			aCalEnd.set(Calendar.DAY_OF_YEAR, ++i);
 
 			if(aCalEnd.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY && aCalEnd.get(Calendar.MONTH)!=aCal.get(Calendar.MONTH))
@@ -322,18 +362,17 @@
 		if(ResultFlag.STATUS_SUCCESS.equals(result.get(ResultFlag.STATUS)))
 		{
 			listBpkEmployeeVO = (List)result.get(ResultFlag.RESULT_DATA);
-
-			/*
-			for(int i=0; i<listBpkEmployeeVO.size(); i++)
-			{
-				BpkEmployeeVO aBpkEmployeeVO = (BpkEmployeeVO)listBpkEmployeeVO.get(i);
-			}
-			*/
 		}
 %>
 		var row, cell, displayColor;
 <%
-		// Run วันไปเรื่อยๆ จนถึงวันที่กำหนด
+		BpkUtility.printDebug(this, "aCalStart.getTime() = "+aCalStart.getTime());
+		BpkUtility.printDebug(this, "aCalEnd.getTime() = "+aCalEnd.getTime());
+
+		// ใช้ตรวจสอบเงื่อนไข ของเดือน Jan, Dec ที่จะมีปฏิทินช่วงข้ามปี
+		boolean notTheSameYear = true;
+
+		// Run วันที่ไปเรื่อยๆ aCalStart ไป aCalEnd จนถึงวันที่กำหนด
 		for(int i=aCalStart.get(Calendar.DAY_OF_YEAR); aCalStart.getTime().before(aCalEnd.getTime());)
 		{
 %>			displayColor = "black";
@@ -344,8 +383,8 @@
 			int thisMonth = aCalMonth.get(Calendar.MONTH);
 			if(day==Calendar.SUNDAY)
 			{
+			// ถ้าเป็นวันอาทิตย์ ต้องขึ้นบรรทัดใหม่
 %>			
-			// ถ้าเป็นวันอาทิตย์ ต้องขึ้นบรรทัดใหม่ 
 			row = tblCalendarMonth.insertRow();
 			row.height = 21;
 <%			}
@@ -356,22 +395,26 @@
 			cell.style.border = "solid 1px #E8E8E8";
 			cell.width = "12%";
 <%
+			
 			if(day==Calendar.SUNDAY)
-			{	
+			{
+			// วันอาทิตย์ให้ใช้ตัวอักษรสีแดง
 %>			displayColor = "red";
 <%			}
 			else if(day==Calendar.SATURDAY)
 			{
+			// วันเสาร์ให้ใช้ตัวอักษรสีเทา
 %>			displayColor = "gray";
 <%			}
 
 			if(startMonth!=thisMonth)
 			{
+			// วันที่ที่ไม่ได้อยู่ในเดือน ให้ใช้ตัวอักษรสีเทาอ่อน
 %>			displayColor = "lightgray";
 <%			}
 			String timeInRange = DoctorProfileDAO.getTimeInRange(BpkUtility.convertDate2StdFormat(aCalStart.getTime()), listBpkEmployeeVO);
 
-			// วันปัจจุบันให้ทำให้เห็นชัด
+			// วันที่ปัจจุบันให้ทำให้เห็นชัด
 			if(nowDate.equals(Utility.getDateStringFromDate(aCalStart.getTime())))
 			{
 %>
@@ -382,8 +425,19 @@
 %>
 			cell.innerHTML = getDayDisplay("<%=date%>", "<%=timeInRange%>", displayColor, 0);
 <%
-			i = i+1;
-			aCalStart.set(Calendar.DAY_OF_YEAR, i);
+			aCalStart.set(Calendar.DAY_OF_YEAR, ++i);
+			if(((aCalStart.get(Calendar.MONTH)==Calendar.JANUARY 
+			    && aCalMonth.get(Calendar.MONTH)==Calendar.JANUARY) || 
+				(aCalStart.get(Calendar.MONTH)==Calendar.JANUARY 
+			    && aCalMonth.get(Calendar.MONTH)==Calendar.DECEMBER))
+				&& notTheSameYear)
+			{
+				i = 1;
+				notTheSameYear = false;
+			}
+			// BpkUtility.printDebug(this, "aCalStart.get(Calendar.DAY_OF_MONTH) = "+aCalStart.get(Calendar.DAY_OF_MONTH));
+			// BpkUtility.printDebug(this, "aCalStart.get(Calendar.MONTH) = "+aCalStart.get(Calendar.MONTH));
+			// BpkUtility.printDebug(this, "aCalStart.get(Calendar.YEAR) = "+aCalStart.get(Calendar.YEAR));
 		}
 %>
 	}

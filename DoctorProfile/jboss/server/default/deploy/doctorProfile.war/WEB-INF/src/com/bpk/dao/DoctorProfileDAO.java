@@ -453,7 +453,7 @@ public class DoctorProfileDAO
 	}
 
 	@SuppressWarnings(
-	{ "rawtypes", "unused" })
+	{ "rawtypes" })
 	public HashMap getSlotDoctor(HashMap param)
 	{
 		String pEmployeeId = null;

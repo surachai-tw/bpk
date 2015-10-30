@@ -210,7 +210,7 @@ function clearTableData()
 		try
 		{
 			var ifrmdocument = ifrmListDoctor.contentWindow;
-			tbl = ifrmdocument.getElementById("tblBpkEmployeeVO");
+			tbl = ifrmdocument.tblBpkEmployeeVO
 		}
 		catch (e)
 		{
@@ -228,109 +228,119 @@ var lineEven = "lineEven";
 function showListBpkEmployeeVO()
 {
 	clearTableData();
-	var tbl = null;
-	if(isCompatView())
-	{
-		tbl = ifrmListDoctor.tblBpkEmployeeVO;
-	}
-	else
-	{
-		try
-		{
-			var ifrmdocument = ifrmListDoctor.contentWindow;
-			tbl = ifrmdocument.getElementById("tblBpkEmployeeVO");
-		}
-		catch (e)
+
+	var listBpkEmployeeVO = top.listBpkEmployeeVO;
+	var size = listBpkEmployeeVO.length;
+	try
+	{	
+		var tbl = null;
+
+		if(isCompatView())
 		{
 			tbl = ifrmListDoctor.tblBpkEmployeeVO;
 		}
-	}
-	var listBpkEmployeeVO = top.listBpkEmployeeVO;
-	var size = listBpkEmployeeVO.length;
-	var previousEmpName = "";
-	// var isReNew = true;
-	var lineStyle = lineOdd;
-	for(var i=0; i<size; i++)
-	{
-		var aBpkEmployeeVO = listBpkEmployeeVO[i];
-		var row = tbl.insertRow();
-		row.aBpkEmployeeVO = aBpkEmployeeVO;
-		row.employee_id = aBpkEmployeeVO.employeeId;
-		row.height = 21;
-
-		/*** ReNew ยังไม่ต้องใช้ 
-		if(i>0)
+		else
 		{
-			if(listBpkEmployeeVO[i-1].employeeId == row.employee_id)
-				isReNew = false;
+			try
+			{
+				var ifrmdocument = ifrmListDoctor.contentWindow;
+				tbl = ifrmdocument.tblBpkEmployeeVO;
+			}
+			catch (e)
+			{
+				tbl = ifrmListDoctor.tblBpkEmployeeVO;
+			}
+		}
+
+		var lineStyle = lineOdd;
+		var previousEmpName = "";
+		// var isReNew = true;
+		for(var i=0; i<size; i++)
+		{
+			var aBpkEmployeeVO = listBpkEmployeeVO[i];
+			var row = tbl.insertRow();
+			row.aBpkEmployeeVO = aBpkEmployeeVO;
+			row.employee_id = aBpkEmployeeVO.employeeId;
+			row.height = 21;
+
+			/*** ReNew ยังไม่ต้องใช้ 
+			if(i>0)
+			{
+				if(listBpkEmployeeVO[i-1].employeeId == row.employee_id)
+					isReNew = false;
+				else
+					isReNew = true;
+			}
+			*/
+
+			var cell = row.insertCell();
+			if(previousEmpName==aBpkEmployeeVO.employeeName)
+			{
+				cell.innerText = "";
+			}
 			else
-				isReNew = true;
+			{
+				cell.innerHTML = "<a href=\"calendarMonth.jsp?employeeId="+aBpkEmployeeVO.employeeId+"\" target=\"_top\">"+aBpkEmployeeVO.employeeName+"</a>";
+			}
+			cell.width = "16%";
+
+			cell = row.insertCell();
+			if(previousEmpName==aBpkEmployeeVO.employeeName)
+			{
+				cell.innerText = "";
+			}
+			else
+			{
+				cell.innerHTML = aBpkEmployeeVO.clinicDescription;
+			}
+			cell.width = "16%";
+
+			cell = row.insertCell();
+			if(previousEmpName==aBpkEmployeeVO.employeeName)
+			{
+				cell.innerText = "";
+			}
+			else
+			{
+				cell.innerHTML = aBpkEmployeeVO.specialty;
+			}
+			cell.width = "29%";
+
+			cell = row.insertCell();
+			cell.innerHTML = aBpkEmployeeVO.dayName;
+			cell.width = "18%";
+
+			cell = row.insertCell();
+			cell.innerHTML = aBpkEmployeeVO.startTime;
+			cell.width = "6%";
+			cell.style.textAlign = "right";
+
+			cell = row.insertCell();
+			cell.innerHTML = aBpkEmployeeVO.endTime;
+			cell.width = "6%";
+			cell.style.textAlign = "right";
+
+			cell = row.insertCell();
+			cell.innerText = " ";
+			cell.width = "10%";
+
+			/*** ReNew ยังไม่ต้องใช้ 
+			if(isReNew)
+			{
+				if(lineStyle==lineOdd)
+					lineStyle = lineEven;
+				else 
+					lineStyle = lineOdd;
+			}
+			*/
+			row.className = i%2==0 ? lineOdd : lineEven;
+
+			previousEmpName = aBpkEmployeeVO.employeeName;
 		}
-		*/
-
-		var cell = row.insertCell();
-		if(previousEmpName==aBpkEmployeeVO.employeeName)
-		{
-			cell.innerText = "";
-		}
-		else
-		{
-			cell.innerHTML = "<a href=\"calendarMonth.jsp?employeeId="+aBpkEmployeeVO.employeeId+"\" target=\"_top\">"+aBpkEmployeeVO.employeeName+"</a>";
-		}
-		cell.width = "16%";
-
-		cell = row.insertCell();
-		if(previousEmpName==aBpkEmployeeVO.employeeName)
-		{
-			cell.innerText = "";
-		}
-		else
-		{
-			cell.innerHTML = aBpkEmployeeVO.clinicDescription;
-		}
-		cell.width = "16%";
-
-		cell = row.insertCell();
-		if(previousEmpName==aBpkEmployeeVO.employeeName)
-		{
-			cell.innerText = "";
-		}
-		else
-		{
-			cell.innerHTML = aBpkEmployeeVO.specialty;
-		}
-		cell.width = "29%";
-
-		cell = row.insertCell();
-		cell.innerHTML = aBpkEmployeeVO.dayName;
-		cell.width = "18%";
-
-		cell = row.insertCell();
-		cell.innerHTML = aBpkEmployeeVO.startTime;
-		cell.width = "6%";
-		cell.style.textAlign = "right";
-
-		cell = row.insertCell();
-		cell.innerHTML = aBpkEmployeeVO.endTime;
-		cell.width = "6%";
-		cell.style.textAlign = "right";
-
-		cell = row.insertCell();
-		cell.innerText = " ";
-		cell.width = "10%";
-
-		/*** ReNew ยังไม่ต้องใช้ 
-		if(isReNew)
-		{
-			if(lineStyle==lineOdd)
-				lineStyle = lineEven;
-			else 
-				lineStyle = lineOdd;
-		}
-		*/
-		row.className = i%2==0 ? lineOdd : lineEven;
-
-		previousEmpName = aBpkEmployeeVO.employeeName;
+	}
+	catch (e)
+	{
+		alert(e);
 	}
 }
 
