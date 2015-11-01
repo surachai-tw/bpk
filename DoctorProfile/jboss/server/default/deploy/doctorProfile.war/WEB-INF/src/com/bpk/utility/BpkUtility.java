@@ -44,7 +44,7 @@ public class BpkUtility
 		{
 			return "";
 		}
-		return paramString;
+		return paramString.trim();
 	}
 
 	/** Validate ค่า String ให้เป็น "" ไม่ใช่ null */
@@ -83,9 +83,12 @@ public class BpkUtility
 	}
 
 	/** สำหรับจัด Format ของตัวเลข 2 ตัวเท่านั้น */
-	public final static NumberFormat nf2 = NumberFormat.getInstance();
-	/** สำหรับจัด Format ของตัวเลข 2 ตัวเท่านั้น NO COMMA */
-	public final static NumberFormat nf4 = NumberFormat.getInstance();
+	private final static NumberFormat nf2 = NumberFormat.getInstance();
+	/** สำหรับจัด Format ของตัวเลข 4 ตัวเท่านั้น NO COMMA */
+	private final static NumberFormat nf4 = NumberFormat.getInstance();
+
+	/** สำหรับจัด Format ของตัวเลข 6 ตัวเท่านั้น NO COMMA */
+	private final static NumberFormat nf9 = NumberFormat.getInstance();
 
 	static
 	{
@@ -100,6 +103,12 @@ public class BpkUtility
 		nf4.setMaximumIntegerDigits(4);
 		nf4.setMinimumIntegerDigits(4);
 		nf4.setGroupingUsed(false);
+
+		nf9.setMaximumFractionDigits(0);
+		nf9.setMinimumFractionDigits(0);
+		nf9.setMaximumIntegerDigits(9);
+		nf9.setMinimumIntegerDigits(9);
+		nf9.setGroupingUsed(false);
 	}
 
 	/** สำหรับใช้ในการกำหนด Locale TH */
@@ -368,5 +377,22 @@ public class BpkUtility
 		tokens = null;
 
 		return splited;
+	}
+	
+	/** แปลง HN กลับเป็นรูปแบบ Database format เพื่อใช้ค้นหาได้เร็วกว่า */
+	public static String getHnDbFormat(String hn)
+	{
+		if(hn!=null && hn.length()==11)
+		{
+			try
+			{
+				return hn.substring(0, 1)+hn.substring(2, 4)+nf9.format(Integer.parseInt(hn.substring(5)));
+			}
+			catch(Exception ex)
+			{
+				return hn;
+			}
+		}
+		return hn;
 	}
 }

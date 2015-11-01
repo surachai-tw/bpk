@@ -23,7 +23,7 @@ function txtUsername_OnKeyUp()
 	if(event.keyCode==13)
 	{
 		var aBpkEmployeeVO = top.aBpkEmployeeVO;
-		aBpkEmployeeVO.employeeId = txtUsername.value;
+		aBpkEmployeeVO.employeeId = Trim(txtUsername.value);
 
 		top.statusFrame.repWorkStatus("กำลังเรียกข้อมูลแพทย์...");
 		top.editDoctorProfileJSPFrame.UCForm.UC.value = "readDoctorProfile";
@@ -70,7 +70,7 @@ function setSlotToForm()
 			btnAdd_OnClick(tmpBpkEmployeeVO);
 
 			// Set ค่าให้ textbox ของ time
-			setComboboxElementForDay(i, tmpBpkEmployeeVO.day);
+			setComboboxElementForDay(i, tmpBpkEmployeeVO.dayId);
 			setComboboxElementForClinic(i, tmpBpkEmployeeVO.clinicDescription);
 			setTexboxStartTime(i, tmpBpkEmployeeVO.startTime);
 			setTexboxEndTime(i, tmpBpkEmployeeVO.endTime);
@@ -229,7 +229,7 @@ function getComboboxElementForDay(id)
 	return cmb;
 }
 
-function setComboboxElementForDay(id, day)
+function setComboboxElementForDay(id, dayId)
 {
 	try
 	{
@@ -250,8 +250,11 @@ function setComboboxElementForDay(id, day)
 			}
 		}
 		
+
 		if(selDay!=null)
 		{
+			selDay.value = dayId;
+			/*
 			for(var i=0; i<selDay.options.length; i++)
 			{
 				if(selDay.options[i].text==day)
@@ -260,6 +263,7 @@ function setComboboxElementForDay(id, day)
 					break;
 				}
 			}
+			*/
 		}
 	}
 	catch (e)
@@ -450,7 +454,7 @@ function btnAdd_OnClick(pBpkEmployeeVO)
 		try
 		{
 			var ifrmdocument = ifrmSession.contentWindow;
-			tblBpkEmployeeVO = ifrmdocument.getElementById("tblBpkEmployeeVO");
+			tblBpkEmployeeVO = ifrmdocument.tblBpkEmployeeVO;
 		}
 		catch (e)
 		{

@@ -808,3 +808,34 @@ BEGIN
     RETURN rec_desc;
 END';
 
+CREATE OR REPLACE FUNCTION bpkget_nation(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(nation.description, '''')) AS description FROM fix_nationality nation 
+    WHERE nation.fix_nationality_id=id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';
+
+CREATE OR REPLACE FUNCTION bpkget_race(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(race.description, '''')) AS description FROM fix_race race 
+    WHERE race.fix_race_id=id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';

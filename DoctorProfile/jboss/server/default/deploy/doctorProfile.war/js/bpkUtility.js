@@ -45,3 +45,30 @@ function getThaiMonth(index)
 	
 	return thaimonth[index];
 }
+
+function getDateDD(yyyy_mm_dd)
+{
+	return yyyy_mm_dd.substring(yyyy_mm_dd.lastIndexOf('-', yyyy_mm_dd.length-1)+1);
+}
+
+function getDateMM(yyyy_mm_dd)
+{
+	return yyyy_mm_dd.substring(yyyy_mm_dd.indexOf('-', 0)+1, yyyy_mm_dd.lastIndexOf('-', yyyy_mm_dd.length-1));
+}
+
+function getDateYYYY(yyyy_mm_dd)
+{
+	return yyyy_mm_dd.substring(0, yyyy_mm_dd.indexOf('-', 0));
+}
+
+function isFutureDate(pdate)
+{
+	var today = new Date().getTime();
+	var dd = getDateDD(pdate);
+	var mm = getDateMM(pdate);
+	var yyyy = getDateYYYY(pdate);
+
+	var checkDate = new Date(yyyy, mm, dd, 23, 59, 59, 999).getTime();
+
+	return today < checkDate;
+}

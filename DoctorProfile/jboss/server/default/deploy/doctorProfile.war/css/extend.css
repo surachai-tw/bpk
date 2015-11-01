@@ -17,11 +17,13 @@ legend {font-weight:bold; color:blue}
 
 .txtBorder 
 {
+	font-family: Tahoma, Verdana, Segoe, sans-serif;
 	border-top: 1px ridge #999999;
 	border-right: 1px solid #CCCCCC;
 	border-bottom: 1px solid #CCCCCC;
 	border-left: 1px ridge #999999;
 	background-color: #FFFFFF;
+	box-shadow: 1px 1px 4px lightgray inset;
 }
 
 .txtNumber
@@ -33,6 +35,7 @@ legend {font-weight:bold; color:blue}
 	text-align: right;
 	background-color: #FFFFFF;
 	height: 24px;
+	box-shadow: 1px 1px 4px lightgray inset;
 }
 
 .txtNoBorderNumber
@@ -53,6 +56,7 @@ legend {font-weight:bold; color:blue}
 	border-bottom: 1px solid #CCCCCC;
 	border-left: 1px ridge #999999;
 	background-color:#CDFEFD;
+	box-shadow: 1px 1px 4px lightgray inset;
 }
 
 .txtNumberRequire
@@ -63,6 +67,7 @@ legend {font-weight:bold; color:blue}
 	border-left: 1px ridge #999999;
 	text-align: right;
 	background-color:#CDFEFD;
+	box-shadow: 1px 1px 4px lightgray inset;
 }
 
 .txtNumberDisabled
@@ -73,6 +78,7 @@ legend {font-weight:bold; color:blue}
 	border-left: 1px ridge #999999;
 	text-align: right;
 	background-color:#D1D1D1;
+	box-shadow: 1px 1px 4px lightgray inset;
 }
 
 .txtDisabled
@@ -83,6 +89,7 @@ legend {font-weight:bold; color:blue}
 	border-left: 1px ridge #999999;
 	background-color:#F7F7F9;
 	color: #000000;
+	box-shadow: 1px 1px 4px lightgray inset;
 }
 
 .txtStyleAdmin
@@ -137,13 +144,13 @@ legend {font-weight:bold; color:blue}
 
 .btnStyle
 {
-	border-top: 1px solid #337AB7;
-	border-right: 1px solid #337AB7;
-	border-bottom: 1px solid #337AB7;
-	border-left: 1px solid #337AB7;
+	border-top: 1px solid #428BCA;
+	border-right: 1px solid #428BCA;
+	border-bottom: 1px solid #428BCA;
+	border-left: 1px solid #428BCA;
 	height: 24px;
 	color: white;
-	background: #337AB7;
+	background: #428BCA;
 	font-weight: bold;
 	cursor: pointer;
 	text-align: center;
@@ -190,6 +197,19 @@ legend {font-weight:bold; color:blue}
 	cursor: pointer;
 }
 
+.btnStyleHelpText
+{
+	border-top: 1px solid gray;
+	border-right: 1px solid gray;
+	border-bottom: 1px solid gray;
+	border-left: 1px solid gray;
+	text-align: center;
+	height: 24px;
+	background: white;
+	color: gray;
+	cursor: pointer;
+}
+
 .btnStyle:hover
 {
 	background: #286090;
@@ -197,41 +217,44 @@ legend {font-weight:bold; color:blue}
 
 .btnStyleS
 {
-	border-top: 1px solid #337AB7;
-	border-right: 1px solid #337AB7;
-	border-bottom: 1px solid #337AB7;
-	border-left: 1px solid #337AB7;
+	border-top: 1px solid #428BCA;
+	border-right: 1px solid #428BCA;
+	border-bottom: 1px solid #428BCA;
+	border-left: 1px solid #428BCA;
 	width: 15px;
 	height: 24px;
 	color: white;
-	background: #337AB7;
+	background: #428BCA;
 	font-weight: bold;
+	cursor: pointer;
 }
 
 .btnStyleM
 {
-	border-top: 1px solid #337AB7;
-	border-right: 1px solid #337AB7;
-	border-bottom: 1px solid #337AB7;
-	border-left: 1px solid #337AB7;
+	border-top: 1px solid #428BCA;
+	border-right: 1px solid #428BCA;
+	border-bottom: 1px solid #428BCA;
+	border-left: 1px solid #428BCA;
 	width: 25px;
 	height: 24px;
 	color: white;
-	background: #337AB7;
+	background: #428BCA;
 	font-weight: bold;
+	cursor: pointer;
 }
 
 .btnStyleL
 {
-	border-top: 1px solid #337AB7;
-	border-right: 1px solid #337AB7;
-	border-bottom: 1px solid #337AB7;
-	border-left: 1px solid #337AB7;
+	border-top: 1px solid #428BCA;
+	border-right: 1px solid #428BCA;
+	border-bottom: 1px solid #428BCA;
+	border-left: 1px solid #428BCA;
 	width: 40px;
 	height: 24px;
 	color: white;
-	background: #337AB7;
+	background: #428BCA;
 	font-weight: bold;
+	cursor: pointer;
 }
 
 .borderSize1 {

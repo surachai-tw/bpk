@@ -12,9 +12,11 @@ import java.sql.ResultSet;
 
 import com.bpk.dto.BpkClinicVO;
 import com.bpk.dto.BpkEmployeeVO;
+import com.bpk.dto.BpkPatientVO;
 import com.bpk.dto.ResultFlag;
 import com.bpk.utility.BpkUtility;
 import com.bpk.utility.Sorter;
+import com.iMed.iMedCore.utility.Utility;
 import com.iMed.iMedCore.utility.XPersistent;
 import com.iMed.iMedCore.utility.fix.FixDayOfWeek;
 import com.iMed.iMedCore.utility.fix.FixServicePointGroup;
@@ -30,7 +32,7 @@ public class DoctorProfileDAO
 	 * ส่วนของ Day ให้เอาจาดส่วนเพิ่มขยาย bpk_fix_day_of_week
 	 * @return
 	 */
-	public List<String> listDayDescription()
+	public List<String> listDayDescription() throws NoLoginSessionException
 	{
 		StringBuilder sql = new StringBuilder("SELECT description FROM bpk_fix_day_of_week ORDER BY display_order");
 		Connection conn = null;
@@ -74,7 +76,7 @@ public class DoctorProfileDAO
 	 */
 	@SuppressWarnings(
 	{ "unchecked", "rawtypes" })
-	public HashMap listAllClinic()
+	public HashMap listAllClinic() throws NoLoginSessionException
 	{
 		HashMap result = new HashMap();
 		List<BpkClinicVO> listBpkClinicVO = new ArrayList<BpkClinicVO>();
@@ -134,7 +136,7 @@ public class DoctorProfileDAO
 	 * @return HashMap 
 	 */
 	@SuppressWarnings("rawtypes")
-	public HashMap listDoctor(HashMap param)
+	public HashMap listDoctor(HashMap param) throws NoLoginSessionException
 	{
 		String pClinic = null;
 		String pSpeciality = null;
@@ -454,7 +456,7 @@ public class DoctorProfileDAO
 
 	@SuppressWarnings(
 	{ "rawtypes" })
-	public HashMap getSlotDoctor(HashMap param)
+	public HashMap getSlotDoctor(HashMap param) throws NoLoginSessionException
 	{
 		String pEmployeeId = null;
 		String pStartDate = null;
@@ -644,7 +646,7 @@ public class DoctorProfileDAO
 	 */
 	@SuppressWarnings(
 	{ "rawtypes", "unchecked" })
-	public HashMap getEmployeeDetail(String employeeId)
+	public HashMap getEmployeeDetail(String employeeId) throws NoLoginSessionException
 	{
 		BpkUtility.printDebug(this, "getEmployeeDetail, PARAM employeeId = "+employeeId);
 		HashMap result = new HashMap();
@@ -721,7 +723,7 @@ public class DoctorProfileDAO
 	 */
 	@SuppressWarnings(
 	{ "rawtypes", "unchecked" })
-	public HashMap saveDoctorProfile(HashMap param)
+	public HashMap saveDoctorProfile(HashMap param) throws NoLoginSessionException
 	{
 		HashMap result = new HashMap();
 		Connection conn = null;
@@ -754,7 +756,7 @@ public class DoctorProfileDAO
 						sql = new StringBuilder("SELECT bpk_employee_doctor_id FROM bpk_employee_doctor WHERE employee_id='")
 								.append(aBpkEmployeeVO.getEmployeeId()).append("' ORDER BY bpk_employee_doctor_id DESC LIMIT 1");
 	
-						BpkUtility.printDebug(this, sql.toString());
+						BpkUtility.printDebug(this, "saveDoctorProfile, "+sql.toString());
 						rst = stmt.executeQuery(sql.toString());
 						if (rst.next())
 						{
@@ -767,7 +769,7 @@ public class DoctorProfileDAO
 						sql = new StringBuilder("UPDATE employee SET profession_code='").append(aBpkEmployeeVO.getLicenseNo()).append("' WHERE employee_id='")
 								.append(aBpkEmployeeVO.getEmployeeId()).append("'");
 						stmt = conn.createStatement();
-						BpkUtility.printDebug(this, sql.toString());
+						BpkUtility.printDebug(this, "saveDoctorProfile, "+sql.toString());
 						rec = stmt.executeUpdate(sql.toString());
 						BpkUtility.printDebug(this, rec+" rows effected");
 
@@ -785,7 +787,7 @@ public class DoctorProfileDAO
 							sql.append(" others = '").append(aBpkEmployeeVO.getOthers()).append("'");
 							sql.append(" WHERE bpk_employee_doctor_id='").append(bpkEmployeeDoctorId).append("'");
 	
-							BpkUtility.printDebug(this, sql.toString());
+							BpkUtility.printDebug(this, "saveDoctorProfile, "+sql.toString());
 							rec = stmt.executeUpdate(sql.toString());
 							BpkUtility.printDebug(this, rec+" rows effected");
 						}
@@ -802,7 +804,7 @@ public class DoctorProfileDAO
 							sql.append(aBpkEmployeeVO.getSpecialty()).append("', '");
 							sql.append(aBpkEmployeeVO.getOthers()).append("')");
 	
-							BpkUtility.printDebug(this, sql.toString());
+							BpkUtility.printDebug(this, "saveDoctorProfile, "+sql.toString());
 							rec = stmt.executeUpdate(sql.toString());
 							BpkUtility.printDebug(this, rec+" rows effected");
 						}
@@ -812,7 +814,7 @@ public class DoctorProfileDAO
 						///////////////////////////////////////////////////////////
 						// การทำงานจะเป็นรูปแบบของการลบออกก่อน แล้วเพิ่มเข้าไปใหม่เสมอ 
 						sql = new StringBuilder("DELETE FROM doctor_schedule WHERE employee_id='").append(aBpkEmployeeVO.getEmployeeId()).append("'");
-						BpkUtility.printDebug(this, sql.toString());
+						BpkUtility.printDebug(this, "saveDoctorProfile, "+sql.toString());
 						rec = stmt.executeUpdate(sql.toString());
 						BpkUtility.printDebug(this, rec+" rows effected");
 						
@@ -831,7 +833,7 @@ public class DoctorProfileDAO
 								sql.append(tmpBpkEmployeeVO.getStartTime()).append(":00', '");
 								sql.append(tmpBpkEmployeeVO.getEndTime()).append(":00', '");
 								sql.append(tmpBpkEmployeeVO.getLimitNumAppoint()).append("')");
-								BpkUtility.printDebug(this, sql.toString());
+								BpkUtility.printDebug(this, "saveDoctorProfile, "+sql.toString());
 								rec = stmt.executeUpdate(sql.toString());
 								BpkUtility.printDebug(this, rec+" rows effected");								
 							}
@@ -893,7 +895,7 @@ public class DoctorProfileDAO
 	 */
 	@SuppressWarnings(
 	{ "unchecked", "rawtypes" })
-	public HashMap readDoctorProfile(HashMap param)
+	public HashMap readDoctorProfile(HashMap param) throws NoLoginSessionException
 	{
 		HashMap result = new HashMap();
 		try
@@ -949,6 +951,116 @@ public class DoctorProfileDAO
 		finally
 		{
 
+		}
+		return result;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public HashMap readPatientByKeyword(HashMap param) throws NoLoginSessionException
+	{
+		HashMap result = new HashMap();
+		List listBpkPatientVO = new ArrayList();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rst = null;
+		StringBuilder sql = null;		
+		try
+		{
+			if(param!=null)
+			{
+				String keyword = BpkUtility.getValidateString(param.get("filterReadPatientByKeyword".toUpperCase()));
+				
+				sql = new StringBuilder("SELECT patient_id, format_hn(hn) AS hn, bpkget_patient_name(patient_id) patient_name, birthdate, calage(CAST(birthdate AS Date)) age, pid, telephone, bpkget_nation(fix_nationality_id) AS nation, bpkget_race(fix_race_id) AS race FROM patient WHERE active='1' AND hn='").append(BpkUtility.getHnDbFormat(keyword)).append("' ORDER BY bpkget_patient_name(patient_id) COLLATE \"th_TH\"");
+				
+				conn = DAOFactory.getConnection();
+				stmt = conn.createStatement();
+				BpkUtility.printDebug(this, "readPatientByKeyword, "+sql.toString());
+				rst = stmt.executeQuery(sql.toString());
+				
+				for(;rst.next();)
+				{
+					BpkPatientVO tmpBpkPatientVO = new BpkPatientVO();
+					
+					tmpBpkPatientVO.setPatientId(rst.getString("patient_id"));
+					tmpBpkPatientVO.setHn(rst.getString("hn"));
+					tmpBpkPatientVO.setPatientName(rst.getString("patient_name"));
+					tmpBpkPatientVO.setNation(rst.getString("nation"));
+					tmpBpkPatientVO.setRace(rst.getString("race"));
+					tmpBpkPatientVO.setBirthdate(rst.getString("birthdate"));
+					tmpBpkPatientVO.setAge(rst.getString("age"));
+					tmpBpkPatientVO.setPid(rst.getString("pid"));
+					tmpBpkPatientVO.setTelephone(rst.getString("telephone"));
+					
+					listBpkPatientVO.add(tmpBpkPatientVO);
+				}
+				
+				if(Utility.isNotNull(listBpkPatientVO))
+				{
+					result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
+					result.put(ResultFlag.RESULT_DATA, (listBpkPatientVO));
+				}
+				
+				rst.close();
+				stmt.close();
+				conn.close();				
+			}
+			else
+			{
+				result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);
+			}
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		finally
+		{
+			conn = null;
+			stmt = null;
+			rst = null;
+			sql = null;			
+		}
+		return result;
+	}
+	
+	public HashMap listBaseTemplateAdvice(int limit)
+	{
+		HashMap result = new HashMap();
+		List listBaseTemplateAdvice = new ArrayList();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rst = null;
+		StringBuilder sql = null;		
+		try
+		{
+			sql = new StringBuilder("SELECT FROM base_template_advice LIMIT ").append(limit);
+			conn = DAOFactory.getConnection();
+			stmt = conn.createStatement();
+			BpkUtility.printDebug(this, "listBaseTemplateAdvice, "+sql.toString());
+			rst = stmt.executeQuery(sql.toString());
+			
+			for(;rst.next();)
+			{
+				listBaseTemplateAdvice.add(rst.getString(""));
+			}
+			
+			result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
+			result.put(ResultFlag.RESULT_DATA, listBaseTemplateAdvice);
+			
+			rst.close();
+			stmt.close();
+			conn.close();			
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		finally
+		{
+			conn = null;
+			stmt = null;
+			rst = null;
+			sql = null;			
 		}
 		return result;
 	}

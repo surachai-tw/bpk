@@ -54,6 +54,9 @@
 
 	function btnMakeAppointment_onClick()
 	{
+		var viewDate = hiddenDate.value;
+
+		location.href = "makeAppointment.jsp?viewDate="+viewDate+"&employeeId=<%=employeeId%>";
 	}
 
 	function btnClose_OnClick()
@@ -182,9 +185,20 @@
 
 	function showBalloonDisplay(date, rangeOfTime, clinicDescription, appNum, limitNum)
 	{
-		var dd = date.substring(date.lastIndexOf('-', date.length-1)+1);
-		var mm = date.substring(date.indexOf('-', 0)+1, date.lastIndexOf('-', date.length-1));
-		var yyyy = date.substring(0, date.indexOf('-', 0));
+		hiddenDate.value = date;
+		var dd = getDateDD(date);
+		var mm = getDateMM(date);
+		var yyyy = getDateYYYY(date);
+
+		// กรณีที่ไม่ใช้อนาคต จะห้ามทำนัด
+		if(isFutureDate(date))
+		{
+			btnMakeAppointment.style.display = "";
+		}
+		else
+		{
+			btnMakeAppointment.style.display = "none";
+		}
 
 		divBalloon.style.display = "";
 		lblSelectedDateTime.innerText = parseInt(dd, 10)+" "+getThaiMonth(parseInt(mm, 10)-1)+" "+(parseInt(yyyy, 10)+543)+", "+rangeOfTime;
@@ -354,7 +368,6 @@
 		// รายการข้อมูลของวันที่นัดได้ทั้งหมดของหมอแต่ละคน
 		List listBpkEmployeeVO = null;
 		HashMap param = new HashMap();
-		BpkUtility.printDebug(this, "Check employeeId = "+employeeId);
 		param.put("employeeId".toUpperCase(), employeeId);
 		param.put("startDate".toUpperCase(), new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aCalStart.getTime()));
 		param.put("endDate".toUpperCase(), new SimpleDateFormat("yyyy-MM-dd", new Locale("en", "US")).format(aCalEnd.getTime()));
@@ -366,8 +379,8 @@
 %>
 		var row, cell, displayColor;
 <%
-		BpkUtility.printDebug(this, "aCalStart.getTime() = "+aCalStart.getTime());
-		BpkUtility.printDebug(this, "aCalEnd.getTime() = "+aCalEnd.getTime());
+		BpkUtility.printDebug(this, "Start calendar, aCalStart.getTime() = "+aCalStart.getTime());
+		BpkUtility.printDebug(this, "End of calendar, aCalEnd.getTime() = "+aCalEnd.getTime());
 
 		// ใช้ตรวจสอบเงื่อนไข ของเดือน Jan, Dec ที่จะมีปฏิทินช่วงข้ามปี
 		boolean notTheSameYear = true;
@@ -534,7 +547,7 @@
 							<tr><td id="lblSelectedDateTime" class="slotHeaderDate">&nbsp;</td></tr>
 							<tr><td id="lblSelectedClinic" class="slotHeaderClinic">&nbsp;</td></tr>
 							<tr><td id="lblCountWorkload" style="align:left">&nbsp;</td></tr>
-							<tr><td style="text-align:right"><input type="button" id="btnMakeAppointment" value=" ทำนัด " class="btnStyle" onClick="btnMakeAppointment_onClick();">&nbsp;</td></tr>
+							<tr><td style="text-align:right"><input type="hidden" id="hiddenDate"/><input type="button" id="btnMakeAppointment" value=" ทำนัด " class="btnStyle" onClick="btnMakeAppointment_onClick();">&nbsp;</td></tr>
 						</table>
 					</div>
 					<div id="divCalendarMonth" width="100%" style="height:480px">
