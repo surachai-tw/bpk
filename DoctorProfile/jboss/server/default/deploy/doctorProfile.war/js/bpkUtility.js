@@ -46,6 +46,16 @@ function getThaiMonth(index)
 	return thaimonth[index];
 }
 
+function getTimeHH(hhmm)
+{
+	return hhmm.substring(0, 2);
+}
+
+function getTimeMM(hhmm)
+{
+	return hhmm.substring(3, 5);
+}
+
 function getDateDD(yyyy_mm_dd)
 {
 	return yyyy_mm_dd.substring(yyyy_mm_dd.lastIndexOf('-', yyyy_mm_dd.length-1)+1);

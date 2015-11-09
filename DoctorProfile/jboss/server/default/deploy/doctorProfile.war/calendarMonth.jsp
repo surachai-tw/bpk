@@ -56,7 +56,10 @@
 	{
 		var viewDate = hiddenDate.value;
 
-		location.href = "makeAppointment.jsp?viewDate="+viewDate+"&employeeId=<%=employeeId%>";
+		var clinic = "&clinic="+lblSelectedClinic.innerText;
+		var time = "&time="+((lblSelectedDateTime.rangeOfTime!=null && lblSelectedDateTime.rangeOfTime!="" && lblSelectedDateTime.rangeOfTime.length>5) ? lblSelectedDateTime.rangeOfTime.substring(0, 5) : "08:00");
+
+		location.href = "makeAppointment.jsp?viewDate="+viewDate+"&employeeId=<%=employeeId%>"+clinic+time;
 	}
 
 	function btnClose_OnClick()
@@ -202,6 +205,7 @@
 
 		divBalloon.style.display = "";
 		lblSelectedDateTime.innerText = parseInt(dd, 10)+" "+getThaiMonth(parseInt(mm, 10)-1)+" "+(parseInt(yyyy, 10)+543)+", "+rangeOfTime;
+		lblSelectedDateTime.rangeOfTime = rangeOfTime;
 		lblSelectedClinic.innerText = clinicDescription;		
 		lblCountWorkload.innerText = "จำนวนการนัดหมายทั้งหมด " + appNum + " / " + limitNum;
 
@@ -544,7 +548,7 @@
 					<div id="divBalloon" class="divBpkBalloon" style="display:none">
 						<table width="100%" height="100%" border="0" cellspacing="2" cellpadding="0">
 							<tr><td style="text-align:right; height:24px"><img id="btnClose" onClick="btnClose_OnClick();" class="btnStyleClose" style="vertical-align:middle;width:24px;" src="css/close.png"/></td></tr>
-							<tr><td id="lblSelectedDateTime" class="slotHeaderDate">&nbsp;</td></tr>
+							<tr><td id="lblSelectedDateTime" class="slotHeaderDate" rangeOfTime="">&nbsp;</td></tr>
 							<tr><td id="lblSelectedClinic" class="slotHeaderClinic">&nbsp;</td></tr>
 							<tr><td id="lblCountWorkload" style="align:left">&nbsp;</td></tr>
 							<tr><td style="text-align:right"><input type="hidden" id="hiddenDate"/><input type="button" id="btnMakeAppointment" value=" ทำนัด " class="btnStyle" onClick="btnMakeAppointment_onClick();">&nbsp;</td></tr>

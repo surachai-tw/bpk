@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 
+import com.bpk.dto.BpkAppointmentVO;
 import com.bpk.dto.BpkClinicVO;
 import com.bpk.dto.BpkEmployeeVO;
 import com.bpk.dto.BpkPatientVO;
@@ -127,6 +128,92 @@ public class DoctorProfileDAO
 			conn = null;
 		}
 
+		return result;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public HashMap listBaseTemplateAdvice(int limit)
+	{
+		HashMap result = new HashMap();
+		List listBaseTemplateAdvice = new ArrayList();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rst = null;
+		StringBuilder sql = null;		
+		try
+		{
+			sql = new StringBuilder("SELECT description FROM base_template_advice LIMIT ").append(limit);
+			conn = DAOFactory.getConnection();
+			stmt = conn.createStatement();
+			BpkUtility.printDebug(this, "listBaseTemplateAdvice, "+sql.toString());
+			rst = stmt.executeQuery(sql.toString());
+			
+			for(;rst.next();)
+			{
+				listBaseTemplateAdvice.add(rst.getString("description"));
+			}
+			
+			result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
+			result.put(ResultFlag.RESULT_DATA, listBaseTemplateAdvice);
+			
+			rst.close();
+			stmt.close();
+			conn.close();			
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		finally
+		{
+			conn = null;
+			stmt = null;
+			rst = null;
+			sql = null;			
+		}
+		return result;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public HashMap listBaseTemplateAppDetail(int limit)
+	{
+		HashMap result = new HashMap();
+		List listBaseTemplateAppDetail = new ArrayList();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rst = null;
+		StringBuilder sql = null;		
+		try
+		{
+			sql = new StringBuilder("SELECT description FROM base_template_app_detail LIMIT ").append(limit);
+			conn = DAOFactory.getConnection();
+			stmt = conn.createStatement();
+			BpkUtility.printDebug(this, "listBaseTemplateAppDetail, "+sql.toString());
+			rst = stmt.executeQuery(sql.toString());
+			
+			for(;rst.next();)
+			{
+				listBaseTemplateAppDetail.add(rst.getString("description"));
+			}
+			
+			result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
+			result.put(ResultFlag.RESULT_DATA, listBaseTemplateAppDetail);
+			
+			rst.close();
+			stmt.close();
+			conn.close();			
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		finally
+		{
+			conn = null;
+			stmt = null;
+			rst = null;
+			sql = null;			
+		}
 		return result;
 	}
 
@@ -454,90 +541,6 @@ public class DoctorProfileDAO
 		return result;
 	}
 
-	@SuppressWarnings(
-	{ "rawtypes" })
-	public HashMap getSlotDoctor(HashMap param) throws NoLoginSessionException
-	{
-		String pEmployeeId = null;
-		String pStartDate = null;
-		String pEndDate = null;
-		HashMap<String, Object> result = new HashMap<String, Object>();
-		List<BpkEmployeeVO> listBpkEmployeeVO = new ArrayList<BpkEmployeeVO>();
-		StringBuilder sql = null;
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet rst = null;
-		try
-		{
-			if (param != null)
-			{
-				pEmployeeId = BpkUtility.getValidateString(param.get("employeeId".toUpperCase()));
-				pStartDate = BpkUtility.getValidateString(param.get("startDate".toUpperCase()));
-				pEndDate = BpkUtility.getValidateString(param.get("endDate".toUpperCase()));
-				
-				BpkUtility.printDebug(this, "getSlotDoctor PARAM pEmployeeId = "+pEmployeeId);
-				BpkUtility.printDebug(this, "getSlotDoctor PARAM pStartDate = "+pStartDate);
-				BpkUtility.printDebug(this, "getSlotDoctor PARAM pEndDate = "+pEndDate);
-			}
-
-			sql = new StringBuilder(
-					"SELECT DISTINCT doctor_schedule.fix_day_of_week dayid, dayofweek.description dayname, trim(replace(replace(replace(bpkget_service_description(doctor_schedule.spid), '..', ''), 'ห้องตรวจ', ''), 'จุดซักประวัติ', '')) AS clinic_description, substring(doctor_schedule.start_time, 1, 5) start_time, substring(doctor_schedule.end_time, 1, 5) end_time, dayofweek.display_order, doctor_schedule.limit_num_appoint ");
-			sql.append(" FROM doctor_schedule ");
-			sql.append(" INNER JOIN bpk_fix_day_of_week dayofweek ON doctor_schedule.fix_day_of_week = dayofweek.bpk_fix_day_of_week_id ");
-			sql.append(" WHERE doctor_schedule.employee_id = '").append(pEmployeeId).append("'");
-			sql.append(" ORDER BY dayofweek.display_order, start_time, end_time ");
-			BpkUtility.printDebug(this, sql.toString());
-
-			conn = DAOFactory.getConnection();
-			stmt = conn.createStatement();
-			BpkUtility.printDebug(this, "getSlotDoctor, "+sql.toString());
-			rst = stmt.executeQuery(sql.toString());
-
-			for (; rst.next();)
-			{
-				BpkEmployeeVO tmpBpkEmployeeVO = new BpkEmployeeVO();
-
-				tmpBpkEmployeeVO.setDayId(rst.getString("dayid"));
-				tmpBpkEmployeeVO.setDayName(rst.getString("dayname"));
-				tmpBpkEmployeeVO.setClinicDescription(rst.getString("clinic_description"));
-				tmpBpkEmployeeVO.setStartTime(rst.getString("start_time"));
-				tmpBpkEmployeeVO.setEndTime(rst.getString("end_time"));
-				tmpBpkEmployeeVO.setLimitNumAppoint(rst.getString("limit_num_appoint"));
-
-				BpkUtility.printDebug(this, tmpBpkEmployeeVO.getDayId() + " " + tmpBpkEmployeeVO.getDayName() + " " + tmpBpkEmployeeVO.getStartTime());
-				listBpkEmployeeVO.add(tmpBpkEmployeeVO);
-			}
-
-			rst.close();
-			stmt.close();
-			conn.close();
-
-			if (listBpkEmployeeVO != null && listBpkEmployeeVO.size() > 0)
-			{
-				// BpkUtility.printDebug(this,
-				// "SUCCESS and Add listBpkEmployeeVO");
-				result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
-				result.put(ResultFlag.RESULT_DATA, listBpkEmployeeVO);
-			}
-			else
-			{
-				// BpkUtility.printDebug(this, "FAIL and No listBpkEmployeeVO");
-				result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);
-			}
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-		}
-		finally
-		{
-			rst = null;
-			stmt = null;
-			conn = null;
-		}
-		return result;
-	}
-
 	/***
 	 * ตรวจสอบว่า วันที่ที่ให้มา อยู่ในช่วงเวลาที่ตรงกับ Slot ที่อยู่ใน List listBpkEmployeeVO หรือไม่ 
 	 * ถ้าตรงให้ส่งเฉพาะ Slot นั้นออกไป ในรูปแบบของ range และ Clinic (คั่น range กับ Clinic ด้วย ^) 
@@ -673,7 +676,7 @@ public class DoctorProfileDAO
 			stmt = conn.createStatement();
 			BpkUtility.printDebug(this, "getEmployeeDetail, "+sql.toString());
 			rst = stmt.executeQuery(sql.toString());
-
+	
 			if (rst.next())
 			{
 				BpkEmployeeVO aBpkEmployeeVO = new BpkEmployeeVO();
@@ -686,7 +689,7 @@ public class DoctorProfileDAO
 				aBpkEmployeeVO.setLicenseNo(rst.getString("license_no"));
 				aBpkEmployeeVO.setEmployeeId(employeeId);
 				aBpkEmployeeVO.setEmployeeName(rst.getString("employee_name"));
-
+	
 				result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
 				result.put(ResultFlag.RESULT_DATA, aBpkEmployeeVO);
 			}
@@ -694,7 +697,7 @@ public class DoctorProfileDAO
 			{
 				result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);
 			}
-
+	
 			rst.close();
 			stmt.close();
 			conn.close();
@@ -709,6 +712,157 @@ public class DoctorProfileDAO
 			conn = null;
 			stmt = null;
 			rst = null;
+		}
+		return result;
+	}
+
+	@SuppressWarnings(
+	{ "rawtypes" })
+	public HashMap getSlotDoctor(HashMap param) throws NoLoginSessionException
+	{
+		String pEmployeeId = null;
+		String pStartDate = null;
+		String pEndDate = null;
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		List<BpkEmployeeVO> listBpkEmployeeVO = new ArrayList<BpkEmployeeVO>();
+		StringBuilder sql = null;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rst = null;
+		try
+		{
+			if (param != null)
+			{
+				pEmployeeId = BpkUtility.getValidateString(param.get("employeeId".toUpperCase()));
+				pStartDate = BpkUtility.getValidateString(param.get("startDate".toUpperCase()));
+				pEndDate = BpkUtility.getValidateString(param.get("endDate".toUpperCase()));
+				
+				BpkUtility.printDebug(this, "getSlotDoctor PARAM pEmployeeId = "+pEmployeeId);
+				BpkUtility.printDebug(this, "getSlotDoctor PARAM pStartDate = "+pStartDate);
+				BpkUtility.printDebug(this, "getSlotDoctor PARAM pEndDate = "+pEndDate);
+			}
+	
+			sql = new StringBuilder(
+					"SELECT DISTINCT doctor_schedule.fix_day_of_week dayid, dayofweek.description dayname, trim(replace(replace(replace(bpkget_service_description(doctor_schedule.spid), '..', ''), 'ห้องตรวจ', ''), 'จุดซักประวัติ', '')) AS clinic_description, substring(doctor_schedule.start_time, 1, 5) start_time, substring(doctor_schedule.end_time, 1, 5) end_time, dayofweek.display_order, doctor_schedule.limit_num_appoint ");
+			sql.append(" FROM doctor_schedule ");
+			sql.append(" INNER JOIN bpk_fix_day_of_week dayofweek ON doctor_schedule.fix_day_of_week = dayofweek.bpk_fix_day_of_week_id ");
+			sql.append(" WHERE doctor_schedule.employee_id = '").append(pEmployeeId).append("'");
+			sql.append(" ORDER BY dayofweek.display_order, start_time, end_time ");
+			BpkUtility.printDebug(this, sql.toString());
+	
+			conn = DAOFactory.getConnection();
+			stmt = conn.createStatement();
+			BpkUtility.printDebug(this, "getSlotDoctor, "+sql.toString());
+			rst = stmt.executeQuery(sql.toString());
+	
+			for (; rst.next();)
+			{
+				BpkEmployeeVO tmpBpkEmployeeVO = new BpkEmployeeVO();
+	
+				tmpBpkEmployeeVO.setDayId(rst.getString("dayid"));
+				tmpBpkEmployeeVO.setDayName(rst.getString("dayname"));
+				tmpBpkEmployeeVO.setClinicDescription(rst.getString("clinic_description"));
+				tmpBpkEmployeeVO.setStartTime(rst.getString("start_time"));
+				tmpBpkEmployeeVO.setEndTime(rst.getString("end_time"));
+				tmpBpkEmployeeVO.setLimitNumAppoint(rst.getString("limit_num_appoint"));
+	
+				BpkUtility.printDebug(this, tmpBpkEmployeeVO.getDayId() + " " + tmpBpkEmployeeVO.getDayName() + " " + tmpBpkEmployeeVO.getStartTime());
+				listBpkEmployeeVO.add(tmpBpkEmployeeVO);
+			}
+	
+			rst.close();
+			stmt.close();
+			conn.close();
+	
+			if (listBpkEmployeeVO != null && listBpkEmployeeVO.size() > 0)
+			{
+				// BpkUtility.printDebug(this,
+				// "SUCCESS and Add listBpkEmployeeVO");
+				result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
+				result.put(ResultFlag.RESULT_DATA, listBpkEmployeeVO);
+			}
+			else
+			{
+				// BpkUtility.printDebug(this, "FAIL and No listBpkEmployeeVO");
+				result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);
+			}
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		finally
+		{
+			rst = null;
+			stmt = null;
+			conn = null;
+		}
+		return result;
+	}
+
+	/**
+	 * เรียกใช้ทั้ง getEmployeeDetail และ getSlotDoctor 
+	 * @param param
+	 * @return
+	 */
+	@SuppressWarnings(
+	{ "unchecked", "rawtypes" })
+	public HashMap readDoctorProfile(HashMap param) throws NoLoginSessionException
+	{
+		HashMap result = new HashMap();
+		try
+		{
+			String employeeId = null;
+			if (param != null)
+			{
+				Object aObj = param.get("employeeId".toUpperCase());
+				if (aObj != null && aObj instanceof String)
+				{
+					employeeId = (String) aObj;
+	
+					HashMap tmpRst1 = this.getEmployeeDetail(employeeId);
+					HashMap tmpRst2 = this.getSlotDoctor(param);
+					if (tmpRst1 != null)
+					{
+						if (ResultFlag.STATUS_SUCCESS.equals(tmpRst1.get(ResultFlag.STATUS)))
+						{
+							result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
+							Object aObj1 = tmpRst1.get(ResultFlag.RESULT_DATA);
+							if (aObj1 != null && aObj1 instanceof BpkEmployeeVO)
+							{
+								BpkEmployeeVO aBpkEmployeeVO = (BpkEmployeeVO) aObj1;
+	
+								if (tmpRst2!=null && ResultFlag.STATUS_SUCCESS.equals(tmpRst2.get(ResultFlag.STATUS)))
+								{
+									Object aObj2 = tmpRst2.get(ResultFlag.RESULT_DATA);
+									if (aObj2 != null && aObj2 instanceof List)
+									{
+										List listBpkEmployeeVO = (List) aObj2;
+										aBpkEmployeeVO.addSlot(listBpkEmployeeVO);
+									}
+								}
+	
+								result.put(ResultFlag.RESULT_DATA, aBpkEmployeeVO);
+							}
+						}
+					}
+				}
+				else
+				{
+					result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);
+				}
+			}
+			else
+			{
+				result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);
+			}
+		}
+		catch (Exception ex)
+		{
+		}
+		finally
+		{
+	
 		}
 		return result;
 	}
@@ -888,73 +1042,6 @@ public class DoctorProfileDAO
 		return result;
 	}
 
-	/**
-	 * เรียกใช้ทั้ง getEmployeeDetail และ getSlotDoctor 
-	 * @param param
-	 * @return
-	 */
-	@SuppressWarnings(
-	{ "unchecked", "rawtypes" })
-	public HashMap readDoctorProfile(HashMap param) throws NoLoginSessionException
-	{
-		HashMap result = new HashMap();
-		try
-		{
-			String employeeId = null;
-			if (param != null)
-			{
-				Object aObj = param.get("employeeId".toUpperCase());
-				if (aObj != null && aObj instanceof String)
-				{
-					employeeId = (String) aObj;
-
-					HashMap tmpRst1 = this.getEmployeeDetail(employeeId);
-					HashMap tmpRst2 = this.getSlotDoctor(param);
-					if (tmpRst1 != null)
-					{
-						if (ResultFlag.STATUS_SUCCESS.equals(tmpRst1.get(ResultFlag.STATUS)))
-						{
-							result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
-							Object aObj1 = tmpRst1.get(ResultFlag.RESULT_DATA);
-							if (aObj1 != null && aObj1 instanceof BpkEmployeeVO)
-							{
-								BpkEmployeeVO aBpkEmployeeVO = (BpkEmployeeVO) aObj1;
-
-								if (tmpRst2!=null && ResultFlag.STATUS_SUCCESS.equals(tmpRst2.get(ResultFlag.STATUS)))
-								{
-									Object aObj2 = tmpRst2.get(ResultFlag.RESULT_DATA);
-									if (aObj2 != null && aObj2 instanceof List)
-									{
-										List listBpkEmployeeVO = (List) aObj2;
-										aBpkEmployeeVO.addSlot(listBpkEmployeeVO);
-									}
-								}
-
-								result.put(ResultFlag.RESULT_DATA, aBpkEmployeeVO);
-							}
-						}
-					}
-				}
-				else
-				{
-					result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);
-				}
-			}
-			else
-			{
-				result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);
-			}
-		}
-		catch (Exception ex)
-		{
-		}
-		finally
-		{
-
-		}
-		return result;
-	}
-	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public HashMap readPatientByKeyword(HashMap param) throws NoLoginSessionException
 	{
@@ -1023,33 +1110,84 @@ public class DoctorProfileDAO
 		return result;
 	}
 	
-	public HashMap listBaseTemplateAdvice(int limit)
+	/**
+	 * ถ้าไม่มีข้อมูล ID ของ Primary Key ให้ทำเป็น INSERT 
+	 * ถ้ามีข้อมูลของ ID Primary Key แล้ว ให้ทำเป็น Update 
+	 * */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public HashMap saveAppointment(HashMap param)
 	{
 		HashMap result = new HashMap();
-		List listBaseTemplateAdvice = new ArrayList();
 		Connection conn = null;
 		Statement stmt = null;
-		ResultSet rst = null;
-		StringBuilder sql = null;		
+		StringBuilder sql = null;
 		try
 		{
-			sql = new StringBuilder("SELECT FROM base_template_advice LIMIT ").append(limit);
-			conn = DAOFactory.getConnection();
-			stmt = conn.createStatement();
-			BpkUtility.printDebug(this, "listBaseTemplateAdvice, "+sql.toString());
-			rst = stmt.executeQuery(sql.toString());
+			Object aObj = param.get("BpkAppointmentVO".toUpperCase());
 			
-			for(;rst.next();)
+			if(aObj!=null && aObj instanceof BpkAppointmentVO)
 			{
-				listBaseTemplateAdvice.add(rst.getString(""));
+				BpkAppointmentVO aBpkAppointmentVO = (BpkAppointmentVO)aObj;
+			
+				aBpkAppointmentVO.setModifyDate(Utility.getCurrentDate());
+				aBpkAppointmentVO.setModifyTime(Utility.getCurrentTime());
+				
+				if(Utility.isNotNull(aBpkAppointmentVO.getAppointmentId()))
+				{
+					sql = new StringBuilder("UPDATE appointment SET ");
+					sql.append("basic_advice = '").append(aBpkAppointmentVO.getBasicAdvice()).append("', ");
+					sql.append("note = '").append(aBpkAppointmentVO.getNote()).append("', ");
+					sql.append("appoint_date = '").append(aBpkAppointmentVO.getAppointDate()).append("', ");
+					sql.append("appoint_time = '").append(aBpkAppointmentVO.getAppointTime()).append("', ");
+					sql.append("modify_eid = '").append(aBpkAppointmentVO.getModifyEid()).append("', ");
+					sql.append("modify_date = '").append(aBpkAppointmentVO.getModifyDate()).append("', ");
+					sql.append("modify_time = '").append(aBpkAppointmentVO.getModifyTime()).append("' ");
+					sql.append(" WHERE appointment_id='").append(aBpkAppointmentVO.getAppointmentId()).append("'");
+				}
+				else
+				{
+					aBpkAppointmentVO.setAppointmentId(XPersistent.generateObjectID());
+					
+					sql = new StringBuilder("INSERT INTO appointment (appointment_id, patient_id, base_spid, doctor_eid, doctor_assigner_eid, base_department_id, basic_advice, note, appoint_date, appoint_time, modify_eid, modify_date, modify_time, fix_appointment_status_id, continue_ref_no, appointment_schedule_id, fix_appointment_type_id, fix_appointment_method_id, estimate_hour, estimate_minute) VALUES('");
+					sql.append(aBpkAppointmentVO.getAppointmentId()).append("', '");
+					sql.append(aBpkAppointmentVO.getPatientId()).append("', '");
+					sql.append(aBpkAppointmentVO.getBaseSpId()).append("', '");
+					sql.append(aBpkAppointmentVO.getDoctorEid()).append("', '");
+					sql.append(aBpkAppointmentVO.getDoctorAssignerEid()).append("', ");
+					sql.append("(SELECT base_department_id FROM base_service_point WHERE base_service_point_id='").append(aBpkAppointmentVO.getBaseSpId()).append("')").append(", '");
+					sql.append(aBpkAppointmentVO.getBasicAdvice()).append("', '");
+					sql.append(aBpkAppointmentVO.getNote()).append("', '");
+					sql.append(aBpkAppointmentVO.getAppointDate()).append("', '");
+					sql.append(aBpkAppointmentVO.getAppointTime()).append("', '");
+					sql.append(aBpkAppointmentVO.getModifyEid()).append("', '");
+					sql.append(aBpkAppointmentVO.getModifyDate()).append("', '");
+					sql.append(aBpkAppointmentVO.getModifyTime()).append("', '");
+					sql.append(aBpkAppointmentVO.getFixAppointmentStatusId()).append("', '");
+					sql.append(aBpkAppointmentVO.getAppointmentId()).append("', '', '");
+					sql.append(aBpkAppointmentVO.getFixAppointmentTypeId()).append("', '");
+					sql.append(aBpkAppointmentVO.getFixAppointmentMethodId()).append("', '0', '00')");
+				}
+				
+				conn = DAOFactory.getConnection();
+				stmt = conn.createStatement();
+				BpkUtility.printDebug(this, "saveAppointment, "+sql.toString());
+				int rst = stmt.executeUpdate(sql.toString());
+				
+				if(rst>0)
+				{
+					result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
+					result.put(ResultFlag.RESULT_DATA, aBpkAppointmentVO);
+				}
+				else
+				{
+					result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);									
+				}
+			}
+			else
+			{
+				result.put(ResultFlag.STATUS, ResultFlag.STATUS_FAIL);				
 			}
 			
-			result.put(ResultFlag.STATUS, ResultFlag.STATUS_SUCCESS);
-			result.put(ResultFlag.RESULT_DATA, listBaseTemplateAdvice);
-			
-			rst.close();
-			stmt.close();
-			conn.close();			
 		}
 		catch(Exception ex)
 		{
@@ -1059,9 +1197,9 @@ public class DoctorProfileDAO
 		{
 			conn = null;
 			stmt = null;
-			rst = null;
-			sql = null;			
+			sql = null;
 		}
 		return result;
 	}
+	
 }

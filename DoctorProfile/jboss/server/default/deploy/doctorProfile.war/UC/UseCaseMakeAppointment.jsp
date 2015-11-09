@@ -9,6 +9,12 @@
 <jsp:include page="form/readPatientByKeyword.jsp" flush="false"/>
 <%
 	}
+	else if("saveAppointment".equals(uc))
+	{
+%>
+<jsp:include page="form/saveAppointment.jsp" flush="false"/>
+<%
+	}
 	else
 	{
 %>

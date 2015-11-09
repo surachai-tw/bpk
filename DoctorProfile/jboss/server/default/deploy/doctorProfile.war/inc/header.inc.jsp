@@ -2,6 +2,10 @@
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Locale"%>
+<%@ page import="com.iMed.iMedCore.utility.HttpSessionVariable"%>
+<%
+	session.setAttribute(HttpSessionVariable.USER_NAME, "surachai.tw");
+%>
 <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td>

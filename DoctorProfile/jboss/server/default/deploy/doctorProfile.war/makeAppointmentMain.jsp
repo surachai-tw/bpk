@@ -6,7 +6,11 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="com.iMed.iMedCore.utility.HttpSessionVariable"%>
 <%@ page import="com.iMed.iMedCore.utility.Utility"%>
+<%@ page import="com.iMed.iMedCore.utility.fix.FixAppointmentStatus"%>
+<%@ page import="com.iMed.iMedCore.utility.fix.FixAppointmentType"%>
+<%@ page import="com.iMed.iMedCore.utility.fix.FixAppointmentMethod"%>
 <%@ page import="com.bpk.utility.BpkUtility"%>
 <%@ page import="com.bpk.dao.DAOFactory"%>
 <%@ page import="com.bpk.dao.DoctorProfileDAO"%>
@@ -59,14 +63,41 @@
   <script type="text/javascript">
   <!--
 
+	function btnSaveAppointment_OnClick()
+	{
+		var aBpkAppointmentVO = top.aBpkAppointmentVO;
+		var aBpkPatientVO = top.aBpkPatientVO;
+
+		// ส่วนของ PatientID
+		aBpkAppointmentVO.patientId = aBpkPatientVO.patientId;
+
+		aBpkAppointmentVO.baseSpId = selClinicId.value;
+		aBpkAppointmentVO.basicAdvice = txaAppointAdvice.value;
+		aBpkAppointmentVO.note = txaAppointNote.value;
+		
+		// ยังไม่ได้ทำส่วนของการ validate วันที่ 
+		aBpkAppointmentVO.appointDate = (txtAppointDateYYYY.value-543)+'-'+txtAppointDateMM.value+'-'+txtAppointDateDD.value;
+		aBpkAppointmentVO.appointTime = txtAppointTimeHH.value+':'+txtAppointTimeMM.value+':00';
+
+		aBpkAppointmentVO.doctorEid = "<%=employeeId%>";
+		aBpkAppointmentVO.doctorAssignerEid = "<%=employeeId%>";
+		aBpkAppointmentVO.fixAppointmentStatusId = "<%=FixAppointmentStatus.INCOMPLETE%>";
+		aBpkAppointmentVO.fixAppointmentTypeId = "<%=FixAppointmentType.SINGLE_APPOINTMENT%>";
+		aBpkAppointmentVO.fixAppointmentMethodId = "<%=FixAppointmentMethod.TELEPHONE%>";
+
+		top.statusFrame.repWorkStatus("กำลังบันทึกข้อมูลการนัดหมาย...");
+		top.makeAppointmentJSPFrame.UCForm.UC.value = "saveAppointment";
+		top.makeAppointmentJSPFrame.UCForm.submit();
+	}
+
 	function btnAppointNoteHelp_onClick(btn)
 	{
-		txaAppointNote.value = Trim(txaAppointNote.value + ' ' + btn.value);
+		txaAppointNote.value = Trim(txaAppointNote.value + ' ' + btn.title);
 	}
 
 	function btnAppointAdviceHelp_onClick(btn)
 	{
-		txaAppointAdvice.value = Trim(txaAppointAdvice.value + ' ' + btn.value);
+		txaAppointAdvice.value = Trim(txaAppointAdvice.value + ' ' + btn.title);
 	}
 
 	function btnClearKeyWord_onclick()
@@ -101,7 +132,7 @@
 	{
 		if(event.keyCode==13)
 		{
-			findPatientF();
+			findPatient();
 		}
 	}
 
@@ -130,10 +161,39 @@
 			{
 				imgDoctor.src = "images/noimage.jpg";
 			}
+<%
+			String time = request.getParameter("time");	
+%>
+			var time = "<%=time!=null ? time : ""%>";
+			txtAppointTimeHH.value = getTimeHH(time);
+			txtAppointTimeMM.value = getTimeMM(time);
+
+			var viewDate = "<%=viewDate%>";
+			txtAppointDateDD.value = getDateDD(viewDate);
+			txtAppointDateMM.value = getDateMM(viewDate);
+			txtAppointDateYYYY.value = parseInt(getDateYYYY(viewDate))+543;
+<%
+			String clinic = request.getParameter("clinic");	
+%>
+			var clinic = "<%=clinic!=null ? clinic : ""%>";
+			try
+			{
+				for(var i=0; i<selClinicId.options.length; i++)
+				{
+					if(selClinicId.options[i].text==clinic)
+					{
+						selClinicId.selectedIndex = i;
+					}
+				}
+			}
+			catch (e)
+			{
+				alert("onLoad.clinic, e = "+e.message);
+			}
 		}
 		catch (e)
 		{
-			alert("imgDoctor exception e = "+e.message);
+			alert("onLoad, e = "+e.message);
 		}
 	}
 
@@ -204,7 +264,7 @@
 							<table width="100%" border="0" cellspacing="0" cellpadding="2">
 								<tr>
 									<td style="height:32px">มารับบริการ:</td>
-									<td colspan="2"><input id="txtAppointDateDD" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isNumber(event.keyCode);"/>/<input id="txtAppointDateMM" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isNumber(event.keyCode);"/>/<input id="txtAppointDateYYYY" class="txtNumber" maxlength="4" style="width:48px" onKeyPress="return isNumber(event.keyCode);"/><input type="button" class="btnStyleAddRemove" value="...">&nbsp;<input id="txtAppointTimeHh" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isHour(this);"/>:<input id="txtAppointTimeMm" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isMinute(this);"/></td>
+									<td colspan="2"><input id="txtAppointDateDD" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isNumber(event.keyCode);"/>/<input id="txtAppointDateMM" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isNumber(event.keyCode);"/>/<input id="txtAppointDateYYYY" class="txtNumber" maxlength="4" style="width:48px" onKeyPress="return isNumber(event.keyCode);"/><input type="button" class="btnStyleAddRemove" value="...">&nbsp;<input id="txtAppointTimeHH" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isHour(this);"/>:<input id="txtAppointTimeMM" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isMinute(this);"/></td>
 								</tr>
 								<tr>
 									<td style="height:32px">ศูนย์การแพทย์:</td>
@@ -231,11 +291,22 @@
 									<td><textarea id="txaAppointAdvice" class="txtBorder" style="width:320px;height:90px"></textarea></td>
 									<td><div style="display:inline-block;padding:25px;">
 <%
-	for(int i=0; i<12; i++)
+	int limit = 12;
+	HashMap resultAdvice = aDAO.listBaseTemplateAdvice(limit);
+	if(resultAdvice!=null && ResultFlag.STATUS_SUCCESS.equals(resultAdvice.get(ResultFlag.STATUS)))
 	{
+		Object aObjAdvice = resultAdvice.get(ResultFlag.RESULT_DATA);
+		if(aObjAdvice!=null && aObjAdvice instanceof List)
+		{
+			List listBaseTemplateAdvice = (List)aObjAdvice;
+			for(int i=0, sizei=listBaseTemplateAdvice.size(); i<sizei; i++)
+			{
+				String txtString = (String)listBaseTemplateAdvice.get(i);
 %>
-									<input type="button" id="btnAppointAdviceHelp<%=i%>" class="btnStyleHelpText" style="width:100px;height:24px" value="งดน้ำ งดอาหาร" onClick="btnAppointAdviceHelp_onClick(this);"/>
+									<input type="button" id="btnAppointAdviceHelp<%=i%>" class="btnStyleHelpText" style="width:100px;height:24px" value="<%=txtString.length()>10 ? txtString.substring(0, 10)+"..." : txtString%>" title="<%=txtString%>" onClick="btnAppointAdviceHelp_onClick(this);"/>
 <%
+			}
+		}
 	}
 %>
 									</div></td>
@@ -245,15 +316,26 @@
 									<td><textarea id="txaAppointNote" class="txtBorder" style="width:320px;height:90px"></textarea></td>
 									<td><div style="display:inline-block;padding:25px;">
 <%
-	for(int i=0; i<12; i++)
+	HashMap resultAppDetail = aDAO.listBaseTemplateAppDetail(limit);
+	if(resultAppDetail!=null && ResultFlag.STATUS_SUCCESS.equals(resultAppDetail.get(ResultFlag.STATUS)))
 	{
+		Object aObjAppDetail = resultAppDetail.get(ResultFlag.RESULT_DATA);
+		if(aObjAppDetail!=null && aObjAppDetail instanceof List)
+		{
+			List listBaseTemplateAppDetail = (List)aObjAppDetail;
+			for(int i=0, sizei=listBaseTemplateAppDetail.size(); i<sizei; i++)
+			{
+				String txtString = (String)listBaseTemplateAppDetail.get(i);
 %>
-									<input type="button" id="btnAppointNoteHelp<%=i%>" class="btnStyleHelpText" style="width:100px;height:24px" value="งดน้ำ งดอาหาร" onClick="btnAppointNoteHelp_onClick(this);"/>
+									<input type="button" id="btnAppointNoteHelp<%=i%>" class="btnStyleHelpText" style="width:100px;height:24px" value="<%=txtString.length()>10 ? txtString.substring(0, 10)+"..." : txtString%>" title="<%=txtString%>" onClick="btnAppointNoteHelp_onClick(this);"/>
 <%
+			}
+		}
 	}
 %>
 									</div></td>
 								</tr>
+								<tr><td colspan="3"><input type="button" id="btnSaveAppointment" onClick="btnSaveAppointment_OnClick();" class="btnStyle" value="บันทึกการนัด"/></td></tr>
 							</table>
 						</div>
 						</td></tr>
