@@ -558,7 +558,7 @@ FROM bpk_agent_with_nation('$P!{dBeginDate}', '$P!{dEndDate}')]]></queryString>
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="TH Sarabun New" pdfFontName="Helvetica" size="12" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[รวมค่าบริการ]]></text>
+				<text><![CDATA[ยอดสุทธิ]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
@@ -1017,7 +1017,7 @@ FROM bpk_agent_with_nation('$P!{dBeginDate}', '$P!{dEndDate}')]]></queryString>
 					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="TH Sarabun New" pdfFontName="Helvetica" size="12" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Double"><![CDATA[$F{รวมค่าบริการ}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.Double"><![CDATA[$F{ยอดสุทธิ}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern=" #,##0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Opaque"
