@@ -228,4 +228,58 @@ INNER JOIN stock_setup_order_detail ON stock_setup_order.stock_setup_order_id = 
 WHERE stock_order.fix_stock_order_status_id IN  ('1', '2', '3')
 
 
+-- รอบหลัง ทำการ Update หน่วยของ item.base_unit ให้ตรงกับ small_unit ถ้า item.base_unit ว่าง 
 
+-- 4. หน่วยขาย กับ หน่วยย่อยของ Stock ไม่ตรงกัน 
+BEGIN TRANSACTION;
+
+UPDATE item SET 
+base_unit_id = cleansing."Small Unit"
+FROM 
+(
+    SELECT clean_item.item_id, (SELECT common_name FROM item WHERE item_id=clean_item.item_id), new_base_unit."Small Unit" FROM 
+    (
+        SELECT item_id FROM 
+        (
+            SELECT DISTINCT tmp.item_code "Item Code", tmp.common_name "Item Name", (tmp.base_unit_id) "Base Unit Master", (tmp.small_unit_id) "Small Unit", item_id 
+            FROM 
+            (
+                SELECT DISTINCT item.item_code, item.common_name, COALESCE(item.base_unit_id, '') base_unit_id, COALESCE(stock_mgnt.small_unit_id, '') small_unit_id, item.item_id  
+                FROM 
+                item 
+                INNER JOIN stock_mgnt ON item.item_id = stock_mgnt.item_id 
+                INNER JOIN stock ON stock_mgnt.stock_id = stock.stock_id 
+                WHERE item.active='1'  
+            ) tmp
+            WHERE tmp.base_unit_id<>tmp.small_unit_id 
+            AND tmp.base_unit_id='' 
+        ) tmp2
+        GROUP BY item_id HAVING Count(DISTINCT "Small Unit")=1 
+    ) clean_item 
+    LEFT JOIN 
+    (
+        SELECT DISTINCT tmp.item_code "Item Code", tmp.common_name "Item Name", (tmp.base_unit_id) "Base Unit Master", (tmp.small_unit_id) "Small Unit", item_id 
+        FROM 
+        (
+            SELECT DISTINCT item.item_code, item.common_name, COALESCE(item.base_unit_id, '') base_unit_id, COALESCE(stock_mgnt.small_unit_id, '') small_unit_id, item.item_id  
+            FROM 
+            item 
+            INNER JOIN stock_mgnt ON item.item_id = stock_mgnt.item_id 
+            INNER JOIN stock ON stock_mgnt.stock_id = stock.stock_id 
+            WHERE item.active='1'  
+        ) tmp
+        WHERE tmp.base_unit_id<>tmp.small_unit_id 
+        AND tmp.base_unit_id='' 
+    ) new_base_unit ON clean_item.item_id = new_base_unit.item_id 
+) cleansing 
+WHERE item.item_id=cleansing.item_id 
+AND item.base_unit_id='' 
+
+ROLLBACK;
+COMMIT
+
+SELECT stock_mgnt_id, mid_unit_rate, unit_rate FROM stock_mgnt WHERE stock_id='WF0042' AND item_id=(SELECT item_id FROM item WHERE item_code='TENO')
+
+BEGIN TRANSACTION 
+UPDATE stock_mgnt SET mid_unit_rate='1', unit_rate='1' WHERE stock_mgnt_id='WF0042110100109121836901';
+COMMIT
