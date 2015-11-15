@@ -1,4 +1,5 @@
 -- DROP TABLE bpk_fix_order_status;
+SELECT * FROM bpk_fix_order_status;
 CREATE TABLE bpk_fix_order_status 
 (
     fix_order_status_id VARCHAR(255) PRIMARY KEY, 
@@ -17,6 +18,7 @@ INSERT INTO bpk_fix_order_status VALUES('8', 'SUBMIT_IGNORE', '08');
 INSERT INTO bpk_fix_order_status VALUES('9', 'NOT_COMPLETE', '09');
 
 -- DROP TABLE bpk_fix_receipt_status;
+SELECT * FROM bpk_fix_receipt_status;
 CREATE TABLE bpk_fix_receipt_status 
 (
     fix_receipt_status_id VARCHAR(255) PRIMARY KEY, 
@@ -29,6 +31,7 @@ INSERT INTO bpk_fix_receipt_status VALUES('2', 'NORMAL', '2');
 -- SELECT * FROM bpk_fix_receipt_status
 
 -- DROP TABLE bpk_fix_receipt_type;
+SELECT * FROM bpk_fix_receipt_type;
 CREATE TABLE bpk_fix_receipt_type  
 (
     fix_receipt_type_id VARCHAR(255) PRIMARY KEY, 
@@ -52,6 +55,7 @@ INSERT INTO bpk_fix_receipt_type VALUES('72', 'PAY_INVOICE_MERGE_DETAIL', '14');
 -- SELECT * FROM bpk_fix_receipt_type
 
 -- DROP TABLE bpk_fix_item_type;
+SELECT * FROM bpk_fix_item_type;
 CREATE TABLE bpk_fix_item_type  
 (
     bpk_fix_item_type_id VARCHAR(255) PRIMARY KEY, 
@@ -89,6 +93,7 @@ BEGIN
     RETURN rec_desc;
 END';
 
+SELECT * FROM bpk_hospital_item;
 CREATE TABLE bpk_hospital_item   
 (
     bpk_hospital_item_id VARCHAR(255) PRIMARY KEY, 
@@ -116,7 +121,7 @@ BEGIN
     RETURN rec_desc;
 END';
 
-CREATE FUNCTION bpkget_base_unit_by_id(id text) RETURNS text 
+CREATE OR REPLACE FUNCTION bpkget_base_unit_by_id(id text) RETURNS text 
 LANGUAGE plpgsql 
 AS '
 DECLARE 
@@ -170,6 +175,7 @@ BEGIN
 END';
 -- SELECT bpkget_department_id_by_spid('001');
 
+SELECT * FROM bpk_account_group;
 DROP TABLE bpk_account_group;
 CREATE TABLE bpk_account_group 
 (
@@ -181,6 +187,13 @@ CREATE TABLE bpk_account_group
 -- SELECT * FROM base_drug_type 
 -- SELECT * FROM base_billing_group WHERE acc_group='' OR acc_group IS NULL 
 
+SELECT dept.base_department_id "รหัสแผนก", dept.description "แผนก", CASE WHEN deptserv.is_revenue_allow='1' THEN 'Y' ELSE 'N' END "อนุญาตให้มีรายได้ ?" 
+FROM base_department dept
+LEFT JOIN bpk_department_services deptserv ON dept.base_department_id = deptserv.base_department_id 
+ORDER BY dept.description COLLATE "th_TH";
+
+SELECT * FROM base_department;
+SELECT * FROM bpk_department_services;
 -- DROP TABLE bpk_department_services;
 CREATE TABLE bpk_department_services 
 (

@@ -8,6 +8,9 @@ EXCEPTION WHEN others THEN
 END;
 ' LANGUAGE plpgsql IMMUTABLE; 
 
+SELECT DISTINCT unit_price_cost FROM item ORDER BY unit_price_cost DESC;
+
+UPDATE item SET unit_price_cost=trim(unit_price_cost) WHERE unit_price_cost<>trim(unit_price_cost);
 UPDATE item SET unit_price_cost='0' WHERE trim(unit_price_cost)='';
 UPDATE item SET unit_price_cost='0' WHERE unit_price_cost='NaN';
 UPDATE item SET unit_price_cost='0' WHERE unit_price_cost='unit_price_cost';
