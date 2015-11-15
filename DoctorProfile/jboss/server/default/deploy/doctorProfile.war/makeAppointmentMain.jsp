@@ -263,7 +263,7 @@
 						<div id="divApptDetail" width="100%">
 							<table width="100%" border="0" cellspacing="0" cellpadding="2">
 								<tr>
-									<td style="height:32px">มารับบริการ:</td>
+									<td style="width:100px;height:32px">มารับบริการ:</td>
 									<td colspan="2"><input id="txtAppointDateDD" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isNumber(event.keyCode);"/>/<input id="txtAppointDateMM" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isNumber(event.keyCode);"/>/<input id="txtAppointDateYYYY" class="txtNumber" maxlength="4" style="width:48px" onKeyPress="return isNumber(event.keyCode);"/><input type="button" class="btnStyleAddRemove" value="...">&nbsp;<input id="txtAppointTimeHH" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isHour(this);"/>:<input id="txtAppointTimeMM" class="txtNumber" maxlength="2" style="width:24px" onKeyPress="return isMinute(this);"/></td>
 								</tr>
 								<tr>
@@ -287,7 +287,7 @@
 %>										</select></td>
 								</tr>
 								<tr>
-									<td>รายละเอียดสำหรับผู้ป่วย:</td>
+									<td>สำหรับผู้ป่วย:</td>
 									<td><textarea id="txaAppointAdvice" class="txtBorder" style="width:320px;height:90px"></textarea></td>
 									<td><div style="display:inline-block;padding:25px;">
 <%
@@ -312,7 +312,7 @@
 									</div></td>
 								</tr>
 								<tr>
-									<td>รายละเอียดสำหรับเจ้าหน้าที่:</td>
+									<td>สำหรับเจ้าหน้าที่:</td>
 									<td><textarea id="txaAppointNote" class="txtBorder" style="width:320px;height:90px"></textarea></td>
 									<td><div style="display:inline-block;padding:25px;">
 <%
