@@ -21,8 +21,8 @@ import java.text.NumberFormat;
  */
 public class XlsReportDAO
 {
-    private static String configFile = new String("config.properties");
 
+    private static String configFile = new String("config.properties");
     private static String pgurl = null;
     private static String pgusername = null;
     private static String pgpassword = null;
@@ -58,26 +58,31 @@ public class XlsReportDAO
                 if ("pgurl".equalsIgnoreCase(key))
                 {
                     pgurl = value;
-                } else if ("pgusername".equalsIgnoreCase(key))
+                }
+                else if ("pgusername".equalsIgnoreCase(key))
                 {
                     pgusername = value;
-                } else if ("pgpassword".equalsIgnoreCase(key))
+                }
+                else if ("pgpassword".equalsIgnoreCase(key))
                 {
                     pgpassword = value;
-                } else if ("excelurl".equalsIgnoreCase(key))
+                }
+                else if ("excelurl".equalsIgnoreCase(key))
                 {
                     excelurl = value;
-                } else if ("pathsql".equalsIgnoreCase(key))
+                }
+                else if ("pathsql".equalsIgnoreCase(key))
                 {
                     pathsql = value;
-                } else if ("pathoutput".equalsIgnoreCase(key))
+                }
+                else if ("pathoutput".equalsIgnoreCase(key))
                 {
                     pathoutput = value;
                 }
             }
             in.close();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             ex.printStackTrace();
         }
@@ -110,14 +115,16 @@ public class XlsReportDAO
             try
             {
                 stmtDest.executeUpdate("DROP TABLE item");
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
             }
 
             try
             {
                 stmtDest.executeUpdate("CREATE TABLE item ( id INTEGER, item_code VARCHAR(255), item_name VARCHAR(255))");
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
             }
 
@@ -140,10 +147,12 @@ public class XlsReportDAO
             stmtSrc.close();
             stmtDest.close();
             connDest.close();
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             ex.printStackTrace();
-        } finally
+        }
+        finally
         {
             rsSrc = null;
             stmtSrc = null;
@@ -168,7 +177,7 @@ public class XlsReportDAO
                 os.write(buffer, 0, length);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             ex.printStackTrace();
         }
@@ -191,18 +200,19 @@ public class XlsReportDAO
 
         try
         {
-            File delFile = new File("working" + System.getProperty("file.separator") + "WorkingReport.xlsx");
+            File delFile = new File("working" + System.getProperty("file.separator") + "WorkingReport.xls");
             delFile.delete();
 
             // Copy original file lib to working pathlib
             // System.out.println(System.getProperty("user.dir"));
-            File srcFile = new File("lib" + System.getProperty("file.separator") + "WorkingReport.xlsx");
-            File destFile = new File("working" + System.getProperty("file.separator") + "WorkingReport.xlsx");
-            File destNewFile = new File("working" + System.getProperty("file.separator") + sheetName +".xlsx");
+            File srcFile = new File("lib" + System.getProperty("file.separator") + "WorkingReport.xls");
+            File destFile= new File("working" + System.getProperty("file.separator") + "WorkingReport.xls");
+            File destNewFile = new File("working" + System.getProperty("file.separator") + sheetName + ".xls");
             copyFileUsingStream(srcFile, destFile);
 
             Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
             Class.forName("org.postgresql.Driver");
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 
             connSrc = DriverManager.getConnection(pgurl, pgusername, pgpassword);
             // connSrc = DriverManager.getConnection("jdbc:postgresql://localhost:5432/imed_kdh2", "postgres", "password");
@@ -211,7 +221,7 @@ public class XlsReportDAO
             stmtSrc = connSrc.createStatement();
             stmtDest = connDest.createStatement();
 
-            // System.out.println(sql);
+            System.out.println(sql);
             rsSrc = stmtSrc.executeQuery(sql);
 
             StringBuilder sqlTable = new StringBuilder("CREATE TABLE \"").append(sheetName).append("\" ( ");
@@ -220,24 +230,28 @@ public class XlsReportDAO
             ResultSetMetaData metadata = rsSrc.getMetaData();
             int columns = metadata.getColumnCount();
             String[] columnNames = new String[columns];
+            String[] columnTypes = new String[columns];
             Object[] summary = new Object[columns];
             for (int i = 0; i < columns; i++)
             {
                 columnNames[i] = metadata.getColumnLabel(i + 1);
-                if(i==0)
+                if (i == 0)
+                {
                     sqlColumnBlank.append("\"").append(columnNames[i]).append("\"");
+                }
                 sqlColumn.append("\"").append(columnNames[i]).append("\"");
                 sqlTable.append("\"").append(columnNames[i]).append("\"");
 
                 String columnType = metadata.getColumnTypeName(i + 1);
-                if("int4".equals(columnType))
+                if ("int4".equals(columnType))
                 {
                     columnType = "INTEGER";
                 }
                 sqlTable.append(" ").append(columnType);
+                columnTypes[i] = columnType;
 
                 // ส่วนของ Summary
-                if(columnType.toLowerCase().indexOf("float")!=-1 || columnType.toLowerCase().indexOf("int")!=-1 || columnType.toLowerCase().indexOf("numeric")!=-1)
+                if (columnType.toLowerCase().indexOf("float") != -1 || columnType.toLowerCase().indexOf("int") != -1 || columnType.toLowerCase().indexOf("numeric") != -1)
                 {
                     summary[i] = new Float(0);
                 }
@@ -250,7 +264,8 @@ public class XlsReportDAO
                 {
                     sqlColumn.append(", ");
                     sqlTable.append(", ");
-                } else
+                }
+                else
                 {
                     sqlTable.append(")");
                 }
@@ -259,7 +274,8 @@ public class XlsReportDAO
             try
             {
                 stmtDest.executeUpdate("DROP TABLE \"" + sheetName + "\"");
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
             }
 
@@ -267,7 +283,8 @@ public class XlsReportDAO
             {
                 // System.out.println(sqlTable.toString());
                 stmtDest.executeUpdate(sqlTable.toString());
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 ex.printStackTrace();
                 rsSrc.close();
@@ -275,7 +292,7 @@ public class XlsReportDAO
                 connSrc.close();
                 stmtDest.close();
                 connDest.close();
-                
+
                 return false;
             }
 
@@ -291,24 +308,29 @@ public class XlsReportDAO
 
                     data = data != null ? data.replaceAll("'", "''") : "";
 
-                    try
+                    if (columnTypes[j].toLowerCase().indexOf("float") != -1 || columnTypes[j].toLowerCase().indexOf("numeric") != -1 || columnTypes[j].toLowerCase().indexOf("double") != -1)
                     {
-                        // Parse ดูก่อน ถ้าทำได้แสดงว่าเป็น Numeric
-                        Float num = Float.parseFloat(data);
-                        sqlInsert.append("'").append(nf8.format(num)).append("'");
+                        try
+                        {
+                            // Parse ดูก่อน ถ้าทำได้แสดงว่าเป็น Numeric
+                            Float num = Float.parseFloat(data);
+                            sqlInsert.append("'").append(nf8.format(num)).append("'");
+                        }
+                        catch (Exception ex)
+                        {
+                            sqlInsert.append("'").append(data).append("'");
+                        }
                     }
-                    catch(Exception ex)
+                    else
                     {
                         sqlInsert.append("'").append(data).append("'");
                     }
 
-                    
-
                     try
                     {
-                        summary[j] = new Float(Float.parseFloat(nf8.format(Float.parseFloat(summary[j].toString())))+Float.parseFloat(nf8.format(Float.parseFloat(data))));
+                        summary[j] = new Float(Float.parseFloat(nf8.format(Float.parseFloat(summary[j].toString()))) + Float.parseFloat(nf8.format(Float.parseFloat(data))));
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                     }
 
@@ -321,8 +343,10 @@ public class XlsReportDAO
 
                 try
                 {
+                    // System.out.println(sqlInsert.toString());
                     stmtDest.executeUpdate(sqlInsert.toString());
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     System.out.println(sqlInsert.toString());
                 }
@@ -336,38 +360,43 @@ public class XlsReportDAO
                     //     The driver will not support DELETE, UPDATE, or ALTER TABLE statements. While it is possible to
                     // update values, DELETE statements will not remove a row from a table based on an Excel spreadsheet.
                     // These operations are not supported. Basically, you can only append (insert) to a table.
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     // ex.printStackTrace();
                 }
             }
 
             // ส่วนของ SUMMARY
-            for(int i=0; i<summary.length; i++)
+            for (int i = 0; i < summary.length; i++)
             {
                 try
                 {
                     Float.parseFloat(summary[i].toString());
 
-                    if(i==0)
+                    if (i == 0)
+                    {
                         sqlBlank.append("''");
+                    }
 
                     sqlSum.append("'").append(summary[i].toString()).append("'");
 
-                    if(i+1<summary.length)
+                    if (i + 1 < summary.length)
                     {
                         // sqlBlank.append(", ");
                         sqlSum.append(", ");
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    if(i==0)
+                    if (i == 0)
+                    {
                         sqlBlank.append("''");
+                    }
 
                     sqlSum.append("''");
 
-                    if(i+1<summary.length)
+                    if (i + 1 < summary.length)
                     {
                         // sqlBlank.append(", ");
                         sqlSum.append(", ");
@@ -380,7 +409,8 @@ public class XlsReportDAO
             try
             {
                 stmtDest.executeUpdate(sqlBlank.toString());
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 ex.printStackTrace();
                 System.out.println(sqlBlank.toString());
@@ -390,7 +420,8 @@ public class XlsReportDAO
             try
             {
                 stmtDest.executeUpdate(sqlSum.toString());
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 System.out.println(sqlSum.toString());
             }
@@ -403,11 +434,15 @@ public class XlsReportDAO
             connDest.close();
 
             // เปลี่ยนชื่อ file ให้เป็นตามแต่ละคำสั่ง
-            return destFile.renameTo(destNewFile);
-        } catch (Exception ex)
+            boolean resultXls = false;
+            resultXls = destFile.renameTo(destNewFile);
+            return resultXls;
+        }
+        catch (Exception ex)
         {
             ex.printStackTrace();
-        } finally
+        }
+        finally
         {
             rsSrc = null;
             stmtSrc = null;

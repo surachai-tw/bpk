@@ -103,8 +103,8 @@ public class FrmExport extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
         aPnlTop.add(aLblSqlPath, gridBagConstraints);
 
-        aTxtSqlPath.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aTxtSqlPath.setText("D:\\BPK9\\XlsReport\\sql\\");
+        aTxtSqlPath.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtSqlPath.setText("D:\\BPK\\trunk\\XlsReport\\sql\\");
             aTxtSqlPath.setMinimumSize(new java.awt.Dimension(200, 24));
             aTxtSqlPath.setPreferredSize(new java.awt.Dimension(200, 24));
             gridBagConstraints = new java.awt.GridBagConstraints();
@@ -125,8 +125,8 @@ public class FrmExport extends javax.swing.JFrame
             gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
             aPnlTop.add(aLblOutputPath, gridBagConstraints);
 
-            aTxtOutputPath.setFont(new java.awt.Font("Tahoma", 0, 12));
-            aTxtOutputPath.setText("D:\\BPK9\\XlsReport\\output\\");
+            aTxtOutputPath.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+            aTxtOutputPath.setText("D:\\BPK\\trunk\\XlsReport\\output\\");
                 aTxtOutputPath.setMinimumSize(new java.awt.Dimension(200, 24));
                 aTxtOutputPath.setPreferredSize(new java.awt.Dimension(200, 24));
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -139,7 +139,7 @@ public class FrmExport extends javax.swing.JFrame
                 gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 11);
                 aPnlTop.add(aTxtOutputPath, gridBagConstraints);
 
-                aBtnExeSqlCommand.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+                aBtnExeSqlCommand.setFont(new java.awt.Font("Tahoma", 1, 12));
                 aBtnExeSqlCommand.setText(bundle.getString("FrmExport.aBtnExeSqlCommand")); // NOI18N
                 aBtnExeSqlCommand.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 aBtnExeSqlCommand.setMaximumSize(new java.awt.Dimension(72, 28));
@@ -166,7 +166,7 @@ public class FrmExport extends javax.swing.JFrame
                 gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
                 aPnlTop.add(aLblFromDate, gridBagConstraints);
 
-                aTxtFromDate.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+                aTxtFromDate.setFont(new java.awt.Font("Tahoma", 0, 12));
                 aTxtFromDate.setText("2015-05-01");
                 aTxtFromDate.setToolTipText("Input format YYYY-MM-DD");
                 aTxtFromDate.setMinimumSize(new java.awt.Dimension(80, 24));
@@ -191,7 +191,7 @@ public class FrmExport extends javax.swing.JFrame
                 gridBagConstraints.insets = new java.awt.Insets(12, 2, 0, 0);
                 aPnlTop.add(aLblTo, gridBagConstraints);
 
-                aTxtToDate.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+                aTxtToDate.setFont(new java.awt.Font("Tahoma", 0, 12));
                 aTxtToDate.setText("2015-05-01");
                 aTxtToDate.setToolTipText("Input format YYYY-MM-DD");
                 aTxtToDate.setMinimumSize(new java.awt.Dimension(80, 24));
@@ -232,7 +232,7 @@ public class FrmExport extends javax.swing.JFrame
 
                 aScrlPaneSqlFile.setFont(new java.awt.Font("Tahoma", 0, 12));
 
-                aLstSqlFile.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+                aLstSqlFile.setFont(new java.awt.Font("Tahoma", 0, 12));
                 aScrlPaneSqlFile.setViewportView(aLstSqlFile);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
