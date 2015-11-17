@@ -137,6 +137,39 @@ BEGIN
     RETURN rec_desc;
 END';
 
+CREATE OR REPLACE FUNCTION bpkget_base_drug_type_by_id(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(description, '''')) AS description FROM base_drug_type  
+    WHERE base_drug_type_id=id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';
+
+
+CREATE OR REPLACE FUNCTION bpkget_base_drug_group_by_id(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(description, '''')) AS description FROM base_drug_group  
+    WHERE base_drug_group_id=id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';
+
 -- SELECT * FROM base_department 
 -- DROP FUNCTION bpkget_department_description_by_spid(id text);
 CREATE OR REPLACE FUNCTION bpkget_department_description_by_spid(id text) RETURNS text 
