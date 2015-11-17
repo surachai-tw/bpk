@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MonthlyPatientRevenue" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="BlankPage" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="83bdedd4-b8a8-455a-8b1d-cd10f1b0d174">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["D:\\BPK\\trunk\\BOP\\ReportXML\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dBeginDate" class="java.lang.String">
+		<parameterDescription><![CDATA[BeginDate]]></parameterDescription>
+	</parameter>
+	<parameter name="dEndDate" class="java.lang.String">
+		<parameterDescription><![CDATA[EndDate]]></parameterDescription>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT * FROM bpk_daily_patient_revenue WHERE FromDate='$P!{dBeginDate}' AND ToDate='$P!{dEndDate}']]>
+	</queryString>
+	<field name="id" class="java.lang.Long"/>
+	<field name="FromDate" class="java.lang.String"/>
+	<field name="ToDate" class="java.lang.String"/>
+	<field name="Daily" class="java.lang.String"/>
+	<field name="BPK" class="java.lang.Double"/>
+	<field name="Growth BPK" class="java.lang.Double"/>
+	<field name="BPK1" class="java.lang.Double"/>
+	<field name="Growth BPK1" class="java.lang.Double"/>
+	<field name="BPK3" class="java.lang.Double"/>
+	<field name="Growth BPK3" class="java.lang.Double"/>
+	<field name="BPK8" class="java.lang.Double"/>
+	<field name="Growth BPK8" class="java.lang.Double"/>
+	<field name="BPK9" class="java.lang.Double"/>
+	<field name="Growth BPK9" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="38" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="5c692715-6567-47c3-9fc4-be3295f95405" x="4" y="1" width="799" height="35"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Monthly Patient Revenue Statistics]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="29" splitType="Stretch">
+			<textField>
+				<reportElement uuid="b8b3575c-78a6-4383-a2a6-abf128c1a07c" x="5" y="0" width="110" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( new java.text.SimpleDateFormat("MMMM yyyy", new java.util.Locale("th", "TH")).format ( (java.util.Date) (java.sql.Date.valueOf($F{FromDate})) ) )]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="24" splitType="Stretch">
+			<line>
+				<reportElement uuid="a400141f-e7b6-4251-988c-3e61d98e11b0" x="1" y="0" width="799" height="1"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="71c15e6b-bbc1-440f-b4b9-3cf6d11bc8a7" x="1" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="fa03df15-5a86-4475-ab96-5442f1ab5909" x="121" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="a79bb5f5-c3dc-40f8-a9ea-614279da082c" x="124" y="2" width="78" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BPK]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="094a951c-3967-4a2a-b5d4-1d1335746ffe" x="204" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="2a145ac2-deaa-40b3-9524-03bf75f0f8c4" x="206" y="2" width="50" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[%Growth]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="b4f61920-612c-4c03-95c4-3205982c7324" x="258" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="38f80b56-1719-43f0-bf06-ef4b9a4f1272" x="260" y="2" width="78" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BPK 1]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="db7d20fe-42b1-44cb-b24f-19b497b7a250" x="340" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="b63aa7d2-41bd-403c-af47-a5ee3fdfe39f" x="342" y="2" width="50" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[%Growth]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="37d010e8-486b-42ad-a144-c910b722a303" x="394" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="9855391a-c5f3-42c1-9cee-771ae5173f75" x="396" y="2" width="78" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BPK 3]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="04235392-3a83-4122-906a-f6f553adda53" x="476" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="389e06f3-5cc2-4e9f-abbb-9fbbe2f769f1" x="478" y="2" width="50" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[%Growth]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="4bbe9d71-06b2-4547-ade7-274f39446ef3" x="530" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="4f1d068d-8a2a-4417-bb2f-8113293aa19d" x="532" y="2" width="78" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BPK 8]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="9eb0160b-0fda-4662-b363-95011eb89b70" x="612" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="f9b21ef6-8049-4f5a-8b3d-4f630ea3a4c3" x="614" y="2" width="50" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[%Growth]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="1157c5cf-0f32-4380-85aa-c11576d40b00" x="666" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="51ab9045-64b7-46b0-85da-e374a06f6edc" x="668" y="2" width="78" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BPK 9]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="82a54474-ee24-4ded-aff4-491a96be83ac" x="748" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="b21c8eb3-7a54-4cf5-a571-68903be7d83d" x="750" y="2" width="48" height="21"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[%Growth]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="354ae0bd-85d0-41bc-b56e-364172afecd2" x="800" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="c187e0fb-3459-4cd0-bfc6-dec6d2dac4dd" x="1" y="23" width="799" height="1"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<line>
+				<reportElement uuid="07488694-49eb-44bb-a5c3-91602238f686" x="1" y="0" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="50b50f59-b8f3-4b92-9dd5-7d348f26f053" x="5" y="2" width="110" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Daily}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="3cf16c63-70d5-41f0-bfa4-13eb5c968e4e" x="121" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0;-#,##0" isBlankWhenNull="true">
+				<reportElement uuid="8ade9527-73fd-427a-9f9e-9b2ace6bc1d1" x="124" y="2" width="78" height="21"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BPK}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="e10c7755-e03b-487d-8e82-7848149a804e" x="204" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
+				<reportElement uuid="a127450a-ac97-4227-88b8-ff838a30f957" x="206" y="2" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Growth BPK}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="d536b4c9-9c4e-4d75-b4be-d74103fb8762" x="258" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0;-#,##0" isBlankWhenNull="true">
+				<reportElement uuid="1d944f58-caa4-491c-a80c-ba7d056fac82" x="260" y="2" width="78" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BPK1}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="d35b5ee1-2f35-4154-b073-455fc4bb70a2" x="340" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
+				<reportElement uuid="329344f5-055a-4f6a-b563-695bdc7984be" x="342" y="2" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Growth BPK1}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="7aca609c-1c6c-4fce-b5eb-eec8afb7ba68" x="394" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0;-#,##0" isBlankWhenNull="true">
+				<reportElement uuid="791a8966-a536-4d93-a860-a99fb516297b" x="396" y="2" width="78" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BPK3}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="45376597-7916-4497-a4dc-01e4ff7ee1c9" x="476" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
+				<reportElement uuid="3a701594-128c-43cd-9450-8e9faf7ce7f1" x="478" y="2" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Growth BPK3}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="8e7b1e58-9c05-45d4-b163-1b87b0b9383f" x="530" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0;-#,##0" isBlankWhenNull="true">
+				<reportElement uuid="32018336-74a5-47e2-ab9b-d11d76df81d6" x="532" y="2" width="78" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BPK8}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="2aafea0e-04bb-433d-a591-1a1c3a34afb4" x="612" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
+				<reportElement uuid="0f05bdd3-4b13-407f-a2e5-14b83272233f" x="614" y="2" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Growth BPK8}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="0ded1b66-e914-4ed0-bff2-7e077198b769" x="666" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0;-#,##0" isBlankWhenNull="true">
+				<reportElement uuid="b4838179-e28a-4aed-ab8a-71d84085bffa" x="668" y="2" width="78" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BPK9}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="c6f8dfe4-4903-486d-8132-d69d134f3bcb" x="748" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<textField pattern="#,##0.00;(#,##0.00)" isBlankWhenNull="true">
+				<reportElement uuid="0d469d3e-380a-4e29-a9b9-3f2119e1f99e" x="750" y="2" width="48" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Growth BPK9}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="f7897aab-4fa7-4fbf-90ec-2fba4d6816e7" x="800" y="1" width="1" height="23"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="0f3db408-ab38-45dc-9a5a-fce3ef39a47a" x="1" y="23" width="799" height="1"/>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="275" splitType="Stretch">
+			<subreport>
+				<reportElement uuid="34286e23-920b-4b7d-8c8a-f93f0ae44815" positionType="FixRelativeToBottom" stretchType="RelativeToBandHeight" x="4" y="15" width="270" height="260"/>
+				<subreportParameter name="dBeginDate">
+					<subreportParameterExpression><![CDATA[$F{FromDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dEndDate">
+					<subreportParameterExpression><![CDATA[$F{ToDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"DailyPatientRevenueBarChart.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="34286e23-920b-4b7d-8c8a-f93f0ae44815" positionType="FixRelativeToBottom" stretchType="RelativeToBandHeight" x="274" y="15" width="270" height="260"/>
+				<subreportParameter name="dBeginDate">
+					<subreportParameterExpression><![CDATA[$F{FromDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dEndDate">
+					<subreportParameterExpression><![CDATA[$F{ToDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"DailyPatientRevenuePieChart.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="34286e23-920b-4b7d-8c8a-f93f0ae44815" positionType="FixRelativeToBottom" stretchType="RelativeToBandHeight" x="544" y="15" width="270" height="260"/>
+				<subreportParameter name="dBeginDate">
+					<subreportParameterExpression><![CDATA[$F{FromDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dEndDate">
+					<subreportParameterExpression><![CDATA[$F{ToDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"DailyPatientRevenuePerCaseBarChart.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>
