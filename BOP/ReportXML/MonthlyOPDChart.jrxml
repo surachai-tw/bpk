@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MonthlyOPDChart" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ec65808a-a8fb-4771-a3af-631ecc7ddb17">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="dBeginDate" class="java.lang.String">
+		<parameterDescription><![CDATA[BeginDate]]></parameterDescription>
+	</parameter>
+	<parameter name="dEndDate" class="java.lang.String">
+		<parameterDescription><![CDATA[EndDate]]></parameterDescription>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT * FROM bpk_daily_patient_revenue WHERE
+Daily LIKE '%Total%OPD'
+AND FromDate BETWEEN '$P!{dBeginDate}' AND '$P!{dEndDate}'
+AND FromDate=ToDate
+ORDER BY FromDate ]]>
+	</queryString>
+	<field name="id" class="java.lang.Long"/>
+	<field name="FromDate" class="java.lang.String"/>
+	<field name="ToDate" class="java.lang.String"/>
+	<field name="Daily" class="java.lang.String"/>
+	<field name="BPK" class="java.lang.Double"/>
+	<field name="Growth BPK" class="java.lang.Double"/>
+	<field name="BPK1" class="java.lang.Double"/>
+	<field name="Growth BPK1" class="java.lang.Double"/>
+	<field name="BPK3" class="java.lang.Double"/>
+	<field name="Growth BPK3" class="java.lang.Double"/>
+	<field name="BPK8" class="java.lang.Double"/>
+	<field name="Growth BPK8" class="java.lang.Double"/>
+	<field name="BPK9" class="java.lang.Double"/>
+	<field name="Growth BPK9" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="455" splitType="Stretch">
+			<timeSeriesChart>
+				<chart>
+					<reportElement uuid="42dadc90-da0e-461f-a42c-87e58e0893a2" positionType="FixRelativeToBottom" stretchType="RelativeToBandHeight" x="0" y="95" width="802" height="360" isPrintWhenDetailOverflows="true"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<timeSeriesDataset>
+					<timeSeries>
+						<seriesExpression><![CDATA["BPK1"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[new SimpleDateFormat("yyyy-mm-DD").parse($F{FromDate})]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{BPK1}]]></valueExpression>
+						<labelExpression><![CDATA["BPK1"]]></labelExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["BPK3"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[new SimpleDateFormat("yyyy-mm-DD").parse($F{FromDate})]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{BPK3}]]></valueExpression>
+						<labelExpression><![CDATA["BPK3"]]></labelExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["BPK8"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[new SimpleDateFormat("yyyy-mm-DD").parse($F{FromDate})]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{BPK8}]]></valueExpression>
+						<labelExpression><![CDATA["BPK8"]]></labelExpression>
+					</timeSeries>
+					<timeSeries>
+						<seriesExpression><![CDATA["BPK9"]]></seriesExpression>
+						<timePeriodExpression><![CDATA[new SimpleDateFormat("yyyy-mm-DD").parse($F{FromDate})]]></timePeriodExpression>
+						<valueExpression><![CDATA[$F{BPK9}]]></valueExpression>
+						<labelExpression><![CDATA["BPK9"]]></labelExpression>
+					</timeSeries>
+				</timeSeriesDataset>
+				<timeSeriesPlot>
+					<plot orientation="Horizontal"/>
+				</timeSeriesPlot>
+			</timeSeriesChart>
+		</band>
+	</summary>
+</jasperReport>

@@ -54,9 +54,9 @@
 		<band height="260" splitType="Stretch">
 			<barChart>
 				<chart isShowLegend="true" theme="default">
-					<reportElement uuid="49da2107-1031-4982-abe7-1dd73e32798d" stretchType="RelativeToBandHeight" x="0" y="80" width="265" height="180"/>
+					<reportElement uuid="49da2107-1031-4982-abe7-1dd73e32798d" stretchType="RelativeToBandHeight" x="0" y="60" width="265" height="200"/>
 					<chartTitle position="Top">
-						<font fontName="TH Sarabun New" size="14" isBold="true"/>
+						<font fontName="TH Sarabun New" size="14" isBold="true" isPdfEmbedded="true"/>
 						<titleExpression><![CDATA["Revenue per visit"]]></titleExpression>
 					</chartTitle>
 					<chartSubtitle>
