@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DailyInventoryBalanceByStockChart" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ccaab330-4b67-4a6e-a74d-c732c5007d01">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="xBPKID" class="java.lang.Integer"/>
+	<parameter name="xPercent" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT dbo.fBpkGetBpkNameById(bpk_id) [Site], * FROM
+(
+	SELECT t1.bpk_id, t1.id, t1.[WAREHOUSE], t1.[Stock Balance Amount], t1.[BALANCE PERCENT], SUM(t2.[BALANCE PERCENT]) [COMMULATIVE]
+	FROM
+	(
+		SELECT ROW_NUMBER() OVER (ORDER BY [Stock Balance Amount] DESC) id, tmp.*, round((100*tmp.[Stock Balance Amount]/tmp.SUMMARY), 0) [BALANCE PERCENT]
+		FROM
+		(
+			SELECT bpk_id, stock_name [WAREHOUSE], SUM(cost) [Stock Balance Amount], (SELECT SUM(cost) FROM bpk_daily_stock_mgnt_his WHERE bpk_id='$P!{xBPKID}') SUMMARY FROM bpk_daily_stock_mgnt_his WHERE bpk_id='$P!{xBPKID}'
+			GROUP BY bpk_id, stock_name
+		) tmp
+	) t1
+	INNER JOIN
+	(
+		SELECT ROW_NUMBER() OVER (ORDER BY [Stock Balance Amount] DESC) id, tmp.*, round((100*tmp.[Stock Balance Amount]/tmp.SUMMARY), 0) [BALANCE PERCENT]
+		FROM
+		(
+			SELECT bpk_id, stock_name [WAREHOUSE], SUM(cost) [Stock Balance Amount], (SELECT SUM(cost) FROM bpk_daily_stock_mgnt_his WHERE bpk_id='$P!{xBPKID}') SUMMARY FROM bpk_daily_stock_mgnt_his WHERE bpk_id='$P!{xBPKID}'
+			GROUP BY bpk_id, stock_name
+		) tmp
+	)
+	 t2 on t1.id >= t2.id
+	GROUP BY t1.bpk_id, t1.id, t1.[WAREHOUSE], t1.[Stock Balance Amount], t1.[BALANCE PERCENT]
+) StockBal
+WHERE StockBal.[COMMULATIVE]<=$P!{xPercent}
+ORDER BY id]]>
+	</queryString>
+	<field name="Site" class="java.lang.String"/>
+	<field name="bpk_id" class="java.lang.Short"/>
+	<field name="id" class="java.lang.Long"/>
+	<field name="WAREHOUSE" class="java.lang.String"/>
+	<field name="Stock Balance Amount" class="java.lang.Double"/>
+	<field name="BALANCE PERCENT" class="java.lang.Double"/>
+	<field name="COMMULATIVE" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="250" splitType="Stretch">
+			<pieChart>
+				<chart isShowLegend="false">
+					<reportElement uuid="514dd7da-811a-47f4-8b82-74aa64502d76" x="0" y="30" width="450" height="220"/>
+					<chartTitle position="Top">
+						<font fontName="TH Sarabun New" size="14" isPdfEmbedded="true"/>
+						<titleExpression><![CDATA[$P{xPercent} + " % Stock Balance Amount - "+$F{Site}]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle>
+						<font fontName="TH Sarabun New" isPdfEmbedded="true"/>
+					</chartSubtitle>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<keyExpression><![CDATA[$F{WAREHOUSE}]]></keyExpression>
+					<valueExpression><![CDATA[$F{BALANCE PERCENT}]]></valueExpression>
+					<labelExpression><![CDATA[$F{BALANCE PERCENT}>2 ?
+$F{WAREHOUSE}+"   "+
+(
+    $F{Stock Balance Amount}<1000.000000 ? new DecimalFormat("##0.##").format($F{Stock Balance Amount}) :
+    $F{Stock Balance Amount}>=1000.000000 && $F{Stock Balance Amount}<1000000.000000 ? new DecimalFormat("##0.##").format($F{Stock Balance Amount}/1000)+"K" :
+    $F{Stock Balance Amount}>=1000000.000000 && $F{Stock Balance Amount}<1000000000.000000 ? new DecimalFormat("##0.##").format($F{Stock Balance Amount}/1000000)+"M" : new DecimalFormat("##0.##").format($F{Stock Balance Amount}/1000000000)+"G"
+)
+: ""]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel>
+						<font fontName="TH Sarabun New" isPdfEmbedded="true"/>
+					</itemLabel>
+				</piePlot>
+			</pieChart>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DailyPatientRevenueBarChart" pageWidth="555" pageHeight="802" whenNoDataType="BlankPage" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="48b9f74d-eb47-410e-895b-8a9f384dabd9">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="32"/>
+	<parameter name="dBeginDate" class="java.lang.String">
+		<parameterDescription><![CDATA[BeginDate]]></parameterDescription>
+	</parameter>
+	<parameter name="dEndDate" class="java.lang.String">
+		<parameterDescription><![CDATA[EndDate]]></parameterDescription>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT Daily, BPK1, BPK3, BPK8, BPK9 FROM bpk_daily_patient_revenue WHERE (Daily LIKE '%Total OPD%' OR Daily LIKE '%Total IPD%') AND FromDate='$P!{dBeginDate}' AND ToDate='$P!{dEndDate}']]>
+	</queryString>
+	<field name="Daily" class="java.lang.String"/>
+	<field name="BPK1" class="java.lang.Double"/>
+	<field name="BPK3" class="java.lang.Double"/>
+	<field name="BPK8" class="java.lang.Double"/>
+	<field name="BPK9" class="java.lang.Double"/>
+	<group name="BPK1">
+		<groupExpression><![CDATA[$F{BPK1}]]></groupExpression>
+	</group>
+	<group name="BPK3">
+		<groupExpression><![CDATA[$F{BPK3}]]></groupExpression>
+	</group>
+	<group name="BPK8">
+		<groupExpression><![CDATA[$F{BPK8}]]></groupExpression>
+	</group>
+	<group name="BPK9">
+		<groupExpression><![CDATA[$F{BPK9}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="260" splitType="Stretch">
+			<barChart>
+				<chart isShowLegend="true" theme="default">
+					<reportElement uuid="49da2107-1031-4982-abe7-1dd73e32798d" stretchType="RelativeToBandHeight" x="0" y="60" width="265" height="200"/>
+					<chartTitle>
+						<font fontName="TH Sarabun New" size="14" isBold="true"/>
+						<titleExpression><![CDATA["Total Visit"]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle>
+						<font fontName="TH Sarabun New" size="12"/>
+					</chartSubtitle>
+					<chartLegend position="Bottom">
+						<font fontName="TH Sarabun New" size="12"/>
+					</chartLegend>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{Daily}]]></seriesExpression>
+						<categoryExpression><![CDATA["BPK1"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{BPK1}]]></valueExpression>
+						<labelExpression><![CDATA["BPK1"]]></labelExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{Daily}]]></seriesExpression>
+						<categoryExpression><![CDATA["BPK3"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{BPK3}]]></valueExpression>
+						<labelExpression><![CDATA["BPK3"]]></labelExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{Daily}]]></seriesExpression>
+						<categoryExpression><![CDATA["BPK8"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{BPK8}]]></valueExpression>
+						<labelExpression><![CDATA["BPK8"]]></labelExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{Daily}]]></seriesExpression>
+						<categoryExpression><![CDATA["BPK9"]]></categoryExpression>
+						<valueExpression><![CDATA[$F{BPK9}]]></valueExpression>
+						<labelExpression><![CDATA["BPK9"]]></labelExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot/>
+					<itemLabel>
+						<font fontName="TH Sarabun New" size="12"/>
+					</itemLabel>
+					<categoryAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="TH Sarabun New" size="12"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="TH Sarabun New" size="12"/>
+							</tickLabelFont>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont>
+								<font fontName="TH Sarabun New" size="12"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="TH Sarabun New" size="12"/>
+							</tickLabelFont>
+						</axisFormat>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+		</band>
+	</summary>
+</jasperReport>

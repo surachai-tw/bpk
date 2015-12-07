@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MonthlyInventoryMovmntByMovmntType" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0079dbec-9b83-4537-93f9-ea0d5c7c7b08">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="dBeginDate" class="java.lang.String"/>
+	<parameter name="dEndDate" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+DISTINCT
+dbo.fBpkGetBpkNameById(bpk_id) [Site],
+isnull((SELECT SUM(summary_cost) FROM bpk_stock_movement_summary WHERE movement_date BETWEEN '2015-01-01' AND '2015-01-31' AND movement_type IN ('RCVPUR') AND bpk_id=main.bpk_id), 0) [ซื้อจากผู้ขาย],
+isnull((SELECT SUM(summary_cost) FROM bpk_stock_movement_summary WHERE movement_date BETWEEN '2015-01-01' AND '2015-01-31' AND movement_type IN ('ISSPTNT') AND bpk_id=main.bpk_id), 0) [ขายผู้ป่วย],
+isnull((SELECT SUM(summary_cost) FROM bpk_stock_movement_summary WHERE movement_date BETWEEN '2015-01-01' AND '2015-01-31' AND movement_type IN ('ISSDEPT') AND bpk_id=main.bpk_id), 0) [ใช้ในหน่วยงาน],
+isnull((SELECT SUM(summary_cost) FROM bpk_stock_movement_summary WHERE movement_date BETWEEN '2015-01-01' AND '2015-01-31' AND movement_type IN ('RCVOTH') AND bpk_id=main.bpk_id), 0) [รับด้วยวิธีอื่นๆ],
+isnull((SELECT SUM(summary_cost) FROM bpk_stock_movement_summary WHERE movement_date BETWEEN '2015-01-01' AND '2015-01-31' AND movement_type IN ('ISSOTH') AND bpk_id=main.bpk_id), 0) [ใช้ด้วยวิธีอื่นๆ]
+FROM bpk_stock_movement_summary main
+WHERE movement_date BETWEEN '2015-01-01' AND '2015-01-31'
+GROUP BY bpk_id, movement_type]]>
+	</queryString>
+	<field name="Site" class="java.lang.String"/>
+	<field name="ซื้อจากผู้ขาย" class="java.lang.Double"/>
+	<field name="ขายผู้ป่วย" class="java.lang.Double"/>
+	<field name="ใช้ในหน่วยงาน" class="java.lang.Double"/>
+	<field name="รับด้วยวิธีอื่นๆ" class="java.lang.Double"/>
+	<field name="ใช้ด้วยวิธีอื่นๆ" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="250" splitType="Stretch">
+			<barChart>
+				<chart>
+					<reportElement uuid="054a6eb8-b266-424b-9473-0652deeb34a2" x="0" y="30" width="450" height="220"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA["ขายผู้ป่วย"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{Site}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{ขายผู้ป่วย}]]></valueExpression>
+						<labelExpression><![CDATA["ขายผู้ป่วย   "+
+(
+    $F{ขายผู้ป่วย}<1000.000000 ? new DecimalFormat("##0.##").format($F{ขายผู้ป่วย}) :
+    $F{ขายผู้ป่วย}>=1000.000000 && $F{ขายผู้ป่วย}<1000000.000000 ? new DecimalFormat("##0.##").format($F{ขายผู้ป่วย}/1000)+"K" :
+    $F{ขายผู้ป่วย}>=1000000.000000 && $F{ขายผู้ป่วย}<1000000000.000000 ? new DecimalFormat("##0.##").format($F{ขายผู้ป่วย}/1000000)+"M" : new DecimalFormat("##0.##").format($F{ขายผู้ป่วย}/1000000000)+"G"
+)]]></labelExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA["ใช้ในหน่วยงาน"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{Site}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{ใช้ในหน่วยงาน}]]></valueExpression>
+						<labelExpression><![CDATA["ใช้ในหน่วยงาน   "+
+(
+    $F{ใช้ในหน่วยงาน}<1000.000000 ? new DecimalFormat("##0.##").format($F{ใช้ในหน่วยงาน}) :
+    $F{ใช้ในหน่วยงาน}>=1000.000000 && $F{ใช้ในหน่วยงาน}<1000000.000000 ? new DecimalFormat("##0.##").format($F{ใช้ในหน่วยงาน}/1000)+"K" :
+    $F{ใช้ในหน่วยงาน}>=1000000.000000 && $F{ใช้ในหน่วยงาน}<1000000000.000000 ? new DecimalFormat("##0.##").format($F{ใช้ในหน่วยงาน}/1000000)+"M" : new DecimalFormat("##0.##").format($F{ใช้ในหน่วยงาน}/1000000000)+"G"
+)]]></labelExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA["ใช้ด้วยวิธีอื่นๆ"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{Site}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{ใช้ด้วยวิธีอื่นๆ}]]></valueExpression>
+						<labelExpression><![CDATA["ใช้ด้วยวิธีอื่นๆ   "+
+(
+    $F{ใช้ด้วยวิธีอื่นๆ}<1000.000000 ? new DecimalFormat("##0.##").format($F{ใช้ด้วยวิธีอื่นๆ}) :
+    $F{ใช้ด้วยวิธีอื่นๆ}>=1000.000000 && $F{ใช้ด้วยวิธีอื่นๆ}<1000000.000000 ? new DecimalFormat("##0.##").format($F{ใช้ด้วยวิธีอื่นๆ}/1000)+"K" :
+    $F{ใช้ด้วยวิธีอื่นๆ}>=1000000.000000 && $F{ใช้ด้วยวิธีอื่นๆ}<1000000000.000000 ? new DecimalFormat("##0.##").format($F{ใช้ด้วยวิธีอื่นๆ}/1000000)+"M" : new DecimalFormat("##0.##").format($F{ใช้ด้วยวิธีอื่นๆ}/1000000000)+"G"
+)]]></labelExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA["ซื้อจากผู้ขาย"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{Site}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{ซื้อจากผู้ขาย}]]></valueExpression>
+						<labelExpression><![CDATA["ซื้อจากผู้ขาย   "+
+(
+    $F{ซื้อจากผู้ขาย}<1000.000000 ? new DecimalFormat("##0.##").format($F{ซื้อจากผู้ขาย}) :
+    $F{ซื้อจากผู้ขาย}>=1000.000000 && $F{ซื้อจากผู้ขาย}<1000000.000000 ? new DecimalFormat("##0.##").format($F{ซื้อจากผู้ขาย}/1000)+"K" :
+    $F{ซื้อจากผู้ขาย}>=1000000.000000 && $F{ซื้อจากผู้ขาย}<1000000000.000000 ? new DecimalFormat("##0.##").format($F{ซื้อจากผู้ขาย}/1000000)+"M" : new DecimalFormat("##0.##").format($F{ซื้อจากผู้ขาย}/1000000000)+"G"
+)]]></labelExpression>
+					</categorySeries>
+					<categorySeries>
+						<seriesExpression><![CDATA["รับด้วยวิธีอื่นๆ"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{Site}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{รับด้วยวิธีอื่นๆ}]]></valueExpression>
+						<labelExpression><![CDATA["รับด้วยวิธีอื่นๆ   "+
+(
+    $F{รับด้วยวิธีอื่นๆ}<1000.000000 ? new DecimalFormat("##0.##").format($F{รับด้วยวิธีอื่นๆ}) :
+    $F{รับด้วยวิธีอื่นๆ}>=1000.000000 && $F{รับด้วยวิธีอื่นๆ}<1000000.000000 ? new DecimalFormat("##0.##").format($F{รับด้วยวิธีอื่นๆ}/1000)+"K" :
+    $F{รับด้วยวิธีอื่นๆ}>=1000000.000000 && $F{รับด้วยวิธีอื่นๆ}<1000000000.000000 ? new DecimalFormat("##0.##").format($F{รับด้วยวิธีอื่นๆ}/1000000)+"M" : new DecimalFormat("##0.##").format($F{รับด้วยวิธีอื่นๆ}/1000000000)+"G"
+)]]></labelExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot/>
+					<itemLabel/>
+				</barPlot>
+			</barChart>
+		</band>
+	</summary>
+</jasperReport>
