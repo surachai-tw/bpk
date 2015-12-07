@@ -74,6 +74,10 @@ CREATE INDEX idx_credit_detail_pverify_deptid ON bpk_account_credit_detail(pveri
 CREATE INDEX idx_credit_detail_billinggrpid ON bpk_account_credit_detail(base_billing_group_id);
 CREATE INDEX idx_credit_detail_accid ON bpk_account_credit_detail(account_id);
 
+ALTER TABLE bpk_account_credit_detail ADD base_plan_group_id NVARCHAR(255) DEFAULT '';
+ALTER TABLE bpk_account_credit_detail ADD nation NVARCHAR(255) DEFAULT '';
+ALTER TABLE bpk_account_credit_detail ADD patient_id NVARCHAR(255) DEFAULT '';
+
 CREATE TABLE bpk_daily_patient_revenue
 (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
@@ -91,3 +95,32 @@ CREATE TABLE bpk_daily_patient_revenue
 	BPK9 FLOAT,
 	[Growth BPK9] FLOAT
 );	
+
+DROP TABLE bpk_daily_stock_mgnt_his;
+CREATE TABLE bpk_daily_stock_mgnt_his 
+(
+	bpk_id SMALLINT DEFAULT 0, 
+    begin_date VARCHAR(255) NOT NULL, 
+    id BIGINT IDENTITY(1,1) PRIMARY KEY, 
+    fix_item_type_description NVARCHAR(255) DEFAULT '',
+    base_drug_type_description NVARCHAR(255) DEFAULT '',
+    item_id NVARCHAR(255) DEFAULT '', 
+    item_description NVARCHAR(255) DEFAULT '', 
+    stock_id NVARCHAR(255) DEFAULT '', 
+    stock_name NVARCHAR(255) DEFAULT '', 
+	is_consign VARCHAR(1) DEFAULT 'N', 
+    quantity FLOAT DEFAULT 0, 
+    small_unit_description NVARCHAR(255) DEFAULT '', 
+    unit_avg_cost FLOAT DEFAULT 0, 
+	cost FLOAT DEFAULT 0 
+);
+
+DROP TABLE bpk_stock_movement_summary;
+CREATE TABLE bpk_stock_movement_summary 
+(
+	bpk_id SMALLINT DEFAULT 0, 
+    movement_date VARCHAR(255) NOT NULL, 
+    id BIGINT IDENTITY(1,1) PRIMARY KEY, 
+    movement_type NVARCHAR(255) DEFAULT '',
+    summary_cost FLOAT DEFAULT 0
+);

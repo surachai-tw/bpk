@@ -47,6 +47,7 @@ BEGIN
 	WHERE 
 	fix_visit_type_id=0 
 	AND financial_discharge_date BETWEEN @V_BeginDate AND @V_EndDate  
+	AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW')
  
 	UNION 
 
@@ -58,16 +59,16 @@ BEGIN
 		SUM(wlinepaid)/Count(DISTINCT visit_id) 
 		ELSE 0 END [BPK], 
 	CASE WHEN Count(DISTINCT (CASE WHEN bpk_id=1 THEN visit_id ELSE NULL END))<>0 THEN 
-		SUM(CASE WHEN bpk_id=1 THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=1 THEN visit_id ELSE NULL END)) 
+		SUM(CASE WHEN bpk_id=1 AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW') THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=1 THEN visit_id ELSE NULL END)) 
 		ELSE 0 END [BPK1], 
 	CASE WHEN Count(DISTINCT (CASE WHEN bpk_id=3 THEN visit_id ELSE NULL END))<>0 THEN 
-		SUM(CASE WHEN bpk_id=3 THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=3 THEN visit_id ELSE NULL END)) 
+		SUM(CASE WHEN bpk_id=3 AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW') THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=3 THEN visit_id ELSE NULL END)) 
 		ELSE 0 END [BPK3], 
 	CASE WHEN Count(DISTINCT (CASE WHEN bpk_id=8 THEN visit_id ELSE NULL END))<>0 THEN 
-		SUM(CASE WHEN bpk_id=8 THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=8 THEN visit_id ELSE NULL END)) 
+		SUM(CASE WHEN bpk_id=8 AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW') THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=8 THEN visit_id ELSE NULL END)) 
 		ELSE 0 END [BPK8], 
 	CASE WHEN Count(DISTINCT (CASE WHEN bpk_id=9 THEN visit_id ELSE NULL END))<>0 THEN 
-		SUM(CASE WHEN bpk_id=9 THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=9 THEN visit_id ELSE NULL END)) 
+		SUM(CASE WHEN bpk_id=9 AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW') THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=9 THEN visit_id ELSE NULL END)) 
 		ELSE 0 END [BPK9]
 	FROM 
 	bpk_account_credit_detail 
@@ -109,6 +110,7 @@ BEGIN
 	WHERE 
 	fix_visit_type_id=1 
 	AND financial_discharge_date BETWEEN @V_BeginDate AND @V_EndDate  
+	AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW')
  
 	UNION 
 
@@ -120,16 +122,16 @@ BEGIN
 		SUM(wlinepaid)/Count(DISTINCT visit_id) 
 		ELSE 0 END [BPK], 
 	CASE WHEN Count(DISTINCT (CASE WHEN bpk_id=1 THEN visit_id ELSE NULL END))<>0 THEN 
-		SUM(CASE WHEN bpk_id=1 THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=1 THEN visit_id ELSE NULL END)) 
+		SUM(CASE WHEN bpk_id=1 AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW') THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=1 THEN visit_id ELSE NULL END)) 
 		ELSE 0 END [BPK1], 
 	CASE WHEN Count(DISTINCT (CASE WHEN bpk_id=3 THEN visit_id ELSE NULL END))<>0 THEN 
-		SUM(CASE WHEN bpk_id=3 THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=3 THEN visit_id ELSE NULL END)) 
+		SUM(CASE WHEN bpk_id=3 AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW') THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=3 THEN visit_id ELSE NULL END)) 
 		ELSE 0 END [BPK3], 
 	CASE WHEN Count(DISTINCT (CASE WHEN bpk_id=8 THEN visit_id ELSE NULL END))<>0 THEN 
-		SUM(CASE WHEN bpk_id=8 THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=8 THEN visit_id ELSE NULL END)) 
+		SUM(CASE WHEN bpk_id=8 AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW') THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=8 THEN visit_id ELSE NULL END)) 
 		ELSE 0 END [BPK8], 
 	CASE WHEN Count(DISTINCT (CASE WHEN bpk_id=9 THEN visit_id ELSE NULL END))<>0 THEN 
-		SUM(CASE WHEN bpk_id=9 THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=9 THEN visit_id ELSE NULL END)) 
+		SUM(CASE WHEN bpk_id=9 AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW') THEN wlinepaid ELSE 0 END)/Count(DISTINCT (CASE WHEN bpk_id=9 THEN visit_id ELSE NULL END)) 
 		ELSE 0 END [BPK9]
 	FROM 
 	bpk_account_credit_detail 
@@ -152,5 +154,6 @@ BEGIN
 	bpk_account_credit_detail 
 	WHERE 
 	financial_discharge_date BETWEEN @V_BeginDate AND @V_EndDate  
+	AND base_plan_group_id NOT IN ('A', 'AB', 'AV', 'AW', 'B', 'D', 'F', 'VIP', 'SW')
 
 END

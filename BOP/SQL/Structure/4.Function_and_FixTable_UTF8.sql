@@ -137,6 +137,59 @@ BEGIN
     RETURN rec_desc;
 END';
 
+CREATE OR REPLACE FUNCTION bpkget_item_name_by_id(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(common_name, '''')) AS description FROM item   
+    WHERE item_id=id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';
+
+
+CREATE OR REPLACE FUNCTION bpkget_stock_name_by_id(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(stock_name, '''')) AS description FROM stock    
+    WHERE stock_id=id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';
+
+CREATE OR REPLACE FUNCTION bpkget_is_consign_by_id(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(fix_stock_type_id, ''N'')) AS consign FROM stock    
+    WHERE stock_id=id;
+
+    rec_desc := COALESCE(rec.consign, ''N'');
+
+    IF rec_desc=''4'' THEN 
+        RETURN ''Y'';
+    END IF;
+
+    RETURN ''N'';
+END';
+
 CREATE OR REPLACE FUNCTION bpkget_base_drug_type_by_id(id text) RETURNS text 
 LANGUAGE plpgsql 
 AS '
