@@ -1,6 +1,6 @@
-SELECT * FROM bpk_agent_with_nation('2015-09-01', '2015-09-30')
+SELECT * FROM bpk_agent_with_nation('2015-11-01', '2015-09-30')
 
-EXECUTE bpk_agent_with_nation('2015-09-01', '2015-09-30')
+EXECUTE bpk_agent_with_nation('2015-11-01', '2015-09-30')
 
 -- DROP FUNCTION bpk_agent_with_nation(fromdate text, todate text); 
 
@@ -67,7 +67,7 @@ CASE WHEN "Visit Type"='IPD' AND "Nation"<>'ไทย' AND "Group"='อพ.' THEN SUM("รวม
 CASE WHEN "Visit Type"='IPD' AND "Nation"<>'ไทย' AND "Group"='อพ.' THEN SUM("ส่วนลด") ELSE 0 END "ส่วนลด IPD", 
 CASE WHEN "Visit Type"='IPD' AND "Nation"<>'ไทย' AND "Group"='อพ.' THEN SUM("ยอดสุทธิ") ELSE 0 END "สุทธิ IPD" 
 FROM 
-bpk_agent_with_nation('2015-09-01', '2015-09-30') main
+bpk_agent_with_nation('2015-11-01', '2015-09-30') main
 GROUP BY main."Discharge Date", main."Visit Type", main."Nation", main."Group" 
 ORDER BY "Discharge Date";
 
@@ -124,8 +124,8 @@ BEGIN
     RETURN ;
 END';
 
--- SELECT * FROM bpk_agent_with_nation_total('2015-09-01', '2015-09-30')
-SELECT * FROM bpk_agent_without_nation_th_total('2015-09-01', '2015-09-30', 'อพ.')
+-- SELECT * FROM bpk_agent_with_nation_total('2015-11-01', '2015-09-30')
+SELECT * FROM bpk_agent_without_nation_th_total('2015-11-01', '2015-09-30', 'อพ.')
 -- DROP TABLE bpk_temp_agent_with_nation
 
 SELECT * FROM bpk_account_credit_detail LIMIT 10 
@@ -156,14 +156,14 @@ visit
 INNER JOIN patient ON visit.patient_id = patient.patient_id AND patient.active='1' 
 INNER JOIN fix_nationality ON patient.fix_nationality_id=fix_nationality.fix_nationality_id
 INNER JOIN bpk_account_credit_detail acccredit ON visit.visit_id = acccredit.visit_id 
-            AND acccredit.financial_discharge_date BETWEEN '2015-09-01' AND '2015-09-31'
+            AND acccredit.financial_discharge_date BETWEEN '2015-11-01' AND '2015-09-31'
 WHERE visit.active='1' 
 AND visit.visit_id IN 
 (
     SELECT DISTINCT visit.visit_id FROM visit 
     INNER JOIN visit_payment ON visit.visit_id = visit_payment.visit_id 
     INNER JOIN plan ON visit_payment.plan_id = plan.plan_id AND plan.base_plan_group_id IN ('AT', 'AY')
-    WHERE financial_discharge_date BETWEEN '2015-09-01' AND '2015-09-31'
+    WHERE financial_discharge_date BETWEEN '2015-11-01' AND '2015-09-31'
 ) 
 GROUP BY visit.visit_id, acccredit.hn, acccredit.financial_discharge_date, acccredit.fix_visit_type_id, fix_nationality.description, 
 acccredit.pverify_deptid, acccredit.pordered_by_department
