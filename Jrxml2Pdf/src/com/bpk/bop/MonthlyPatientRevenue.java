@@ -121,7 +121,7 @@ public class MonthlyPatientRevenue
                 System.out.println("yyyy-mm-DD = " + (new SimpleDateFormat("yyyy-mm-DD").parse(reportDate[0])) + " to " + (new SimpleDateFormat("yyyy-mm-DD").parse(reportDate[1])));
 
                 // Export pdf file
-                JasperExportManager.exportReportToPdfFile(jprint, outputFolder + System.getProperty("file.separator") + (new SimpleDateFormat("yyyy-MM").format((java.util.Date) (java.sql.Date.valueOf(reportDate[0])))) + ".pdf");
+                JasperExportManager.exportReportToPdfFile(jprint, outputFolder + System.getProperty("file.separator") + (new SimpleDateFormat("yyyy-MM", new Locale("en", "US")).format((java.util.Date) (java.sql.Date.valueOf(reportDate[0])))) + ".pdf");
 
                 System.out.println("Done exporting reports to pdf");
 

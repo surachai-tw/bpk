@@ -122,10 +122,10 @@ public class DailyPatientRevenue
                     // สร้าง Folder รอไว้
                     String outputFolder = mkdirFromDate(pathoutput, reportDate[0]);
 
-                    System.out.println("yyyy-mm-DD = " + (new SimpleDateFormat("yyyy-mm-DD").parse(reportDate[0])));
+                    System.out.println("yyyy-mm-DD = " + reportDate[0]);
 
                     // Export pdf file
-                    JasperExportManager.exportReportToPdfFile(jprint, outputFolder + System.getProperty("file.separator") + (new SimpleDateFormat("dd MMM yyyy").format((java.util.Date) (java.sql.Date.valueOf(reportDate[0])))) + ".pdf");
+                    JasperExportManager.exportReportToPdfFile(jprint, outputFolder + System.getProperty("file.separator") + (new SimpleDateFormat("dd MMM yyyy", new Locale("en", "US")).format((java.util.Date) (java.sql.Date.valueOf(reportDate[0])))) + ".pdf");
 
                     System.out.println("Done exporting reports to pdf");
 
