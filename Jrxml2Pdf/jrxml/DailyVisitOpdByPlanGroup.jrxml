@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DailyVisitOpdByPlanGroup" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="BlankPage" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isSummaryNewPage="true" uuid="3114603f-359c-4dd0-bda4-0e38ffbd4e10">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="42"/>
+	<property name="ireport.y" value="71"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["..\\jrxml\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dBeginDate" class="java.lang.String"/>
+	<parameter name="dEndDate" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT CAST($P!{dBeginDate} AS VARCHAR(10)) AS dBeginDate, CAST($P!{dEndDate} AS VARCHAR(10)) AS dEndDate]]>
+	</queryString>
+	<field name="dBeginDate" class="java.lang.String"/>
+	<field name="dEndDate" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<lastPageFooter>
+		<band height="595" splitType="Stretch">
+			<textField>
+				<reportElement uuid="b8b3575c-78a6-4383-a2a6-abf128c1a07c" x="10" y="10" width="804" height="35"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="15" isBold="true" pdfFontName="font/THSarabunNewBold.ttf" pdfEncoding="TIS-620" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Daily OPD Visits By Plan Group Statistics " + ( new java.text.SimpleDateFormat("d MMMM yyyy", new java.util.Locale("th", "TH")).format ( (java.util.Date) (java.sql.Date.valueOf($P{dBeginDate})) ) )]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement uuid="3a99de5d-f7a8-4721-8b96-8dfd311fc4b3" x="414" y="48" width="400" height="220"/>
+				<subreportParameter name="dBeginDate">
+					<subreportParameterExpression><![CDATA[$P{dBeginDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dEndDate">
+					<subreportParameterExpression><![CDATA[$P{dEndDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="xBPKID">
+					<subreportParameterExpression><![CDATA["3"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DailyVisitOpdByPlanGroupPieChart.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="8b01497b-e002-499e-b4f6-f689199a679f" x="414" y="274" width="400" height="220"/>
+				<subreportParameter name="dBeginDate">
+					<subreportParameterExpression><![CDATA[$P{dBeginDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dEndDate">
+					<subreportParameterExpression><![CDATA[$P{dEndDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="xBPKID">
+					<subreportParameterExpression><![CDATA["9"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DailyVisitOpdByPlanGroupPieChart.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="75be7818-1577-495a-b4f3-437acfc60edb" x="10" y="48" width="400" height="220"/>
+				<subreportParameter name="dBeginDate">
+					<subreportParameterExpression><![CDATA[$P{dBeginDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dEndDate">
+					<subreportParameterExpression><![CDATA[$P{dEndDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="xBPKID">
+					<subreportParameterExpression><![CDATA["1"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DailyVisitOpdByPlanGroupPieChart.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="678c836a-0b63-4c12-8726-00b778381b46" x="10" y="274" width="400" height="220"/>
+				<subreportParameter name="dBeginDate">
+					<subreportParameterExpression><![CDATA[$P{dBeginDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dEndDate">
+					<subreportParameterExpression><![CDATA[$P{dEndDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="xBPKID">
+					<subreportParameterExpression><![CDATA["8"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DailyVisitOpdByPlanGroupPieChart.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band height="555" splitType="Stretch">
+			<subreport>
+				<reportElement uuid="c09e26b8-6900-450f-a5d1-ff61e5771276" x="0" y="0" width="842" height="555"/>
+				<subreportParameter name="SUBREPORT_DIR"/>
+				<subreportParameter name="dBeginDate">
+					<subreportParameterExpression><![CDATA[$P{dBeginDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="dEndDate">
+					<subreportParameterExpression><![CDATA[$P{dEndDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DailyVisitOpdByNation.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>

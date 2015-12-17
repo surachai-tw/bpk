@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DailyVisitOpdByPlanGroupPieChart" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b5f8d85c-5508-4afb-8f1e-0c18c790e8ae">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="dBeginDate" class="java.lang.String"/>
+	<parameter name="dEndDate" class="java.lang.String"/>
+	<parameter name="xBPKID" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT dbo.fBpkGetBpkNameById($P!{xBPKID}) [BPK], nation, Count(DISTINCT visit_id) Cnt
+FROM
+bpk_account_credit_detail
+WHERE financial_discharge_date BETWEEN '$P!{dBeginDate}' AND '$P!{dEndDate}'
+AND fix_visit_type_id='0'
+AND bpk_id='$P!{xBPKID}'
+GROUP BY nation
+ORDER BY Cnt DESC]]>
+	</queryString>
+	<field name="BPK" class="java.lang.String"/>
+	<field name="nation" class="java.lang.String"/>
+	<field name="Cnt" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="240" splitType="Stretch">
+			<pieChart>
+				<chart isShowLegend="false">
+					<reportElement uuid="caaef923-e630-4fbd-9d4e-fce9579180e7" stretchType="RelativeToBandHeight" x="0" y="0" width="400" height="240"/>
+					<chartTitle>
+						<font fontName="TH Sarabun New" size="14" isBold="true" isPdfEmbedded="true"/>
+						<titleExpression><![CDATA["OPD Visits By Nation"]]></titleExpression>
+					</chartTitle>
+					<chartSubtitle>
+						<font fontName="TH Sarabun New" size="12" isPdfEmbedded="true"/>
+						<subtitleExpression><![CDATA[$F{BPK}]]></subtitleExpression>
+					</chartSubtitle>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<keyExpression><![CDATA[$F{nation}]]></keyExpression>
+					<valueExpression><![CDATA[$F{Cnt}]]></valueExpression>
+					<labelExpression><![CDATA["["+($F{nation}!=null && !"".equals($F{nation}) ? $F{nation} : "N/A")+"] " + new DecimalFormat("#,##0").format($F{Cnt})]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel>
+						<font fontName="TH Sarabun New" isPdfEmbedded="true"/>
+					</itemLabel>
+				</piePlot>
+			</pieChart>
+		</band>
+	</summary>
+</jasperReport>

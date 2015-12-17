@@ -51,10 +51,10 @@
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="260" splitType="Stretch">
+		<band height="200" splitType="Stretch">
 			<pieChart>
 				<chart isShowLegend="false" theme="default">
-					<reportElement uuid="1cc10018-8ecd-4305-85a5-3967d2976415" stretchType="RelativeToBandHeight" x="0" y="60" width="270" height="200"/>
+					<reportElement uuid="1cc10018-8ecd-4305-85a5-3967d2976415" stretchType="RelativeToBandHeight" x="0" y="0" width="270" height="200"/>
 					<chartTitle position="Top">
 						<font fontName="TH Sarabun New" size="14" isBold="true"/>
 						<titleExpression><![CDATA[$F{Daily}]]></titleExpression>
