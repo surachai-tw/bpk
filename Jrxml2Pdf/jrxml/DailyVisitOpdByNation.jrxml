@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DailyVisitOpdByPlanNation" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isSummaryNewPage="true" uuid="3114603f-359c-4dd0-bda4-0e38ffbd4e10">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="255"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA["..\\jrxml\\"]]></defaultValueExpression>
 	</parameter>
@@ -44,7 +44,7 @@ CAST($P!{dEndDate} AS VARCHAR(10)) AS dEndDate]]>
 					<subreportParameterExpression><![CDATA[$P{dEndDate}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="xBPKID">
-					<subreportParameterExpression><![CDATA["1"]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[1]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DailyVisitOpdByNationPieChart.jasper"]]></subreportExpression>
@@ -58,7 +58,7 @@ CAST($P!{dEndDate} AS VARCHAR(10)) AS dEndDate]]>
 					<subreportParameterExpression><![CDATA[$P{dEndDate}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="xBPKID">
-					<subreportParameterExpression><![CDATA["3"]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[3]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DailyVisitOpdByNationPieChart.jasper"]]></subreportExpression>
@@ -72,7 +72,7 @@ CAST($P!{dEndDate} AS VARCHAR(10)) AS dEndDate]]>
 					<subreportParameterExpression><![CDATA[$P{dEndDate}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="xBPKID">
-					<subreportParameterExpression><![CDATA["8"]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[8]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DailyVisitOpdByNationPieChart.jasper"]]></subreportExpression>
@@ -86,7 +86,7 @@ CAST($P!{dEndDate} AS VARCHAR(10)) AS dEndDate]]>
 					<subreportParameterExpression><![CDATA[$P{dEndDate}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="xBPKID">
-					<subreportParameterExpression><![CDATA["9"]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[9]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DailyVisitOpdByNationPieChart.jasper"]]></subreportExpression>
@@ -94,6 +94,6 @@ CAST($P!{dEndDate} AS VARCHAR(10)) AS dEndDate]]>
 		</band>
 	</lastPageFooter>
 	<summary>
-		<band height="595" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</summary>
 </jasperReport>

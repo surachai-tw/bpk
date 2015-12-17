@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DailyVisitOpdBarChart" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e072c077-c65d-479c-aa5e-3ba59ac2bab8">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DailyVisitOpdBarChart" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e072c077-c65d-479c-aa5e-3ba59ac2bab8">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="dBeginDate" class="java.lang.String"/>
 	<parameter name="dEndDate" class="java.lang.String"/>
-	<parameter name="xBPKID" class="java.lang.String"/>
+	<parameter name="xBPKID" class="java.lang.Short"/>
 	<parameter name="xBackDate" class="java.lang.Integer">
 		<parameterDescription><![CDATA[จำนวนวันย้อนหลังเพื่อดูข้อมูล]]></parameterDescription>
 		<defaultValueExpression><![CDATA[14]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-dbo.fBpkGetBpkNameById('$P!{xBPKID}') [BPK]
+dbo.fBpkGetBpkNameById($P!{xBPKID}) [BPK]
 , substring(FromDate, 9, 2) AS FromDate,
 CASE WHEN '$P!{xBPKID}'='1' THEN BPK1
      WHEN '$P!{xBPKID}'='3' THEN BPK3
@@ -57,7 +57,7 @@ ORDER BY bpk_daily_patient_revenue.FromDate]]>
 					<reportElement uuid="f83d558b-d518-4b60-85bd-a1888d093715" x="0" y="0" width="380" height="238"/>
 					<chartTitle position="Top">
 						<font fontName="TH Sarabun New" size="14" isBold="true" isPdfEmbedded="true"/>
-						<titleExpression><![CDATA["OPD Visits "+$P{xBackDate}+" days"]]></titleExpression>
+						<titleExpression><![CDATA["OPD Visits "+($P{xBackDate}+1)+" days"]]></titleExpression>
 					</chartTitle>
 					<chartSubtitle>
 						<font fontName="TH Sarabun New" size="14" isPdfEmbedded="true"/>

@@ -61,7 +61,6 @@
 					</chartTitle>
 					<chartSubtitle>
 						<font fontName="TH Sarabun New" size="12"/>
-						<subtitleExpression><![CDATA[$F{BPK1}]]></subtitleExpression>
 					</chartSubtitle>
 					<chartLegend position="Bottom">
 						<font fontName="TH Sarabun New" size="12"/>
