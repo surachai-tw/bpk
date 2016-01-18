@@ -1,0 +1,1 @@
+java -cp lib\*;dist\lib\*;dist\Jrxml2Pdf.jar com.bpk.bop.MonthlyPatientRevenue %1 %2
