@@ -38,6 +38,10 @@ ORDER BY SUMMARY DESC
  SELECT * FROM bpk_daily_stock_mgnt_his WHERE bpk_id=9 AND stock_name='ห้องผ่าตัด' ORDER BY cost DESC 
  DELETE FROM bpk_daily_stock_mgnt_his WHERE quantity IN (9998, 9997, 9997) AND bpk_id=9
 
+ SELECT stock_mgnt.cur_quantity, item.item_code, item.common_name, item.base_unit_id FROM stock_mgnt 
+INNER JOIN item ON stock_mgnt.item_id=item.item_id AND item.active='1' 
+WHERE stock_id=(SELECT stock_id FROM stock WHERE stock_name='ER อาคาร 1') AND stock_mgnt.active='1' AND Cast(cur_quantity AS FLOAT)>8888
+
  SELECT * FROM bpk_daily_stock_mgnt_his WHERE bpk_id=8 AND stock_name='ER อาคาร 2' ORDER BY cost DESC 
  DELETE FROM bpk_daily_stock_mgnt_his WHERE quantity IN (88904, 88903, 88842, 88896, 88898, 89062, 88902, 88898, 88902, 88897, 88896, 88896, 88895, 88895, 88895, 88891, 88895, 88898, 88904, 88903, 88891, 88901, 88865, 89032, 89104, 89068, 89324, 88901, 88898, 88899, 88891, 88891, 88891, 88891, 88896, 88910, 88898, 88898, 88900, 88936, 88899, 88902, 88865, 88903, 88901, 88903, 88902, 90088, 88918, 89138, 88907, 88902, 88904, 88904, 88904, 88904, 88900, 88652, 89152, 92488, 89388, 88875, 130091, 93088, 93488, 104488, 90388, 94980, 104432, 90564, 93638, 91388, 98238, 93488, 92088, 90788, 91488, 91788, 89688, 89188, 92888, 90388) AND bpk_id=8
 

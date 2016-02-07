@@ -124,3 +124,35 @@ CREATE TABLE bpk_stock_movement_summary
     movement_type NVARCHAR(255) DEFAULT '',
     summary_cost FLOAT DEFAULT 0
 );
+
+DROP TABLE bpk_patient;
+CREATE TABLE bpk_patient 
+(
+	bpk_id SMALLINT DEFAULT 0, 
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    patient_id NVARCHAR(255) DEFAULT '',
+	hn NVARCHAR(255) DEFAULT '', 
+	pid VARCHAR(255) DEFAULT '', 
+	any_id VARCHAR(255) DEFAULT '', 
+	prename NVARCHAR(255) DEFAULT '', 
+	firstname NVARCHAR(255) DEFAULT '', 
+	lastname NVARCHAR(255) DEFAULT '', 
+	birthdate VARCHAR(10) DEFAULT '', 
+	fix_gender_id VARCHAR(1) DEFAULT '', 
+	nation NVARCHAR(255) DEFAULT ''
+);
+CREATE INDEX idx_patient_bpk_id ON bpk_patient(bpk_id);
+CREATE INDEX idx_patient_patient_id ON bpk_patient(patient_id);
+CREATE INDEX idx_patient_hn ON bpk_patient(hn);
+CREATE INDEX idx_patient_pid ON bpk_patient(pid);
+CREATE INDEX idx_patient_any_id ON bpk_patient(any_id);
+CREATE INDEX idx_patient_nation ON bpk_patient(nation);
+
+CREATE TABLE bpk_daily_bed_occupancy 
+(
+	bpk_id SMALLINT DEFAULT 0, 
+    id BIGINT IDENTITY(1,1) PRIMARY KEY, 
+	ward_name NVARCHAR(255), 
+	base_service_point_id NVARCHAR(255), 
+	
+);

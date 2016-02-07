@@ -137,6 +137,38 @@ BEGIN
     RETURN rec_desc;
 END';
 
+CREATE OR REPLACE FUNCTION bpkget_base_billing_group_by_id(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(description_th, '''')) AS description FROM base_billing_group  
+    WHERE base_billing_group_id=id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';
+
+CREATE OR REPLACE FUNCTION bpkget_base_tariff_by_id(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(description, '''')) AS description FROM base_tariff  
+    WHERE base_tariff_id=id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';
+
 CREATE OR REPLACE FUNCTION bpkget_item_name_by_id(id text) RETURNS text 
 LANGUAGE plpgsql 
 AS '
@@ -164,6 +196,38 @@ DECLARE
 BEGIN 
     SELECT INTO rec TRIM(COALESCE(stock_name, '''')) AS description FROM stock    
     WHERE stock_id=id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';
+
+CREATE OR REPLACE FUNCTION bpkget_distributor_name_by_id(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(distributor_name, '''')) AS description FROM distributor    
+    WHERE distributor_id=id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';
+
+CREATE OR REPLACE FUNCTION bpkget_manufacturer_name_by_id(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(manufacturer_name, '''')) AS description FROM manufacturer    
+    WHERE manufacturer_id=id;
 
     rec_desc := COALESCE(rec.description, '''');
 

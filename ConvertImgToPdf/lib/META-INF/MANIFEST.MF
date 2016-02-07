@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.9.4
+Created-By: 1.8.0_60-b27 (Oracle Corporation)
+Class-Path: lib/core.jar lib/imgscalr-lib-4.2.jar lib/javase.jar lib/j
+ boss-j2ee.jar lib/jnp-client.jar lib/jbossall-client.jar lib/log4j.ja
+ r lib/morena.jar lib/shiftone-cache.jar lib/Utility.jar lib/iMedOPDPe
+ rsistence.jar lib/iMedOPDServices.jar lib/javax.servlet.jar lib/iMedS
+ tockServices.jar lib/iMedTracking.jar
+X-COMMENT: Main-Class will be added automatically by build
+Main-Class: com.iMed.iMedApp.iDocScanApp.FrmDocScanManager
+
