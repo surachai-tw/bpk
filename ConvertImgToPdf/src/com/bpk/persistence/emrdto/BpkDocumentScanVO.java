@@ -19,6 +19,11 @@ public class BpkDocumentScanVO extends XPersistent
 	private String updateDate;
 	private String updateTime;
 
+        /** สำหรับใข้แสดงผลเท่านั้น */
+        private String hn;
+        /** สำหรับใข้แสดงผลเท่านั้น */
+        private String patientName;
+
 	public String getPatientId()
 	{
 		return Utility.getStringVO(patientId);
@@ -138,5 +143,37 @@ public class BpkDocumentScanVO extends XPersistent
 	{
 		this.updateTime = updateTime;
 	}
+
+    /**
+     * @return the hn
+     */
+    public String getHn()
+    {
+        return Utility.getStringVO(hn);
+    }
+
+    /**
+     * @param hn the hn to set
+     */
+    public void setHn(String hn)
+    {
+        this.hn = hn;
+    }
+
+    /**
+     * @return the patientName
+     */
+    public String getPatientName()
+    {
+        return Utility.getStringVO(patientName);
+    }
+
+    /**
+     * @param patientName the patientName to set
+     */
+    public void setPatientName(String patientName)
+    {
+        this.patientName = patientName;
+    }
 
 }

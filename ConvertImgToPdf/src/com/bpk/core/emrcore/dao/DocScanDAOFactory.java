@@ -20,6 +20,8 @@ public class DocScanDAOFactory
     private static String password = null;
     private static String docScanOutputPath = null;
     private static String docScanInputPath = null;
+    private static String docScanInputPathSuccess = null;
+    private static String docScanInputPathFail = null;
     private static String docScanUrl = null;
 
     public static Connection getConnection()
@@ -61,6 +63,14 @@ public class DocScanDAOFactory
                     else if ("doc_scan_input_path".equalsIgnoreCase(key))
                     {
                         docScanInputPath = value;
+                    }
+                    else if ("doc_scan_input_path_success".equalsIgnoreCase(key))
+                    {
+                        docScanInputPathSuccess = value;
+                    }
+                    else if ("doc_scan_input_path_fail".equalsIgnoreCase(key))
+                    {
+                        docScanInputPathFail = value;
                     }
                     else if ("doc_scan_url".equalsIgnoreCase(key))
                     {
@@ -152,4 +162,21 @@ public class DocScanDAOFactory
     {
         return getHnImageFolder(hn, "/");
     }
+
+    /**
+     * @return the docScanInputPathSuccess
+     */
+    public static String getDocScanInputPathSuccess()
+    {
+        return docScanInputPathSuccess+System.getProperty("file.separator");
+    }
+
+    /**
+     * @return the docScanInputPathFail
+     */
+    public static String getDocScanInputPathFail()
+    {
+        return docScanInputPathFail+System.getProperty("file.separator");
+    }
+
 }

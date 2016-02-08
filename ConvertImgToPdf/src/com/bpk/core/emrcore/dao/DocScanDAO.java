@@ -122,6 +122,11 @@ public class DocScanDAO
                         fileNamePrefix = "";
                     }
                 }
+                else
+                {
+                    seqValue = "0";
+                    fileNamePrefix = "";
+                }
 
                 int intSeqValue = Integer.parseInt(seqValue)+1;
                 seqValue = String.valueOf(intSeqValue);
