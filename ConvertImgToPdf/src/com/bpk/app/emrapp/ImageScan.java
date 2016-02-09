@@ -69,7 +69,7 @@ public class ImageScan implements Runnable
         {
             public boolean accept(File dir, String name)
             {
-                return name.toLowerCase().endsWith(".jpg");
+                return name.toLowerCase().endsWith(".jpg") && !name.toUpperCase().startsWith("THRESHOLD_");
             }
         });
 
@@ -85,11 +85,13 @@ public class ImageScan implements Runnable
                 try
                 {
                     String resultText = null;
+                    String[] allReadText = null;
 
                     this.status = tmpStatusBeforeMatch;
                     this.statusText = "Matching HN in database";
                     // Read text from barcode 
                     int j = 101;
+                    CHECK_HN_VALID:
                     do
                     {
                         // รอบแรก จะไม่ต้องทำ Threshold
@@ -105,27 +107,44 @@ public class ImageScan implements Runnable
                         j-=2;
                         int tmpStatus = (int)(((float)(101 - j)/101)*(tmpStatusAfterMatch-tmpStatusBeforeMatch));
                         this.status = tmpStatusBeforeMatch + tmpStatus;
+
+                        if(resultText!=null)
+                        {
+                            allReadText = resultText.split(" ");
+                            if(allReadText!=null && allReadText.length>1)
+                            {
+                                if(aDocScanDAO.isPatientExistByHn(allReadText[0]))
+                                    break CHECK_HN_VALID;
+                            }
+                        }
                     }
-                    while(!aDocScanDAO.isPatientExistByHn(resultText) && j>=1);
+                    while(j>=1);
+                    for(int chki=0; allReadText!=null && chki<allReadText.length; chki++)
+                        System.out.println("allReadText["+chki+"] = "+allReadText[chki]);
 
                     this.status = tmpStatusAfterMatch;
                     this.statusText = "Create record in database";
                     if(resultText!=null)
                     {
-                        HashMap result = aDocScanDAO.readPatient(resultText);
+                        HashMap result = aDocScanDAO.readPatient(allReadText[0]);
                         Object aObj = result.get(EventNames.RESULT_DATA);
                         if(aObj!=null && aObj instanceof PatientVO)
                         {
                             aPatientVO = (PatientVO)aObj;
 
+                            // GetBarcodeServlet?code=958000003000+5802060286+D15317+20150206163207+LAB+LAB-RESULT&type=QR_CODE
                             BpkDocumentScanVO newBpkDocumentScanVO = new BpkDocumentScanVO();
                             newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
-                            // ส่วนของ visit id ต้องเช็กกับ user อีกที ว่าหายังไง?
-                            // 1. มาจาก input หน้าจอ
-                            // 2. มาจาก barcode ของการ scan
-                            // 3. มาจาก visit ที่หาได้ในปัจจุบัน
-                            // ส่วนของ Folder จะให้มาจากการเลือกจากหน้าจอก่อน แต่ก็อาจจะมาจากการอ่าน barcode ก็ได้
-                            newBpkDocumentScanVO.setFolderName(this.getFolderName());
+                            newBpkDocumentScanVO.setHn(aPatientVO.getHn());
+                            newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
+                            newBpkDocumentScanVO.setVn(allReadText!=null && allReadText.length>=2 ? allReadText[1] : "");
+                            newBpkDocumentScanVO.setDoctorEid(allReadText!=null && allReadText.length>=3 ? allReadText[2] : "");
+                            newBpkDocumentScanVO.setPrintDate(BpkDocumentScanVO.getDateFromReadText(allReadText!=null && allReadText.length>=4 ? allReadText[3] : ""));
+                            newBpkDocumentScanVO.setPrintTime(BpkDocumentScanVO.getTimeFromReadText(allReadText!=null && allReadText.length>=4 ? allReadText[3] : ""));
+                            newBpkDocumentScanVO.setFolderName(allReadText!=null && allReadText.length>=5 ? allReadText[4] : "OTR");
+                            newBpkDocumentScanVO.setDocumentName(allReadText!=null && allReadText.length>=6 ? allReadText[5] : "");
+                            newBpkDocumentScanVO.setOption(allReadText!=null && allReadText.length>=7 ? allReadText[6] : "");
+
                             newBpkDocumentScanVO = aDocScanDAO.createBpkDocumentScan(newBpkDocumentScanVO);
 
                             this.status = 90;
@@ -142,10 +161,13 @@ public class ImageScan implements Runnable
                                 
                                 // ถ้าได้ข้อมูล ObjectID มาได้ ต้อง copy file ไปไว้ที่ปลายทางให้ตรงกับ folder
                                 File srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + pdfFilename);
-                                File destFile = new File(DocScanDAOFactory.getDocScanOutputPath()+DocScanDAOFactory.getHnImageFolder(aPatientVO.getOriginalHn()) + System.getProperty("file.separator") + newBpkDocumentScanVO.getFolderName()+System.getProperty("file.separator")+newBpkDocumentScanVO.getImageFileName());
+                                File destPath = new File(DocScanDAOFactory.getDocScanOutputPath()+DocScanDAOFactory.getHnImageFolder(aPatientVO.getOriginalHn()) + System.getProperty("file.separator") + newBpkDocumentScanVO.getFolderName()+System.getProperty("file.separator"));
+                                if(!destPath.exists())
+                                {
+                                    destPath.mkdirs();
+                                }                                
+                                File destFile = new File(destPath.toString()+System.getProperty("file.separator")+newBpkDocumentScanVO.getImageFileName());
                                 Path rstPath = Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-                                System.out.println("rstPath = "+rstPath);
 
                                 // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
                                 File chkRstPath = new File(rstPath.toString());
@@ -159,8 +181,6 @@ public class ImageScan implements Runnable
                                 Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                                 this.numSuccess++;
 
-                                newBpkDocumentScanVO.setHn(aPatientVO.getHn());
-                                newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
                                 this.setLastBpkDocumentScanVO(newBpkDocumentScanVO);
                             }
                             else
@@ -215,7 +235,7 @@ public class ImageScan implements Runnable
             reader.setRegistrationName("demo");
             reader.setRegistrationKey("demo");
             // Set barcode types to find:
-            reader.setBarcodeTypesToFind(EnumSet.of(BarcodeType.Code39, BarcodeType.Code39Ext, BarcodeType.Code128, BarcodeType.QRCode));
+            reader.setBarcodeTypesToFind(EnumSet.of(BarcodeType.QRCode));
 
             // Demonstrate barcode decoding from image file:
             Utility.printCoreDebug(new ImageScan(), "getTextFromBarcode, filename = "+filename);
@@ -225,6 +245,8 @@ public class ImageScan implements Runnable
                 for (int i = 0; i < foundBarcodes.length; i++)
                 {
                     result = foundBarcodes[i].getValue();
+
+                    // System.out.println("result at "+i+" = "+result);
 
                     if(result!=null && result.indexOf("(")!=-1)
                     {

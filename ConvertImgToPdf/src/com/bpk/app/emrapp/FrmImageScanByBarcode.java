@@ -10,6 +10,9 @@
  */
 package com.bpk.app.emrapp;
 
+import SK.gnome.twain.TwainException;
+import SK.gnome.twain.TwainManager;
+import SK.gnome.twain.TwainSource;
 import com.bpk.core.emrcore.dao.DocScanDAOFactory;
 import com.bpk.core.emrcore.dao.DocScanDAO;
 import com.bpk.persistence.emrdto.BpkDocumentScanVO;
@@ -19,11 +22,19 @@ import com.bpk.persistence.emrdto.VisitVO;
 import com.bpk.utility.EventNames;
 import com.bpk.utility.MyString;
 import com.bpk.utility.Utility;
+import com.lowagie.text.Image;
 import java.awt.CardLayout;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
 import java.awt.LayoutManager;
+import java.awt.MediaTracker;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -102,6 +113,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         jSeparator2 = new javax.swing.JSeparator();
         aBtnScanByBarcode = new javax.swing.JButton();
         aBtnCancel = new javax.swing.JButton();
+        aBtnConnectScanner = new javax.swing.JButton();
         aPnlBody = new javax.swing.JPanel();
         aPnlRight = new javax.swing.JPanel();
         aPnlPatientDetail = new javax.swing.JPanel();
@@ -112,11 +124,15 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aLblVn = new javax.swing.JLabel();
         aTxtVn = new javax.swing.JTextField();
         aLblDocDate = new javax.swing.JLabel();
-        aTxtDocDate = new javax.swing.JTextField();
+        aTxtPrintDateTime = new javax.swing.JTextField();
         aLblFolderName = new javax.swing.JLabel();
         aTxtFolderName = new javax.swing.JTextField();
         aLblDoctor = new javax.swing.JLabel();
         aTxtDoctor = new javax.swing.JTextField();
+        aLblDocumentName = new javax.swing.JLabel();
+        aTxtDocumentName = new javax.swing.JTextField();
+        aLblOption = new javax.swing.JLabel();
+        aTxtOption = new javax.swing.JTextField();
         ScrlBody = new javax.swing.JScrollPane();
         aPnlImagePreview = new javax.swing.JPanel();
         aLblImg = new javax.swing.JLabel();
@@ -125,7 +141,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aMenuFileStart = new javax.swing.JMenuItem();
         aMenuFileCancel = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
-        aMenuExit = new javax.swing.JMenuItem();
+        aMenuFileExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Image Scan by barcode");
@@ -146,7 +162,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
 
         aPnlStatusCardProgress.setLayout(new java.awt.GridBagLayout());
 
-        aLblProgress.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblProgress.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblProgress.setText(" ");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -157,7 +173,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 11);
         aPnlStatusCardProgress.add(aLblProgress, gridBagConstraints);
 
-        aStatusProgress.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aStatusProgress.setFont(new java.awt.Font("Tahoma", 0, 12));
         aStatusProgress.setFocusable(false);
         aStatusProgress.setMinimumSize(new java.awt.Dimension(200, 24));
         aStatusProgress.setPreferredSize(new java.awt.Dimension(200, 24));
@@ -183,7 +199,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
 
         aPnlTotalScan.setLayout(new java.awt.GridBagLayout());
 
-        aLblTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblTotalScan.setText("Scanned:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -193,7 +209,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aPnlTotalScan.add(aLblTotalScan, gridBagConstraints);
 
         aTxtTotalScan.setEditable(false);
-        aTxtTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtTotalScan.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtTotalScan.setMinimumSize(new java.awt.Dimension(60, 24));
         aTxtTotalScan.setPreferredSize(new java.awt.Dimension(60, 24));
@@ -204,7 +220,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
         aPnlTotalScan.add(aTxtTotalScan, gridBagConstraints);
 
-        aLblTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblTotalSuccess.setText("Success:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -214,7 +230,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aPnlTotalScan.add(aLblTotalSuccess, gridBagConstraints);
 
         aTxtTotalSuccess.setEditable(false);
-        aTxtTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtTotalSuccess.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtTotalSuccess.setMinimumSize(new java.awt.Dimension(60, 24));
         aTxtTotalSuccess.setPreferredSize(new java.awt.Dimension(60, 24));
@@ -225,7 +241,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
         aPnlTotalScan.add(aTxtTotalSuccess, gridBagConstraints);
 
-        aLblTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblTotalFail.setText("Fail:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
@@ -235,7 +251,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aPnlTotalScan.add(aLblTotalFail, gridBagConstraints);
 
         aTxtTotalFail.setEditable(false);
-        aTxtTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtTotalFail.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtTotalFail.setMinimumSize(new java.awt.Dimension(60, 24));
         aTxtTotalFail.setPreferredSize(new java.awt.Dimension(60, 24));
@@ -248,14 +264,14 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 8;
+        gridBagConstraints.gridwidth = 9;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         aPnlTotalScan.add(jSeparator1, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 8;
+        gridBagConstraints.gridwidth = 9;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
@@ -274,13 +290,13 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridx = 7;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 24, 0, 0);
         aPnlTotalScan.add(aBtnScanByBarcode, gridBagConstraints);
 
-        aBtnCancel.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        aBtnCancel.setFont(new java.awt.Font("Tahoma", 1, 12));
         aBtnCancel.setEnabled(false);
         aBtnCancel.setLabel("Cancel");
         aBtnCancel.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -293,11 +309,29 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 7;
+        gridBagConstraints.gridx = 8;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 11);
         aPnlTotalScan.add(aBtnCancel, gridBagConstraints);
+
+        aBtnConnectScanner.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        aBtnConnectScanner.setText("Connect");
+        aBtnConnectScanner.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        aBtnConnectScanner.setMaximumSize(new java.awt.Dimension(72, 32));
+        aBtnConnectScanner.setMinimumSize(new java.awt.Dimension(72, 32));
+        aBtnConnectScanner.setPreferredSize(new java.awt.Dimension(72, 32));
+        aBtnConnectScanner.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aBtnConnectScannerActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 24, 0, 0);
+        aPnlTotalScan.add(aBtnConnectScanner, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -325,7 +359,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aPnlPatientDetail.add(aLblHn, gridBagConstraints);
 
         aTxtHn.setEditable(false);
-        aTxtHn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtHn.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtHn.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtHn.setMinimumSize(new java.awt.Dimension(120, 24));
         aTxtHn.setPreferredSize(new java.awt.Dimension(120, 24));
@@ -336,7 +370,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 2, 0, 0);
         aPnlPatientDetail.add(aTxtHn, gridBagConstraints);
 
-        aLblPatient.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblPatient.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblPatient.setText("Patient:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -346,7 +380,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aPnlPatientDetail.add(aLblPatient, gridBagConstraints);
 
         aTxtPatientName.setEditable(false);
-        aTxtPatientName.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtPatientName.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtPatientName.setMinimumSize(new java.awt.Dimension(240, 24));
         aTxtPatientName.setPreferredSize(new java.awt.Dimension(240, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -358,7 +392,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 2, 0, 11);
         aPnlPatientDetail.add(aTxtPatientName, gridBagConstraints);
 
-        aLblVn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblVn.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblVn.setText("VN:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -368,7 +402,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aPnlPatientDetail.add(aLblVn, gridBagConstraints);
 
         aTxtVn.setEditable(false);
-        aTxtVn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtVn.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtVn.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtVn.setMinimumSize(new java.awt.Dimension(120, 24));
         aTxtVn.setPreferredSize(new java.awt.Dimension(120, 24));
@@ -379,7 +413,7 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 0);
         aPnlPatientDetail.add(aTxtVn, gridBagConstraints);
 
-        aLblDocDate.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblDocDate.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblDocDate.setText("Print Date:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -388,57 +422,97 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
         aPnlPatientDetail.add(aLblDocDate, gridBagConstraints);
 
-        aTxtDocDate.setEditable(false);
-        aTxtDocDate.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        aTxtDocDate.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        aTxtDocDate.setMinimumSize(new java.awt.Dimension(240, 24));
-        aTxtDocDate.setPreferredSize(new java.awt.Dimension(240, 24));
+        aTxtPrintDateTime.setEditable(false);
+        aTxtPrintDateTime.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtPrintDateTime.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        aTxtPrintDateTime.setMinimumSize(new java.awt.Dimension(240, 24));
+        aTxtPrintDateTime.setPreferredSize(new java.awt.Dimension(240, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 11);
-        aPnlPatientDetail.add(aTxtDocDate, gridBagConstraints);
+        aPnlPatientDetail.add(aTxtPrintDateTime, gridBagConstraints);
 
-        aLblFolderName.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblFolderName.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblFolderName.setText("Folder:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
         aPnlPatientDetail.add(aLblFolderName, gridBagConstraints);
 
         aTxtFolderName.setEditable(false);
-        aTxtFolderName.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtFolderName.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtFolderName.setMinimumSize(new java.awt.Dimension(120, 24));
         aTxtFolderName.setPreferredSize(new java.awt.Dimension(120, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 0);
         aPnlPatientDetail.add(aTxtFolderName, gridBagConstraints);
 
-        aLblDoctor.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblDoctor.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblDoctor.setText("Doctor:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
         aPnlPatientDetail.add(aLblDoctor, gridBagConstraints);
 
         aTxtDoctor.setEditable(false);
-        aTxtDoctor.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtDoctor.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtDoctor.setMinimumSize(new java.awt.Dimension(240, 24));
         aTxtDoctor.setPreferredSize(new java.awt.Dimension(240, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 11);
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 11);
         aPnlPatientDetail.add(aTxtDoctor, gridBagConstraints);
+
+        aLblDocumentName.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblDocumentName.setText("Document:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        aPnlPatientDetail.add(aLblDocumentName, gridBagConstraints);
+
+        aTxtDocumentName.setEditable(false);
+        aTxtDocumentName.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtDocumentName.setMinimumSize(new java.awt.Dimension(120, 24));
+        aTxtDocumentName.setPreferredSize(new java.awt.Dimension(120, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 0);
+        aPnlPatientDetail.add(aTxtDocumentName, gridBagConstraints);
+
+        aLblOption.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblOption.setText("Option:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        aPnlPatientDetail.add(aLblOption, gridBagConstraints);
+
+        aTxtOption.setEditable(false);
+        aTxtOption.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtOption.setMinimumSize(new java.awt.Dimension(240, 24));
+        aTxtOption.setPreferredSize(new java.awt.Dimension(240, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 11);
+        aPnlPatientDetail.add(aTxtOption, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -486,13 +560,13 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aMenuFile.add(aMenuFileCancel);
         aMenuFile.add(jSeparator3);
 
-        aMenuExit.setText("Exit");
-        aMenuExit.addActionListener(new java.awt.event.ActionListener() {
+        aMenuFileExit.setText("Exit");
+        aMenuFileExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aMenuExitActionPerformed(evt);
+                aMenuFileExitActionPerformed(evt);
             }
         });
-        aMenuFile.add(aMenuExit);
+        aMenuFile.add(aMenuFileExit);
 
         aMenuBar.add(aMenuFile);
 
@@ -522,7 +596,6 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         setConvertInProgress(true);
 
         final ImageScan aImageScan = new ImageScan();
-        aImageScan.setFolderName("DOS");
         aTimer = new Timer(1000, new ActionListener()
         {
 
@@ -539,6 +612,12 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
                 {
                     aTxtHn.setText(tmpBpkDocumentScanVO.getHn());
                     aTxtPatientName.setText(tmpBpkDocumentScanVO.getPatientName());
+                    aTxtVn.setText(Utility.formatVn(tmpBpkDocumentScanVO.getVn()));
+                    aTxtPrintDateTime.setText(Utility.formatDateForDisplay(tmpBpkDocumentScanVO.getPrintDate()) + " " + tmpBpkDocumentScanVO.getPrintTime());
+                    aTxtFolderName.setText(tmpBpkDocumentScanVO.getFolderName());
+                    aTxtDocumentName.setText(tmpBpkDocumentScanVO.getDocumentName());
+                    aTxtDoctor.setText(tmpBpkDocumentScanVO.getDoctorEid());
+                    aTxtOption.setText(tmpBpkDocumentScanVO.getOption());
                 }
                 if (aImageScan.getStatus() == 100)
                 {
@@ -587,9 +666,11 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         }
         catch (Exception e)
         {
-
-            e.printStackTrace();
-            System.out.println("Picture upload attempted & failed");
+            if (e.getMessage().indexOf("Can't read input file") == -1)
+            {
+                e.printStackTrace();
+                System.out.println("Picture upload attempted & failed");
+            }
         }
 
         sizeImage = new ImageIcon(image);
@@ -649,10 +730,105 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aBtnCancelActionPerformed(evt);
     }//GEN-LAST:event_aMenuFileCancelActionPerformed
 
-    private void aMenuExitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aMenuExitActionPerformed
-    {//GEN-HEADEREND:event_aMenuExitActionPerformed
+    private void aMenuFileExitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aMenuFileExitActionPerformed
+    {//GEN-HEADEREND:event_aMenuFileExitActionPerformed
         System.exit(1);
-    }//GEN-LAST:event_aMenuExitActionPerformed
+    }//GEN-LAST:event_aMenuFileExitActionPerformed
+
+    private void aBtnConnectScannerActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnConnectScannerActionPerformed
+    {//GEN-HEADEREND:event_aBtnConnectScannerActionPerformed
+        DocScanDAO aDocScanDAO = null;
+        try
+        {
+            aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
+            // Scan ด้วย TwainSource
+            TwainSource source = TwainManager.selectSource(TwainManager.getDefaultSource());
+            if (source != null)
+            {
+                source.maskUnsupportedCapabilityException(false);
+                source.maskBadValueException(false);
+                try
+                {
+                    source.setFeederEnabled(true);
+                    source.setAutoFeed(true);
+                }
+                catch (Exception ex)
+                {
+                    // ex.printStackTrace();
+                    Utility.printCoreDebug(this, ex.getMessage());
+                }
+
+                java.awt.Image image = Toolkit.getDefaultToolkit().createImage(source);
+
+                /*
+                MediaTracker tracker = new MediaTracker(this);
+                tracker.addImage(image, 0);
+                try
+                {
+                tracker.waitForAll();
+                }
+                catch (InterruptedException e)
+                {
+                e.printStackTrace();
+                }
+                tracker.removeImage(image);
+                 */
+
+                // Create a buffered image with a format that's compatible with the screen
+                BufferedImage bimage = null;
+                do
+                {
+                    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                    try
+                    {
+                        // Determine the type of transparency of the new buffered image
+                        int transparency = Transparency.OPAQUE;
+
+                        // Create the buffered image
+                        GraphicsDevice gs = ge.getDefaultScreenDevice();
+                        GraphicsConfiguration gc = gs.getDefaultConfiguration();
+
+                        bimage = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), transparency);
+                    }
+                    catch (HeadlessException e)
+                    {
+                        // The system does not have a screen
+                        e.printStackTrace();
+                    }
+
+                    if (bimage == null)
+                    {
+                        // Create a buffered image using the default color model
+                        int type = BufferedImage.TYPE_INT_RGB;
+                        bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
+                    }
+
+                    // Copy image to buffered image
+                    Graphics g = bimage.createGraphics();
+
+                    // Paint the image onto the buffered image
+                    g.drawImage(image, 0, 0, null);
+                    g.dispose();
+                }
+                while (source != null && source.hasMoreImages());
+                source = null;
+
+                File outputfile = new File(DocScanDAOFactory.getDocScanInputPath()+"SCANFILE.jpg");
+                ImageIO.write(bimage, "jpg", outputfile);
+
+                // aLblImg.setIcon(new ImageIcon(bimage));
+                aLblImg.setIcon(rescaleImage(new File(DocScanDAOFactory.getDocScanInputPath()+"SCANFILE.jpg"), aPnlImagePreview.getHeight(), aPnlImagePreview.getWidth()));
+            }
+        }
+        catch (TwainException ex)
+        {
+            ex.printStackTrace();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_aBtnConnectScannerActionPerformed
     public final static String TEMP_FILENAME = "TempFilename";
     public final static String HEADER1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><jasperReport xmlns=\"http://jasperreports.sourceforge.net/jasperreports\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd\" name=\"";
     public final static String HEADER2 = "\" pageWidth=\"595\" pageHeight=\"842\" whenNoDataType=\"AllSectionsNoDetail\" columnWidth=\"595\" leftMargin=\"0\" rightMargin=\"0\" topMargin=\"0\" bottomMargin=\"0\" isSummaryNewPage=\"true\"><property name=\"ireport.zoom\" value=\"1.0\"/><property name=\"ireport.x\" value=\"0\"/><property name=\"ireport.y\" value=\"0\"/><parameter name=\"SUBREPORT_DIR\" class=\"java.lang.String\" isForPrompting=\"false\"><defaultValueExpression><![CDATA[\"";
@@ -803,13 +979,16 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane ScrlBody;
     private javax.swing.JButton aBtnCancel;
+    private javax.swing.JButton aBtnConnectScanner;
     private javax.swing.JButton aBtnScanByBarcode;
     private javax.swing.JLabel aLblDocDate;
     private javax.swing.JLabel aLblDoctor;
+    private javax.swing.JLabel aLblDocumentName;
     private javax.swing.JLabel aLblFolderName;
     private javax.swing.JLabel aLblHn;
     private javax.swing.JLabel aLblImg;
     private javax.swing.JLabel aLblLogo;
+    private javax.swing.JLabel aLblOption;
     private javax.swing.JLabel aLblPatient;
     private javax.swing.JLabel aLblProgress;
     private javax.swing.JLabel aLblTotalFail;
@@ -817,9 +996,9 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
     private javax.swing.JLabel aLblTotalSuccess;
     private javax.swing.JLabel aLblVn;
     private javax.swing.JMenuBar aMenuBar;
-    private javax.swing.JMenuItem aMenuExit;
     private javax.swing.JMenu aMenuFile;
     private javax.swing.JMenuItem aMenuFileCancel;
+    private javax.swing.JMenuItem aMenuFileExit;
     private javax.swing.JMenuItem aMenuFileStart;
     private javax.swing.JPanel aPanelTop;
     private javax.swing.JPanel aPnlBody;
@@ -831,11 +1010,13 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
     private javax.swing.JPanel aPnlStatusCardProgress;
     private javax.swing.JPanel aPnlTotalScan;
     private final javax.swing.JProgressBar aStatusProgress = new javax.swing.JProgressBar();
-    private javax.swing.JTextField aTxtDocDate;
     private javax.swing.JTextField aTxtDoctor;
+    private javax.swing.JTextField aTxtDocumentName;
     private javax.swing.JTextField aTxtFolderName;
     private javax.swing.JTextField aTxtHn;
+    private javax.swing.JTextField aTxtOption;
     private javax.swing.JTextField aTxtPatientName;
+    private javax.swing.JTextField aTxtPrintDateTime;
     private javax.swing.JTextField aTxtTotalFail;
     private javax.swing.JTextField aTxtTotalScan;
     private javax.swing.JTextField aTxtTotalSuccess;

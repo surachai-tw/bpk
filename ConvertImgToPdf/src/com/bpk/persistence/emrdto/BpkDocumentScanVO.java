@@ -18,11 +18,17 @@ public class BpkDocumentScanVO extends XPersistent
 	private String updateSpid;
 	private String updateDate;
 	private String updateTime;
+        private String printDate;
+        private String printTime;
+        private String documentName;
 
         /** สำหรับใข้แสดงผลเท่านั้น */
         private String hn;
         /** สำหรับใข้แสดงผลเท่านั้น */
         private String patientName;
+        private String vn;
+        private String doctorEid;
+        private String option;
 
 	public String getPatientId()
 	{
@@ -174,6 +180,126 @@ public class BpkDocumentScanVO extends XPersistent
     public void setPatientName(String patientName)
     {
         this.patientName = patientName;
+    }
+
+    /**
+     * @return the printDate
+     */
+    public String getPrintDate()
+    {
+        return Utility.getStringVO(printDate);
+    }
+
+    /**
+     * @param printDate the printDate to set
+     */
+    public void setPrintDate(String printDate)
+    {
+        this.printDate = printDate;
+    }
+
+    /**
+     * @return the printTime
+     */
+    public String getPrintTime()
+    {
+        return Utility.getStringVO(printTime);
+    }
+
+    /**
+     * @param printTime the printTime to set
+     */
+    public void setPrintTime(String printTime)
+    {
+        this.printTime = printTime;
+    }
+
+    /**
+     * @return the documentName
+     */
+    public String getDocumentName()
+    {
+        return Utility.getStringVO(documentName);
+    }
+
+    /**
+     * @param documentName the documentName to set
+     */
+    public void setDocumentName(String documentName)
+    {
+        this.documentName = documentName;
+    }
+
+    /**
+     * @return the vn
+     */
+    public String getVn()
+    {
+        return Utility.getStringVO(vn);
+    }
+
+    /**
+     * @param vn the vn to set
+     */
+    public void setVn(String vn)
+    {
+        this.vn = vn;
+    }
+
+    /**
+     * @return the doctorEid
+     */
+    public String getDoctorEid()
+    {
+        return Utility.getStringVO(doctorEid);
+    }
+
+    /**
+     * @param doctorEid the doctorEid to set
+     */
+    public void setDoctorEid(String doctorEid)
+    {
+        this.doctorEid = doctorEid;
+    }
+
+    /**
+     * @return the option
+     */
+    public String getOption()
+    {
+        return Utility.getStringVO(option);
+    }
+
+    /**
+     * @param option the option to set
+     */
+    public void setOption(String option)
+    {
+        this.option = option;
+    }
+
+    public static String getDateFromReadText(String yyyymmddhhmmss)
+    {
+        if(Utility.isNotNull(yyyymmddhhmmss) && yyyymmddhhmmss.length()>=8)
+        {
+            String yyyymmdd = yyyymmddhhmmss.substring(0, 8);
+
+            return yyyymmdd.substring(0, 4)+"-"+yyyymmdd.substring(4, 6)+"-"+yyyymmdd.substring(6);
+        }
+
+        return "";
+    }
+
+    public static String getTimeFromReadText(String yyyymmddhhmmss)
+    {
+        if(Utility.isNotNull(yyyymmddhhmmss) && yyyymmddhhmmss.length()>=8)
+        {
+            String hhmmss = yyyymmddhhmmss.substring(8);
+
+            return hhmmss.substring(0, 2)+":"+hhmmss.substring(2, 4)+":"+hhmmss.substring(4);
+        }
+
+        return "";
     }
 
 }

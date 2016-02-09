@@ -18,9 +18,9 @@ public class ImageTool
                         0, 30, 70, 100
                     })
             {
-                BufferedImage img = ImageIO.read(new File("D:\\BPK\\trunk\\BarCodeReader\\file\\SCAN.jpg"));
+                BufferedImage img = ImageIO.read(new File("D:\\BPKHIS\\trunk\\Sources\\CodeJSP\\jboss\\server\\default\\deploy\\bpkimage.war\\scan\\TEST.jpg"));
                 ImageTool.toBlackAndWhite(img, i);
-                ImageIO.write(img, "jpg", new File("D:\\BPK\\trunk\\BarCodeReader\\file\\CHECK_" + i + ".jpg"));
+                ImageIO.write(img, "jpg", new File("D:\\BPKHIS\\trunk\\Sources\\CodeJSP\\jboss\\server\\default\\deploy\\bpkimage.war\\scan\\CHECK_" + i + ".jpg"));
             }
         }
         catch(Exception ex)
