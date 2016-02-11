@@ -16,8 +16,16 @@ public class VisitVO extends XPersistent
 	private String admitTime;
 	private String financialDischargeDate;
 	private String financialDischargeTime;
+	private String pDx;
 
 	private List listFolderVO;
+
+        /** สำหรับใช้การแสดงผล */
+        private String patientId;
+        /** สำหรับใช้การแสดงผล */
+        private String hn;
+        /** สำหรับใช้การแสดงผล */
+        private String patientName;
 
 	public String getVn()
 	{
@@ -132,5 +140,70 @@ public class VisitVO extends XPersistent
 	{
 		this.listFolderVO = listFolderVO;
 	}
+
+	/**
+	 * @return the pdx
+	 */
+	public String getPDx()
+	{
+		return Utility.getStringVO(pDx);
+	}
+
+	/**
+	 * @param pdx
+	 *            the pdx to set
+	 */
+	public void setPDx(String pDx)
+	{
+		this.pDx = pDx;
+	}
+
+    /**
+     * @return the patientId
+     */
+    public String getPatientId()
+    {
+        return Utility.getStringVO(patientId);
+    }
+
+    /**
+     * @param patientId the patientId to set
+     */
+    public void setPatientId(String patientId)
+    {
+        this.patientId = patientId;
+    }
+
+    /**
+     * @return the hn
+     */
+    public String getHn()
+    {
+        return Utility.getStringVO(hn);
+    }
+
+    /**
+     * @param hn the hn to set
+     */
+    public void setHn(String hn)
+    {
+        this.hn = hn;
+    }
+
+    /**
+     * @return the patientName
+     */
+    public String getPatientName()
+    {
+        return Utility.getStringVO(patientName);
+    }
+
+    /**
+     * @param patientName the patientName to set
+     */
+    public void setPatientName(String patientName)
+    {
+        this.patientName = patientName;
+    }
 
 }

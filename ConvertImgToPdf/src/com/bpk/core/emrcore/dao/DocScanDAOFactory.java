@@ -64,14 +64,6 @@ public class DocScanDAOFactory
                     {
                         docScanInputPath = value;
                     }
-                    else if ("doc_scan_input_path_success".equalsIgnoreCase(key))
-                    {
-                        docScanInputPathSuccess = value;
-                    }
-                    else if ("doc_scan_input_path_fail".equalsIgnoreCase(key))
-                    {
-                        docScanInputPathFail = value;
-                    }
                     else if ("doc_scan_url".equalsIgnoreCase(key))
                     {
                         docScanUrl = value;
@@ -129,7 +121,62 @@ public class DocScanDAOFactory
      */
     public static String getDocScanInputPath()
     {
-        return docScanInputPath+System.getProperty("file.separator");
+        return docScanInputPath!=null && !docScanInputPath.endsWith("\\") ? docScanInputPath+System.getProperty("file.separator") : docScanInputPath;
+    }
+
+    /**
+     * @return the docScanOutputPath
+     */
+    public static boolean setDocScanInputPath(String path)
+    {
+        File chkPath = new File(path);
+        if(chkPath.exists() && chkPath.isDirectory())
+        {
+            docScanInputPath = path;
+
+            updateFile();
+            return true;
+        }
+        return false;
+    }
+
+    public static void updateFile()
+    {
+        try
+        {
+            // System.out.println("connectionFile = " + connectionFile);
+            StringBuilder newConnFile = new StringBuilder("url");
+            newConnFile.append("=").append(url);
+            newConnFile.append(System.getProperty("line.separator"));
+            newConnFile.append("username");
+            newConnFile.append("=").append(username);
+            newConnFile.append(System.getProperty("line.separator"));
+            newConnFile.append("password");
+            newConnFile.append("=").append(password);
+            newConnFile.append(System.getProperty("line.separator"));
+            newConnFile.append("doc_scan_input_path");
+            newConnFile.append("=").append(getDocScanInputPath());
+            newConnFile.append(System.getProperty("line.separator"));
+            newConnFile.append("doc_scan_output_path");
+            newConnFile.append("=").append(getDocScanOutputPath());
+            newConnFile.append(System.getProperty("line.separator"));
+            newConnFile.append("doc_scan_url");
+            newConnFile.append("=").append(getDocScanUrl());
+            newConnFile.append(System.getProperty("line.separator"));
+            /*
+            newConnFile.append("doc_scan_input_path_success");
+            newConnFile.append("=").append(getDocScanInputPathSuccess());
+            newConnFile.append(System.getProperty("line.separator"));
+            newConnFile.append("doc_scan_input_path_fail");
+            newConnFile.append("=").append(getDocScanInputPathFail());
+            newConnFile.append(System.getProperty("line.separator"));
+            */
+            // เขียน File config DB ใหม่
+            FileOperation.writeFile(configFile, newConnFile.toString());
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -168,7 +215,10 @@ public class DocScanDAOFactory
      */
     public static String getDocScanInputPathSuccess()
     {
-        return docScanInputPathSuccess+System.getProperty("file.separator");
+        File folder = new File(getDocScanInputPath()+System.getProperty("file.separator")+"success");
+        if(!folder.exists())
+            folder.mkdir();
+        return folder.toString()+System.getProperty("file.separator");
     }
 
     /**
@@ -176,7 +226,10 @@ public class DocScanDAOFactory
      */
     public static String getDocScanInputPathFail()
     {
-        return docScanInputPathFail+System.getProperty("file.separator");
+        File folder = new File(getDocScanInputPath()+System.getProperty("file.separator")+"fail");
+        if(!folder.exists())
+            folder.mkdir();
+        return folder.toString()+System.getProperty("file.separator");
     }
 
 }

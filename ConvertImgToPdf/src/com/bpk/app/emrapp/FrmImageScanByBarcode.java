@@ -24,6 +24,7 @@ import com.bpk.utility.MyString;
 import com.bpk.utility.Utility;
 import com.lowagie.text.Image;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -40,16 +41,20 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -64,6 +69,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 public class FrmImageScanByBarcode extends javax.swing.JFrame
 {
 
+    final ImageScanFromPath aImageScanFromPath = new ImageScanFromPath();
     private PatientVO patientVO = null;
     Thread aThread = null;
     Timer aTimer = null;
@@ -84,6 +90,16 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         }
 
         initComponents();
+        this.aScrlFile.getViewport().setBackground(Color.WHITE);
+
+        DocScanDAO aDao = DocScanDAOFactory.newDocScanDAO();
+        List listFolderName = aDao.listBpkPatientImageFolder();
+        for (int i = 0, sizei = listFolderName.size(); i < sizei; i++)
+        {
+            this.aCmbFolderNameByManual.addItem((String) listFolderName.get(i));
+        }
+        aTxtFolderInput.setText(DocScanDAOFactory.getDocScanInputPath());
+        this.listFileInPatch();
     }
 
     /** This method is called from within the constructor to
@@ -96,10 +112,13 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        aBtnGrpScanMethod = new javax.swing.ButtonGroup();
+        aTblMdlFile = new com.bpk.app.emrapp.BpkTableModel();
         aPanelTop = new javax.swing.JPanel();
         aPnlStatusCard = new javax.swing.JPanel();
         aPnlStatusCardLogo = new javax.swing.JPanel();
-        aLblLogo = new javax.swing.JLabel();
+        aRadByBarcode = new javax.swing.JRadioButton();
+        aRadByManualInput = new javax.swing.JRadioButton();
         aPnlStatusCardProgress = new javax.swing.JPanel();
         aLblProgress = new javax.swing.JLabel();
         aPnlTotalScan = new javax.swing.JPanel();
@@ -111,31 +130,58 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         aTxtTotalFail = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
         jSeparator2 = new javax.swing.JSeparator();
-        aBtnScanByBarcode = new javax.swing.JButton();
+        aBtnScanFromScanner = new javax.swing.JButton();
         aBtnCancel = new javax.swing.JButton();
         aBtnConnectScanner = new javax.swing.JButton();
+        aBtnScanFromPath = new javax.swing.JButton();
         aPnlBody = new javax.swing.JPanel();
-        aPnlRight = new javax.swing.JPanel();
+        aPnlBodyCenter = new javax.swing.JPanel();
         aPnlPatientDetail = new javax.swing.JPanel();
-        aLblHn = new javax.swing.JLabel();
-        aTxtHn = new javax.swing.JTextField();
-        aLblPatient = new javax.swing.JLabel();
-        aTxtPatientName = new javax.swing.JTextField();
-        aLblVn = new javax.swing.JLabel();
-        aTxtVn = new javax.swing.JTextField();
-        aLblDocDate = new javax.swing.JLabel();
-        aTxtPrintDateTime = new javax.swing.JTextField();
-        aLblFolderName = new javax.swing.JLabel();
-        aTxtFolderName = new javax.swing.JTextField();
-        aLblDoctor = new javax.swing.JLabel();
-        aTxtDoctor = new javax.swing.JTextField();
-        aLblDocumentName = new javax.swing.JLabel();
-        aTxtDocumentName = new javax.swing.JTextField();
-        aLblOption = new javax.swing.JLabel();
-        aTxtOption = new javax.swing.JTextField();
+        aPnlPatientDetailByBarcode = new javax.swing.JPanel();
+        aLblHnByBarcode = new javax.swing.JLabel();
+        aTxtHnByBarcode = new javax.swing.JTextField();
+        aLblPatientByBarcode = new javax.swing.JLabel();
+        aTxtPatientNameByBarcode = new javax.swing.JTextField();
+        aLblVnByBarcode = new javax.swing.JLabel();
+        aTxtVnByBarcode = new javax.swing.JTextField();
+        aLblDocDateByBarcode = new javax.swing.JLabel();
+        aTxtPrintDateTimeByBarcode = new javax.swing.JTextField();
+        aLblFolderNameByBarcode = new javax.swing.JLabel();
+        aTxtFolderNameByBarcode = new javax.swing.JTextField();
+        aLblDoctorByBarcode = new javax.swing.JLabel();
+        aTxtDoctorByBarcode = new javax.swing.JTextField();
+        aLblDocumentNameByBarcode = new javax.swing.JLabel();
+        aTxtDocumentNameByBarcode = new javax.swing.JTextField();
+        aLblOptionByBarcode = new javax.swing.JLabel();
+        aTxtOptionByBarcode = new javax.swing.JTextField();
+        aPnlPatientDetailByManual = new javax.swing.JPanel();
+        aLblHnByManual = new javax.swing.JLabel();
+        aTxtHnByManual = new javax.swing.JTextField();
+        aLblPatientByManual = new javax.swing.JLabel();
+        aTxtPatientNameByManual = new javax.swing.JTextField();
+        aLblVnByManual = new javax.swing.JLabel();
+        aTxtVnByManual = new javax.swing.JTextField();
+        aLblDocDateByManual = new javax.swing.JLabel();
+        aTxtPrintDateTimeByManual = new javax.swing.JTextField();
+        aLblFolderNameByManual = new javax.swing.JLabel();
+        aCmbFolderNameByManual = new javax.swing.JComboBox();
+        aLblDoctorByManual = new javax.swing.JLabel();
+        aTxtDoctorByManual = new javax.swing.JTextField();
+        aLblDocumentNameByManual = new javax.swing.JLabel();
+        aCmbDocumentNameByManual = new javax.swing.JComboBox();
+        aLblOptionByManual = new javax.swing.JLabel();
+        aTxtOptionByManual = new javax.swing.JTextField();
+        aBtnFindPatient = new javax.swing.JButton();
         ScrlBody = new javax.swing.JScrollPane();
         aPnlImagePreview = new javax.swing.JPanel();
         aLblImg = new javax.swing.JLabel();
+        aPnlDirectory = new javax.swing.JPanel();
+        aLblFolderInput = new javax.swing.JLabel();
+        aTxtFolderInput = new javax.swing.JTextField();
+        aBtnChooseFolder = new javax.swing.JButton();
+        aPnlDirRight = new javax.swing.JPanel();
+        aScrlFile = new javax.swing.JScrollPane();
+        aTblFile = new javax.swing.JTable();
         aMenuBar = new javax.swing.JMenuBar();
         aMenuFile = new javax.swing.JMenu();
         aMenuFileStart = new javax.swing.JMenuItem();
@@ -150,15 +196,40 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
 
         aPnlStatusCard.setLayout(new java.awt.CardLayout());
 
-        aPnlStatusCardLogo.setBackground(new java.awt.Color(255, 255, 255));
         aPnlStatusCardLogo.setLayout(new java.awt.GridBagLayout());
+
+        aBtnGrpScanMethod.add(aRadByBarcode);
+        aRadByBarcode.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        aRadByBarcode.setSelected(true);
+        aRadByBarcode.setText("Barcode Reader");
+        aRadByBarcode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aRadByBarcodeActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        aPnlStatusCardLogo.add(aLblLogo, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 12, 0);
+        aPnlStatusCardLogo.add(aRadByBarcode, gridBagConstraints);
 
-        aPnlStatusCard.add(aPnlStatusCardLogo, "Logo");
+        aBtnGrpScanMethod.add(aRadByManualInput);
+        aRadByManualInput.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        aRadByManualInput.setText("Manual Input");
+        aRadByManualInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aRadByManualInputActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 11);
+        aPnlStatusCardLogo.add(aRadByManualInput, gridBagConstraints);
+
+        aPnlStatusCard.add(aPnlStatusCardLogo, "Method");
 
         aPnlStatusCardProgress.setLayout(new java.awt.GridBagLayout());
 
@@ -264,29 +335,30 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 9;
+        gridBagConstraints.gridwidth = 10;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         aPnlTotalScan.add(jSeparator1, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 9;
+        gridBagConstraints.gridwidth = 10;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(12, 0, 0, 0);
         aPnlTotalScan.add(jSeparator2, gridBagConstraints);
 
-        aBtnScanByBarcode.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        aBtnScanByBarcode.setText("Start");
-        aBtnScanByBarcode.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        aBtnScanByBarcode.setMaximumSize(new java.awt.Dimension(72, 32));
-        aBtnScanByBarcode.setMinimumSize(new java.awt.Dimension(72, 32));
-        aBtnScanByBarcode.setPreferredSize(new java.awt.Dimension(72, 32));
-        aBtnScanByBarcode.addActionListener(new java.awt.event.ActionListener() {
+        aBtnScanFromScanner.setFont(new java.awt.Font("Tahoma", 1, 12));
+        aBtnScanFromScanner.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/bpk/app/emrapp/images/scanner.png"))); // NOI18N
+        aBtnScanFromScanner.setText("By Scanner");
+        aBtnScanFromScanner.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        aBtnScanFromScanner.setMaximumSize(new java.awt.Dimension(120, 36));
+        aBtnScanFromScanner.setMinimumSize(new java.awt.Dimension(120, 36));
+        aBtnScanFromScanner.setPreferredSize(new java.awt.Dimension(120, 36));
+        aBtnScanFromScanner.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aBtnScanByBarcodeActionPerformed(evt);
+                aBtnScanFromScannerActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -294,28 +366,28 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 24, 0, 0);
-        aPnlTotalScan.add(aBtnScanByBarcode, gridBagConstraints);
+        aPnlTotalScan.add(aBtnScanFromScanner, gridBagConstraints);
 
         aBtnCancel.setFont(new java.awt.Font("Tahoma", 1, 12));
         aBtnCancel.setEnabled(false);
         aBtnCancel.setLabel("Cancel");
         aBtnCancel.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        aBtnCancel.setMaximumSize(new java.awt.Dimension(72, 32));
-        aBtnCancel.setMinimumSize(new java.awt.Dimension(72, 32));
-        aBtnCancel.setPreferredSize(new java.awt.Dimension(72, 32));
+        aBtnCancel.setMaximumSize(new java.awt.Dimension(108, 36));
+        aBtnCancel.setMinimumSize(new java.awt.Dimension(108, 36));
+        aBtnCancel.setPreferredSize(new java.awt.Dimension(108, 36));
         aBtnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aBtnCancelActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 8;
+        gridBagConstraints.gridx = 9;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 11);
         aPnlTotalScan.add(aBtnCancel, gridBagConstraints);
 
-        aBtnConnectScanner.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        aBtnConnectScanner.setFont(new java.awt.Font("Tahoma", 1, 12));
         aBtnConnectScanner.setText("Connect");
         aBtnConnectScanner.setMargin(new java.awt.Insets(0, 0, 0, 0));
         aBtnConnectScanner.setMaximumSize(new java.awt.Dimension(72, 32));
@@ -333,6 +405,25 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 24, 0, 0);
         aPnlTotalScan.add(aBtnConnectScanner, gridBagConstraints);
 
+        aBtnScanFromPath.setFont(new java.awt.Font("Tahoma", 1, 12));
+        aBtnScanFromPath.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/bpk/app/emrapp/images/folder.png"))); // NOI18N
+        aBtnScanFromPath.setText("By Path");
+        aBtnScanFromPath.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        aBtnScanFromPath.setMaximumSize(new java.awt.Dimension(120, 36));
+        aBtnScanFromPath.setMinimumSize(new java.awt.Dimension(120, 36));
+        aBtnScanFromPath.setPreferredSize(new java.awt.Dimension(120, 36));
+        aBtnScanFromPath.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aBtnScanFromPathActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 8;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
+        aPnlTotalScan.add(aBtnScanFromPath, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -341,186 +432,378 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.weightx = 1.0;
         aPanelTop.add(aPnlTotalScan, gridBagConstraints);
 
-        getContentPane().add(aPanelTop, java.awt.BorderLayout.PAGE_START);
+        getContentPane().add(aPanelTop, java.awt.BorderLayout.NORTH);
 
         aPnlBody.setLayout(new java.awt.BorderLayout());
 
-        aPnlRight.setLayout(new java.awt.GridBagLayout());
+        aPnlBodyCenter.setLayout(new java.awt.GridBagLayout());
 
-        aPnlPatientDetail.setLayout(new java.awt.GridBagLayout());
+        aPnlPatientDetail.setLayout(new java.awt.CardLayout());
 
-        aLblHn.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblHn.setText("HN:");
+        aPnlPatientDetailByBarcode.setLayout(new java.awt.GridBagLayout());
+
+        aLblHnByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblHnByBarcode.setText("HN:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
-        aPnlPatientDetail.add(aLblHn, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aLblHnByBarcode, gridBagConstraints);
 
-        aTxtHn.setEditable(false);
-        aTxtHn.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aTxtHn.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        aTxtHn.setMinimumSize(new java.awt.Dimension(120, 24));
-        aTxtHn.setPreferredSize(new java.awt.Dimension(120, 24));
+        aTxtHnByBarcode.setEditable(false);
+        aTxtHnByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtHnByBarcode.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        aTxtHnByBarcode.setMinimumSize(new java.awt.Dimension(120, 24));
+        aTxtHnByBarcode.setPreferredSize(new java.awt.Dimension(120, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 2, 0, 0);
-        aPnlPatientDetail.add(aTxtHn, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aTxtHnByBarcode, gridBagConstraints);
 
-        aLblPatient.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblPatient.setText("Patient:");
+        aLblPatientByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblPatientByBarcode.setText("Patient:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
-        aPnlPatientDetail.add(aLblPatient, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aLblPatientByBarcode, gridBagConstraints);
 
-        aTxtPatientName.setEditable(false);
-        aTxtPatientName.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aTxtPatientName.setMinimumSize(new java.awt.Dimension(240, 24));
-        aTxtPatientName.setPreferredSize(new java.awt.Dimension(240, 24));
+        aTxtPatientNameByBarcode.setEditable(false);
+        aTxtPatientNameByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtPatientNameByBarcode.setMinimumSize(new java.awt.Dimension(240, 24));
+        aTxtPatientNameByBarcode.setPreferredSize(new java.awt.Dimension(240, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(12, 2, 0, 11);
-        aPnlPatientDetail.add(aTxtPatientName, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aTxtPatientNameByBarcode, gridBagConstraints);
 
-        aLblVn.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblVn.setText("VN:");
+        aLblVnByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblVnByBarcode.setText("VN:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
-        aPnlPatientDetail.add(aLblVn, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aLblVnByBarcode, gridBagConstraints);
 
-        aTxtVn.setEditable(false);
-        aTxtVn.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aTxtVn.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        aTxtVn.setMinimumSize(new java.awt.Dimension(120, 24));
-        aTxtVn.setPreferredSize(new java.awt.Dimension(120, 24));
+        aTxtVnByBarcode.setEditable(false);
+        aTxtVnByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtVnByBarcode.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        aTxtVnByBarcode.setMinimumSize(new java.awt.Dimension(120, 24));
+        aTxtVnByBarcode.setPreferredSize(new java.awt.Dimension(120, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 0);
-        aPnlPatientDetail.add(aTxtVn, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aTxtVnByBarcode, gridBagConstraints);
 
-        aLblDocDate.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblDocDate.setText("Print Date:");
+        aLblDocDateByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblDocDateByBarcode.setText("Print Date:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
-        aPnlPatientDetail.add(aLblDocDate, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aLblDocDateByBarcode, gridBagConstraints);
 
-        aTxtPrintDateTime.setEditable(false);
-        aTxtPrintDateTime.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aTxtPrintDateTime.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-        aTxtPrintDateTime.setMinimumSize(new java.awt.Dimension(240, 24));
-        aTxtPrintDateTime.setPreferredSize(new java.awt.Dimension(240, 24));
+        aTxtPrintDateTimeByBarcode.setEditable(false);
+        aTxtPrintDateTimeByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtPrintDateTimeByBarcode.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        aTxtPrintDateTimeByBarcode.setMinimumSize(new java.awt.Dimension(240, 24));
+        aTxtPrintDateTimeByBarcode.setPreferredSize(new java.awt.Dimension(240, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 11);
-        aPnlPatientDetail.add(aTxtPrintDateTime, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aTxtPrintDateTimeByBarcode, gridBagConstraints);
 
-        aLblFolderName.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblFolderName.setText("Folder:");
+        aLblFolderNameByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblFolderNameByBarcode.setText("Folder:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
-        aPnlPatientDetail.add(aLblFolderName, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aLblFolderNameByBarcode, gridBagConstraints);
 
-        aTxtFolderName.setEditable(false);
-        aTxtFolderName.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aTxtFolderName.setMinimumSize(new java.awt.Dimension(120, 24));
-        aTxtFolderName.setPreferredSize(new java.awt.Dimension(120, 24));
+        aTxtFolderNameByBarcode.setEditable(false);
+        aTxtFolderNameByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtFolderNameByBarcode.setMinimumSize(new java.awt.Dimension(120, 24));
+        aTxtFolderNameByBarcode.setPreferredSize(new java.awt.Dimension(120, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 0);
-        aPnlPatientDetail.add(aTxtFolderName, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aTxtFolderNameByBarcode, gridBagConstraints);
 
-        aLblDoctor.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblDoctor.setText("Doctor:");
+        aLblDoctorByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblDoctorByBarcode.setText("Doctor:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
-        aPnlPatientDetail.add(aLblDoctor, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aLblDoctorByBarcode, gridBagConstraints);
 
-        aTxtDoctor.setEditable(false);
-        aTxtDoctor.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aTxtDoctor.setMinimumSize(new java.awt.Dimension(240, 24));
-        aTxtDoctor.setPreferredSize(new java.awt.Dimension(240, 24));
+        aTxtDoctorByBarcode.setEditable(false);
+        aTxtDoctorByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtDoctorByBarcode.setMinimumSize(new java.awt.Dimension(240, 24));
+        aTxtDoctorByBarcode.setPreferredSize(new java.awt.Dimension(240, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 11);
-        aPnlPatientDetail.add(aTxtDoctor, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aTxtDoctorByBarcode, gridBagConstraints);
 
-        aLblDocumentName.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblDocumentName.setText("Document:");
+        aLblDocumentNameByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblDocumentNameByBarcode.setText("Document:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
-        aPnlPatientDetail.add(aLblDocumentName, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aLblDocumentNameByBarcode, gridBagConstraints);
 
-        aTxtDocumentName.setEditable(false);
-        aTxtDocumentName.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aTxtDocumentName.setMinimumSize(new java.awt.Dimension(120, 24));
-        aTxtDocumentName.setPreferredSize(new java.awt.Dimension(120, 24));
+        aTxtDocumentNameByBarcode.setEditable(false);
+        aTxtDocumentNameByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtDocumentNameByBarcode.setMinimumSize(new java.awt.Dimension(120, 24));
+        aTxtDocumentNameByBarcode.setPreferredSize(new java.awt.Dimension(120, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 0);
-        aPnlPatientDetail.add(aTxtDocumentName, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aTxtDocumentNameByBarcode, gridBagConstraints);
 
-        aLblOption.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblOption.setText("Option:");
+        aLblOptionByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblOptionByBarcode.setText("Option:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
-        aPnlPatientDetail.add(aLblOption, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aLblOptionByBarcode, gridBagConstraints);
 
-        aTxtOption.setEditable(false);
-        aTxtOption.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aTxtOption.setMinimumSize(new java.awt.Dimension(240, 24));
-        aTxtOption.setPreferredSize(new java.awt.Dimension(240, 24));
+        aTxtOptionByBarcode.setEditable(false);
+        aTxtOptionByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtOptionByBarcode.setMinimumSize(new java.awt.Dimension(240, 24));
+        aTxtOptionByBarcode.setPreferredSize(new java.awt.Dimension(240, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 11);
-        aPnlPatientDetail.add(aTxtOption, gridBagConstraints);
+        aPnlPatientDetailByBarcode.add(aTxtOptionByBarcode, gridBagConstraints);
 
+        aPnlPatientDetail.add(aPnlPatientDetailByBarcode, "ByBarcode");
+
+        aPnlPatientDetailByManual.setLayout(new java.awt.GridBagLayout());
+
+        aLblHnByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblHnByManual.setText("HN:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
+        aPnlPatientDetailByManual.add(aLblHnByManual, gridBagConstraints);
+
+        aTxtHnByManual.setBackground(new java.awt.Color(153, 255, 255));
+        aTxtHnByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtHnByManual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        aTxtHnByManual.setMinimumSize(new java.awt.Dimension(120, 24));
+        aTxtHnByManual.setPreferredSize(new java.awt.Dimension(120, 24));
+        aTxtHnByManual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aTxtHnByManualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 2, 0, 0);
+        aPnlPatientDetailByManual.add(aTxtHnByManual, gridBagConstraints);
+
+        aLblPatientByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblPatientByManual.setText("Patient:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
+        aPnlPatientDetailByManual.add(aLblPatientByManual, gridBagConstraints);
+
+        aTxtPatientNameByManual.setBackground(new java.awt.Color(153, 255, 255));
+        aTxtPatientNameByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtPatientNameByManual.setMinimumSize(new java.awt.Dimension(240, 24));
+        aTxtPatientNameByManual.setPreferredSize(new java.awt.Dimension(240, 24));
+        aTxtPatientNameByManual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aTxtPatientNameByManualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 2, 0, 11);
+        aPnlPatientDetailByManual.add(aTxtPatientNameByManual, gridBagConstraints);
+
+        aLblVnByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblVnByManual.setText("VN:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
+        aPnlPatientDetailByManual.add(aLblVnByManual, gridBagConstraints);
+
+        aTxtVnByManual.setEditable(false);
+        aTxtVnByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtVnByManual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        aTxtVnByManual.setMinimumSize(new java.awt.Dimension(120, 24));
+        aTxtVnByManual.setPreferredSize(new java.awt.Dimension(120, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 0);
+        aPnlPatientDetailByManual.add(aTxtVnByManual, gridBagConstraints);
+
+        aLblDocDateByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblDocDateByManual.setText("Print Date:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
+        aPnlPatientDetailByManual.add(aLblDocDateByManual, gridBagConstraints);
+
+        aTxtPrintDateTimeByManual.setEditable(false);
+        aTxtPrintDateTimeByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtPrintDateTimeByManual.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        aTxtPrintDateTimeByManual.setMinimumSize(new java.awt.Dimension(240, 24));
+        aTxtPrintDateTimeByManual.setPreferredSize(new java.awt.Dimension(240, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 11);
+        aPnlPatientDetailByManual.add(aTxtPrintDateTimeByManual, gridBagConstraints);
+
+        aLblFolderNameByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblFolderNameByManual.setText("Folder:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
+        aPnlPatientDetailByManual.add(aLblFolderNameByManual, gridBagConstraints);
+
+        aCmbFolderNameByManual.setBackground(new java.awt.Color(153, 255, 255));
+        aCmbFolderNameByManual.setMinimumSize(new java.awt.Dimension(120, 24));
+        aCmbFolderNameByManual.setPreferredSize(new java.awt.Dimension(120, 24));
+        aCmbFolderNameByManual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aCmbFolderNameByManualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 0);
+        aPnlPatientDetailByManual.add(aCmbFolderNameByManual, gridBagConstraints);
+
+        aLblDoctorByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblDoctorByManual.setText("Doctor:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
+        aPnlPatientDetailByManual.add(aLblDoctorByManual, gridBagConstraints);
+
+        aTxtDoctorByManual.setEditable(false);
+        aTxtDoctorByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtDoctorByManual.setMinimumSize(new java.awt.Dimension(240, 24));
+        aTxtDoctorByManual.setPreferredSize(new java.awt.Dimension(240, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 11);
+        aPnlPatientDetailByManual.add(aTxtDoctorByManual, gridBagConstraints);
+
+        aLblDocumentNameByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblDocumentNameByManual.setText("Document:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        aPnlPatientDetailByManual.add(aLblDocumentNameByManual, gridBagConstraints);
+
+        aCmbDocumentNameByManual.setMinimumSize(new java.awt.Dimension(120, 24));
+        aCmbDocumentNameByManual.setPreferredSize(new java.awt.Dimension(120, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 0);
+        aPnlPatientDetailByManual.add(aCmbDocumentNameByManual, gridBagConstraints);
+
+        aLblOptionByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblOptionByManual.setText("Option:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        aPnlPatientDetailByManual.add(aLblOptionByManual, gridBagConstraints);
+
+        aTxtOptionByManual.setEditable(false);
+        aTxtOptionByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtOptionByManual.setMinimumSize(new java.awt.Dimension(240, 24));
+        aTxtOptionByManual.setPreferredSize(new java.awt.Dimension(240, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 11);
+        aPnlPatientDetailByManual.add(aTxtOptionByManual, gridBagConstraints);
+
+        aBtnFindPatient.setText("Find");
+        aBtnFindPatient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aBtnFindPatientActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 4);
-        aPnlRight.add(aPnlPatientDetail, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(12, 0, 0, 11);
+        aPnlPatientDetailByManual.add(aBtnFindPatient, gridBagConstraints);
+
+        aPnlPatientDetail.add(aPnlPatientDetailByManual, "ByManualInput");
+
+        aPnlBodyCenter.add(aPnlPatientDetail, new java.awt.GridBagConstraints());
 
         aPnlImagePreview.setLayout(new java.awt.BorderLayout());
         aPnlImagePreview.add(aLblImg, java.awt.BorderLayout.CENTER);
@@ -535,11 +818,92 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 4, 5);
-        aPnlRight.add(ScrlBody, gridBagConstraints);
+        aPnlBodyCenter.add(ScrlBody, gridBagConstraints);
 
-        aPnlBody.add(aPnlRight, java.awt.BorderLayout.CENTER);
+        aPnlBody.add(aPnlBodyCenter, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(aPnlBody, java.awt.BorderLayout.CENTER);
+
+        aPnlDirectory.setMinimumSize(new java.awt.Dimension(400, 24));
+        aPnlDirectory.setPreferredSize(new java.awt.Dimension(400, 24));
+        aPnlDirectory.setLayout(new java.awt.GridBagLayout());
+
+        aLblFolderInput.setText("Folder:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 2, 0, 0);
+        aPnlDirectory.add(aLblFolderInput, gridBagConstraints);
+
+        aTxtFolderInput.setMinimumSize(new java.awt.Dimension(120, 24));
+        aTxtFolderInput.setPreferredSize(new java.awt.Dimension(120, 24));
+        aTxtFolderInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aTxtFolderInputActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
+        aPnlDirectory.add(aTxtFolderInput, gridBagConstraints);
+
+        aBtnChooseFolder.setLabel("...");
+        aBtnChooseFolder.setMaximumSize(new java.awt.Dimension(24, 24));
+        aBtnChooseFolder.setMinimumSize(new java.awt.Dimension(24, 24));
+        aBtnChooseFolder.setPreferredSize(new java.awt.Dimension(24, 24));
+        aBtnChooseFolder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aBtnChooseFolderActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 2, 0, 11);
+        aPnlDirectory.add(aBtnChooseFolder, gridBagConstraints);
+
+        aPnlDirRight.setBackground(new java.awt.Color(255, 255, 255));
+        aPnlDirRight.setLayout(new java.awt.GridBagLayout());
+
+        aScrlFile.setBackground(new java.awt.Color(255, 255, 255));
+
+        aTblFile.setModel(aTblMdlFile);
+        aTblFile.setGridColor(new java.awt.Color(255, 255, 255));
+        aTblFile.setRowHeight(24);
+        aTblFile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                aTblFileMouseReleased(evt);
+            }
+        });
+        aScrlFile.setViewportView(aTblFile);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        aPnlDirRight.add(aScrlFile, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 4, 11);
+        aPnlDirectory.add(aPnlDirRight, gridBagConstraints);
+
+        getContentPane().add(aPnlDirectory, java.awt.BorderLayout.EAST);
 
         aMenuFile.setText("File");
 
@@ -573,12 +937,13 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         setJMenuBar(aMenuBar);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-536)/2, (screenSize.height-712)/2, 536, 712);
+        setBounds((screenSize.width-1024)/2, (screenSize.height-720)/2, 1024, 720);
     }// </editor-fold>//GEN-END:initComponents
 
-    public void setConvertInProgress(boolean isInProgress)
+    public void setInProgress(boolean isInProgress)
     {
-        this.aBtnScanByBarcode.setEnabled(!isInProgress);
+        this.aBtnScanFromScanner.setEnabled(!isInProgress);
+        this.aBtnScanFromPath.setEnabled(!isInProgress);
         this.aBtnCancel.setEnabled(isInProgress);
 
         if (isInProgress)
@@ -587,68 +952,59 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         }
         else
         {
-            showStatusCard("Card");
+            showStatusCard("Method");
         }
     }
 
-    private void aBtnScanByBarcodeActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnScanByBarcodeActionPerformed
-    {//GEN-HEADEREND:event_aBtnScanByBarcodeActionPerformed
-        setConvertInProgress(true);
+    private void aBtnScanFromScannerActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnScanFromScannerActionPerformed
+    {//GEN-HEADEREND:event_aBtnScanFromScannerActionPerformed
+    }//GEN-LAST:event_aBtnScanFromScannerActionPerformed
 
-        final ImageScan aImageScan = new ImageScan();
-        aTimer = new Timer(1000, new ActionListener()
+    public void listFileInPatch()
+    {
+        this.aTblMdlFile.removeAllRow();
+        DocScanDAOFactory.setDocScanInputPath(this.aTxtFolderInput.getText());
+
+        File path = new File(DocScanDAOFactory.getDocScanInputPath());
+        String[] filenames = path.list(new FilenameFilter()
         {
 
-            public void actionPerformed(ActionEvent evt)
+            public boolean accept(File dir, String name)
             {
-                aTxtTotalScan.setText(String.valueOf(aImageScan.getNumScan()));
-                aTxtTotalSuccess.setText(String.valueOf(aImageScan.getNumSuccess()));
-                aTxtTotalFail.setText(String.valueOf(aImageScan.getNumFail()));
-                aLblProgress.setText(aImageScan.getStatusText());
-                aStatusProgress.setValue(aImageScan.getStatus());
-
-                BpkDocumentScanVO tmpBpkDocumentScanVO = aImageScan.getLastBpkDocumentScanVO();
-                if (tmpBpkDocumentScanVO != null)
-                {
-                    aTxtHn.setText(tmpBpkDocumentScanVO.getHn());
-                    aTxtPatientName.setText(tmpBpkDocumentScanVO.getPatientName());
-                    aTxtVn.setText(Utility.formatVn(tmpBpkDocumentScanVO.getVn()));
-                    aTxtPrintDateTime.setText(Utility.formatDateForDisplay(tmpBpkDocumentScanVO.getPrintDate()) + " " + tmpBpkDocumentScanVO.getPrintTime());
-                    aTxtFolderName.setText(tmpBpkDocumentScanVO.getFolderName());
-                    aTxtDocumentName.setText(tmpBpkDocumentScanVO.getDocumentName());
-                    aTxtDoctor.setText(tmpBpkDocumentScanVO.getDoctorEid());
-                    aTxtOption.setText(tmpBpkDocumentScanVO.getOption());
-                }
-                if (aImageScan.getStatus() == 100)
-                {
-                    Toolkit.getDefaultToolkit().beep();
-                    aTimer.stop();
-                    setConvertInProgress(false);
-                }
-
-                try
-                {
-                    // aLblImg.setIcon(new ImageIcon(ImageIO.read(new File(aImageScan.getLastImage()))));
-                    aLblImg.setIcon(rescaleImage(new File(aImageScan.getLastImage()), aPnlImagePreview.getHeight(), aPnlImagePreview.getWidth()));
-                }
-                catch (Exception ex)
-                {
-                    // Logger.getLogger(FrmImageScanByBarcode.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-                if ("Finished".equals(aLblProgress.getText()))
-                {
-                    setConvertInProgress(false);
-                    return;
-                }
+                return name.toLowerCase().endsWith(".jpg") && !name.toUpperCase().startsWith("THRESHOLD_");
             }
         });
-        aThread = new Thread(aImageScan);
-        aThread.start();
-        aTimer.start();
 
-        setConvertInProgress(false);
-    }//GEN-LAST:event_aBtnScanByBarcodeActionPerformed
+        String[] header = new String[4];
+        header[0] = " ";
+        header[1] = "Name";
+        header[2] = "Date modified";
+        header[3] = "Size";
+        this.aTblMdlFile.createHeader(header);
+
+        SimpleDateFormat fmat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        for (int i = 0, sizei = filenames.length; i < sizei; i++)
+        {
+            Object[] rowData = new Object[header.length];
+            rowData[0] = " ";
+            rowData[1] = filenames[i];
+
+            File chkDetail = new File(DocScanDAOFactory.getDocScanInputPath() + filenames[i]);
+
+            rowData[2] = fmat.format(chkDetail.lastModified());
+            rowData[3] = (int) Math.ceil((float) chkDetail.length() / 1024) + " KB";
+            // (int)((float)chkDetail.length() / (1024 * 1024)) + " KB";
+
+            this.aTblMdlFile.addRowData(rowData);
+        }
+
+        this.aTblFile.getColumnModel().getColumn(0).setPreferredWidth(1);
+        this.aTblFile.getColumnModel().getColumn(1).setPreferredWidth(200);
+        this.aTblFile.getColumnModel().getColumn(2).setPreferredWidth(200);
+        this.aTblFile.getColumnModel().getColumn(3).setPreferredWidth(120);
+
+        this.aTblMdlFile.fireTableDataChanged();
+    }
 
     public ImageIcon rescaleImage(File source, int maxHeight, int maxWidth)
     {
@@ -717,12 +1073,17 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
 
     private void aBtnCancelActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnCancelActionPerformed
     {//GEN-HEADEREND:event_aBtnCancelActionPerformed
-        // setConvertInProgress(false);
+        if (JOptionPane.showConfirmDialog(this, "Confirm cancel ?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+        {
+            this.aImageScanFromPath.setIsInterrupt(true);
+
+            this.setInProgress(false);
+        }
 }//GEN-LAST:event_aBtnCancelActionPerformed
 
     private void aMenuFileStartActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aMenuFileStartActionPerformed
     {//GEN-HEADEREND:event_aMenuFileStartActionPerformed
-        aBtnScanByBarcodeActionPerformed(evt);
+        aBtnScanFromScannerActionPerformed(evt);
     }//GEN-LAST:event_aMenuFileStartActionPerformed
 
     private void aMenuFileCancelActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aMenuFileCancelActionPerformed
@@ -813,11 +1174,11 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
                 while (source != null && source.hasMoreImages());
                 source = null;
 
-                File outputfile = new File(DocScanDAOFactory.getDocScanInputPath()+"SCANFILE.jpg");
+                File outputfile = new File(DocScanDAOFactory.getDocScanInputPath() + "SCANFILE.jpg");
                 ImageIO.write(bimage, "jpg", outputfile);
 
                 // aLblImg.setIcon(new ImageIcon(bimage));
-                aLblImg.setIcon(rescaleImage(new File(DocScanDAOFactory.getDocScanInputPath()+"SCANFILE.jpg"), aPnlImagePreview.getHeight(), aPnlImagePreview.getWidth()));
+                aLblImg.setIcon(rescaleImage(new File(DocScanDAOFactory.getDocScanInputPath() + "SCANFILE.jpg"), aPnlImagePreview.getHeight(), aPnlImagePreview.getWidth()));
             }
         }
         catch (TwainException ex)
@@ -828,7 +1189,190 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
         {
             ex.printStackTrace();
         }
+        finally
+        {
+            aDocScanDAO = null;
+        }
     }//GEN-LAST:event_aBtnConnectScannerActionPerformed
+
+    private void aRadByManualInputActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aRadByManualInputActionPerformed
+    {//GEN-HEADEREND:event_aRadByManualInputActionPerformed
+        CardLayout card = (CardLayout) this.aPnlPatientDetail.getLayout();
+        card.show(this.aPnlPatientDetail, "ByManualInput");
+    }//GEN-LAST:event_aRadByManualInputActionPerformed
+
+    private void aRadByBarcodeActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aRadByBarcodeActionPerformed
+    {//GEN-HEADEREND:event_aRadByBarcodeActionPerformed
+        CardLayout card = (CardLayout) this.aPnlPatientDetail.getLayout();
+        card.show(this.aPnlPatientDetail, "ByBarcode");
+    }//GEN-LAST:event_aRadByBarcodeActionPerformed
+
+    private void aBtnFindPatientActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnFindPatientActionPerformed
+    {//GEN-HEADEREND:event_aBtnFindPatientActionPerformed
+        PatientVO aPatientVO = new PatientVO();
+        aPatientVO.setHn(this.aTxtHnByManual.getText().trim());
+        aPatientVO.setPatientName(this.aTxtPatientNameByManual.getText().trim());
+
+        BpkDocumentScanVO aBpkDocumentScanVO = DlgFindPatientAndVisit.showDlgFindPatientAndVisit(this, aPatientVO);
+        if (aBpkDocumentScanVO != null)
+        {
+            this.aTxtHnByManual.setText(aBpkDocumentScanVO.getHn());
+            this.aTxtPatientNameByManual.setText(aBpkDocumentScanVO.getPatientName());
+            this.aTxtPrintDateTimeByManual.setText(Utility.formatDateForDisplay(aBpkDocumentScanVO.getPrintDate()) + " " + aBpkDocumentScanVO.getPrintTime());
+            this.aTxtVnByManual.setText(aBpkDocumentScanVO.getVn());
+        }
+    }//GEN-LAST:event_aBtnFindPatientActionPerformed
+
+    private void aCmbFolderNameByManualActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aCmbFolderNameByManualActionPerformed
+    {//GEN-HEADEREND:event_aCmbFolderNameByManualActionPerformed
+        DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
+        try
+        {
+            List listDocumentName = aDocScanDAO.listDocumentNameInFolder(this.aCmbFolderNameByManual.getSelectedItem().toString());
+
+            this.aCmbDocumentNameByManual.removeAllItems();
+            for (int i = 0, sizei = listDocumentName.size(); i < sizei; i++)
+            {
+                this.aCmbDocumentNameByManual.addItem(listDocumentName.get(i));
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        finally
+        {
+            aDocScanDAO = null;
+        }
+    }//GEN-LAST:event_aCmbFolderNameByManualActionPerformed
+
+    private void aTxtHnByManualActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aTxtHnByManualActionPerformed
+    {//GEN-HEADEREND:event_aTxtHnByManualActionPerformed
+        this.aBtnFindPatientActionPerformed(evt);
+    }//GEN-LAST:event_aTxtHnByManualActionPerformed
+
+    private void aTxtPatientNameByManualActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aTxtPatientNameByManualActionPerformed
+    {//GEN-HEADEREND:event_aTxtPatientNameByManualActionPerformed
+        this.aBtnFindPatientActionPerformed(evt);
+    }//GEN-LAST:event_aTxtPatientNameByManualActionPerformed
+
+    private void aBtnScanFromPathActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnScanFromPathActionPerformed
+    {//GEN-HEADEREND:event_aBtnScanFromPathActionPerformed
+        if(this.aImageScanFromPath.isIsInterrupt())
+            this.aImageScanFromPath.setIsInterrupt(false);
+        listFileInPatch();
+        if (this.aRadByBarcode.isSelected() || (this.aRadByManualInput.isSelected() && !"".equals(this.aTxtVnByManual.getText().trim())))
+        {
+            setInProgress(true);
+
+            aTimer = new Timer(1000, new ActionListener()
+            {
+                public void actionPerformed(ActionEvent evt)
+                {
+                    if (!aImageScanFromPath.isIsInterrupt())
+                    {
+                        aTxtTotalScan.setText(String.valueOf(aImageScanFromPath.getNumScan()));
+                        aTxtTotalSuccess.setText(String.valueOf(aImageScanFromPath.getNumSuccess()));
+                        aTxtTotalFail.setText(String.valueOf(aImageScanFromPath.getNumFail()));
+                        aLblProgress.setText(aImageScanFromPath.getStatusText());
+                        aStatusProgress.setValue(aImageScanFromPath.getStatus());
+
+                        BpkDocumentScanVO tmpBpkDocumentScanVO = aImageScanFromPath.getLastBpkDocumentScanVO();
+                        if (tmpBpkDocumentScanVO != null)
+                        {
+                            aTxtHnByBarcode.setText(tmpBpkDocumentScanVO.getHn());
+                            aTxtPatientNameByBarcode.setText(tmpBpkDocumentScanVO.getPatientName());
+                            aTxtVnByBarcode.setText(Utility.formatVn(tmpBpkDocumentScanVO.getVn()));
+                            aTxtPrintDateTimeByBarcode.setText(Utility.formatDateForDisplay(tmpBpkDocumentScanVO.getPrintDate()) + " " + tmpBpkDocumentScanVO.getPrintTime());
+                            aTxtFolderNameByBarcode.setText(tmpBpkDocumentScanVO.getFolderName());
+                            aTxtDocumentNameByBarcode.setText(tmpBpkDocumentScanVO.getDocumentName());
+                            aTxtDoctorByBarcode.setText(tmpBpkDocumentScanVO.getDoctorEid());
+                            aTxtOptionByBarcode.setText(tmpBpkDocumentScanVO.getOption());
+                        }
+                        if (aImageScanFromPath.getStatus() == 100)
+                        {
+                            Toolkit.getDefaultToolkit().beep();
+                            aTimer.stop();
+                            setInProgress(false);
+                        }
+                        else
+                        {
+                            setInProgress(true);
+                        }
+
+                        try
+                        {
+                            // aLblImg.setIcon(new ImageIcon(ImageIO.read(new File(aImageScanFromPath.getLastImage()))));
+                            aLblImg.setIcon(rescaleImage(new File(aImageScanFromPath.getLastImage()), aPnlImagePreview.getHeight(), aPnlImagePreview.getWidth()));
+                        }
+                        catch (Exception ex)
+                        {
+                            // Logger.getLogger(FrmImageScanByBarcode.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                        listFileInPatch();
+                    }
+                }
+            });
+            aThread = new Thread(aImageScanFromPath);
+            aThread.start();
+            aTimer.start();
+
+            setInProgress(false);
+        }
+        listFileInPatch();
+
+        if (this.aRadByManualInput.isSelected())
+        {
+            if ("".equals(this.aTxtVnByManual.getText().trim()))
+            {
+                JOptionPane.showMessageDialog(this, "ยังไม่ได้เลือก VN", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_aBtnScanFromPathActionPerformed
+
+    private void aTxtFolderInputActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aTxtFolderInputActionPerformed
+    {//GEN-HEADEREND:event_aTxtFolderInputActionPerformed
+        if (!DocScanDAOFactory.setDocScanInputPath(this.aTxtFolderInput.getText().trim()))
+        {
+            JOptionPane.showMessageDialog(this, "Invalid path!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        listFileInPatch();
+    }//GEN-LAST:event_aTxtFolderInputActionPerformed
+
+    private void aBtnChooseFolderActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnChooseFolderActionPerformed
+    {//GEN-HEADEREND:event_aBtnChooseFolderActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new File(DocScanDAOFactory.getDocScanInputPath()));
+        chooser.setDialogTitle("Select folder");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+        {
+            // System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+            // System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+
+            this.aTxtFolderInput.setText(chooser.getSelectedFile().toString());
+            DocScanDAOFactory.setDocScanInputPath(this.aTxtFolderInput.getText().trim());
+        }
+        else
+        {
+            Utility.printCoreDebug(this, "No Selection ");
+        }
+
+        listFileInPatch();
+    }//GEN-LAST:event_aBtnChooseFolderActionPerformed
+
+    private void aTblFileMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_aTblFileMouseReleased
+    {//GEN-HEADEREND:event_aTblFileMouseReleased
+        if(Utility.isDoubleReleased())
+        {
+            // TODO: Open file with default image viewer
+        }
+    }//GEN-LAST:event_aTblFileMouseReleased
     public final static String TEMP_FILENAME = "TempFilename";
     public final static String HEADER1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><jasperReport xmlns=\"http://jasperreports.sourceforge.net/jasperreports\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd\" name=\"";
     public final static String HEADER2 = "\" pageWidth=\"595\" pageHeight=\"842\" whenNoDataType=\"AllSectionsNoDetail\" columnWidth=\"595\" leftMargin=\"0\" rightMargin=\"0\" topMargin=\"0\" bottomMargin=\"0\" isSummaryNewPage=\"true\"><property name=\"ireport.zoom\" value=\"1.0\"/><property name=\"ireport.x\" value=\"0\"/><property name=\"ireport.y\" value=\"0\"/><parameter name=\"SUBREPORT_DIR\" class=\"java.lang.String\" isForPrompting=\"false\"><defaultValueExpression><![CDATA[\"";
@@ -979,22 +1523,36 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane ScrlBody;
     private javax.swing.JButton aBtnCancel;
+    private javax.swing.JButton aBtnChooseFolder;
     private javax.swing.JButton aBtnConnectScanner;
-    private javax.swing.JButton aBtnScanByBarcode;
-    private javax.swing.JLabel aLblDocDate;
-    private javax.swing.JLabel aLblDoctor;
-    private javax.swing.JLabel aLblDocumentName;
-    private javax.swing.JLabel aLblFolderName;
-    private javax.swing.JLabel aLblHn;
+    private javax.swing.JButton aBtnFindPatient;
+    private javax.swing.ButtonGroup aBtnGrpScanMethod;
+    private javax.swing.JButton aBtnScanFromPath;
+    private javax.swing.JButton aBtnScanFromScanner;
+    private javax.swing.JComboBox aCmbDocumentNameByManual;
+    private javax.swing.JComboBox aCmbFolderNameByManual;
+    private javax.swing.JLabel aLblDocDateByBarcode;
+    private javax.swing.JLabel aLblDocDateByManual;
+    private javax.swing.JLabel aLblDoctorByBarcode;
+    private javax.swing.JLabel aLblDoctorByManual;
+    private javax.swing.JLabel aLblDocumentNameByBarcode;
+    private javax.swing.JLabel aLblDocumentNameByManual;
+    private javax.swing.JLabel aLblFolderInput;
+    private javax.swing.JLabel aLblFolderNameByBarcode;
+    private javax.swing.JLabel aLblFolderNameByManual;
+    private javax.swing.JLabel aLblHnByBarcode;
+    private javax.swing.JLabel aLblHnByManual;
     private javax.swing.JLabel aLblImg;
-    private javax.swing.JLabel aLblLogo;
-    private javax.swing.JLabel aLblOption;
-    private javax.swing.JLabel aLblPatient;
+    private javax.swing.JLabel aLblOptionByBarcode;
+    private javax.swing.JLabel aLblOptionByManual;
+    private javax.swing.JLabel aLblPatientByBarcode;
+    private javax.swing.JLabel aLblPatientByManual;
     private javax.swing.JLabel aLblProgress;
     private javax.swing.JLabel aLblTotalFail;
     private javax.swing.JLabel aLblTotalScan;
     private javax.swing.JLabel aLblTotalSuccess;
-    private javax.swing.JLabel aLblVn;
+    private javax.swing.JLabel aLblVnByBarcode;
+    private javax.swing.JLabel aLblVnByManual;
     private javax.swing.JMenuBar aMenuBar;
     private javax.swing.JMenu aMenuFile;
     private javax.swing.JMenuItem aMenuFileCancel;
@@ -1002,25 +1560,41 @@ public class FrmImageScanByBarcode extends javax.swing.JFrame
     private javax.swing.JMenuItem aMenuFileStart;
     private javax.swing.JPanel aPanelTop;
     private javax.swing.JPanel aPnlBody;
+    private javax.swing.JPanel aPnlBodyCenter;
+    private javax.swing.JPanel aPnlDirRight;
+    private javax.swing.JPanel aPnlDirectory;
     private javax.swing.JPanel aPnlImagePreview;
     private javax.swing.JPanel aPnlPatientDetail;
-    private javax.swing.JPanel aPnlRight;
+    private javax.swing.JPanel aPnlPatientDetailByBarcode;
+    private javax.swing.JPanel aPnlPatientDetailByManual;
     private javax.swing.JPanel aPnlStatusCard;
     private javax.swing.JPanel aPnlStatusCardLogo;
     private javax.swing.JPanel aPnlStatusCardProgress;
     private javax.swing.JPanel aPnlTotalScan;
+    private javax.swing.JRadioButton aRadByBarcode;
+    private javax.swing.JRadioButton aRadByManualInput;
+    private javax.swing.JScrollPane aScrlFile;
     private final javax.swing.JProgressBar aStatusProgress = new javax.swing.JProgressBar();
-    private javax.swing.JTextField aTxtDoctor;
-    private javax.swing.JTextField aTxtDocumentName;
-    private javax.swing.JTextField aTxtFolderName;
-    private javax.swing.JTextField aTxtHn;
-    private javax.swing.JTextField aTxtOption;
-    private javax.swing.JTextField aTxtPatientName;
-    private javax.swing.JTextField aTxtPrintDateTime;
+    private javax.swing.JTable aTblFile;
+    private com.bpk.app.emrapp.BpkTableModel aTblMdlFile;
+    private javax.swing.JTextField aTxtDoctorByBarcode;
+    private javax.swing.JTextField aTxtDoctorByManual;
+    private javax.swing.JTextField aTxtDocumentNameByBarcode;
+    private javax.swing.JTextField aTxtFolderInput;
+    private javax.swing.JTextField aTxtFolderNameByBarcode;
+    private javax.swing.JTextField aTxtHnByBarcode;
+    private javax.swing.JTextField aTxtHnByManual;
+    private javax.swing.JTextField aTxtOptionByBarcode;
+    private javax.swing.JTextField aTxtOptionByManual;
+    private javax.swing.JTextField aTxtPatientNameByBarcode;
+    private javax.swing.JTextField aTxtPatientNameByManual;
+    private javax.swing.JTextField aTxtPrintDateTimeByBarcode;
+    private javax.swing.JTextField aTxtPrintDateTimeByManual;
     private javax.swing.JTextField aTxtTotalFail;
     private javax.swing.JTextField aTxtTotalScan;
     private javax.swing.JTextField aTxtTotalSuccess;
-    private javax.swing.JTextField aTxtVn;
+    private javax.swing.JTextField aTxtVnByBarcode;
+    private javax.swing.JTextField aTxtVnByManual;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;

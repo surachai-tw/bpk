@@ -29,7 +29,7 @@ public class DocScanDAO
     public boolean isPatientExistByHn(String hn)
     {
         boolean result = false;
-        if(hn != null)
+        if (hn != null)
         {
             Connection conn = DocScanDAOFactory.getConnection();
             Statement stmt = null;
@@ -54,8 +54,8 @@ public class DocScanDAO
 
                 if (rs.next())
                 {
-                    result = rs.getString("patient_id")!=null ? true : false;
-                    
+                    result = rs.getString("patient_id") != null ? true : false;
+
                     rs.close();
                 }
 
@@ -81,7 +81,7 @@ public class DocScanDAO
     public String getNextImageFileName(String folderName)
     {
         String result = null;
-        if(folderName != null)
+        if (folderName != null)
         {
             Connection conn = DocScanDAOFactory.getConnection();
             Statement stmt = null;
@@ -96,7 +96,7 @@ public class DocScanDAO
             nf4.setGroupingUsed(false);
             String seqValue = null;
             String fileNamePrefix = null;
-            
+
             try
             {
                 sqlCmd = new StringBuffer("SELECT seq_value, file_name_prefix FROM bpk_patient_image_folder WHERE folder_name='").append(folderName).append("'");
@@ -112,12 +112,12 @@ public class DocScanDAO
 
                     rs.close();
 
-                    if(!Utility.isNumber(seqValue))
+                    if (!Utility.isNumber(seqValue))
                     {
                         seqValue = "0";
                     }
 
-                    if(Utility.isNull(fileNamePrefix))
+                    if (Utility.isNull(fileNamePrefix))
                     {
                         fileNamePrefix = "";
                     }
@@ -128,21 +128,21 @@ public class DocScanDAO
                     fileNamePrefix = "";
                 }
 
-                int intSeqValue = Integer.parseInt(seqValue)+1;
+                int intSeqValue = Integer.parseInt(seqValue) + 1;
                 seqValue = String.valueOf(intSeqValue);
 
                 sqlCmd = new StringBuffer("UPDATE bpk_patient_image_folder SET seq_value='").append(seqValue).append("' WHERE folder_name='").append(folderName).append("'");
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 stmt.executeUpdate(sqlCmd.toString());
-                
+
                 stmt.close();
                 conn.close();
 
                 String cDate = Utility.getCurrentDate();
                 cDate = cDate.substring(5);
                 cDate = cDate.replaceAll("-", "");
-                
-                result = fileNamePrefix+Utility.getCurrentYearInBuddhist()+cDate+nf4.format(intSeqValue);
+
+                result = fileNamePrefix + Utility.getCurrentYearInBuddhist() + cDate + nf4.format(intSeqValue);
             }
             catch (Exception ex)
             {
@@ -270,7 +270,7 @@ public class DocScanDAO
             try
             {
                 sqlCmd = new StringBuffer(
-                        "SELECT DISTINCT visit.visit_id, format_vn(visit.vn) AS vn, format_an(visit.an) AS an, visit.fix_visit_type_id, visit.visit_date, visit.visit_time ");
+                        "SELECT DISTINCT visit.visit_id, format_vn(visit.vn) AS vn, format_an(visit.an) AS an, visit.fix_visit_type_id, visit.visit_date, visit.visit_time, get_first_pdx_name(visit.visit_id) AS pdx ");
                 sqlCmd.append(" FROM visit ");
                 sqlCmd.append(" INNER JOIN bpk_document_scan ON visit.patient_id=bpk_document_scan.patient_id AND visit.visit_id=bpk_document_scan.visit_id ");
                 sqlCmd.append(" WHERE visit.active='1' AND visit.patient_id='").append(patientId).append("' ");
@@ -291,6 +291,7 @@ public class DocScanDAO
                     aVisitVO.setVisitDate(rst.getString("visit_date"));
                     aVisitVO.setVisitTime(rst.getString("visit_time"));
                     aVisitVO.setFixVisitTypeId(rst.getString("fix_visit_type_id"));
+                    aVisitVO.setPDx(rst.getString("pdx"));
 
                     aVisitVO.setListFolderVO(this.listFolderBpkDocumentScanVO(aVisitVO.getObjectID()));
                     List listFolder = aVisitVO.getListFolderVO();
@@ -479,7 +480,7 @@ public class DocScanDAO
         Statement stmt = null;
         StringBuffer sqlCmd = null;
 
-        if (newBpkDocumentScanVO!=null && Utility.isNotNull(newBpkDocumentScanVO.getPatientId()) && Utility.isNotNull(newBpkDocumentScanVO.getFolderName()))
+        if (newBpkDocumentScanVO != null && Utility.isNotNull(newBpkDocumentScanVO.getPatientId()) && Utility.isNotNull(newBpkDocumentScanVO.getFolderName()))
         {
             try
             {
@@ -489,7 +490,7 @@ public class DocScanDAO
                 newBpkDocumentScanVO.setScanTime(Utility.getCurrentTime());
                 newBpkDocumentScanVO.setUpdateDate(Utility.getCurrentDate());
                 newBpkDocumentScanVO.setUpdateTime(Utility.getCurrentTime());
-                newBpkDocumentScanVO.setImageFileName(getNextImageFileName(newBpkDocumentScanVO.getFolderName())+".pdf");
+                newBpkDocumentScanVO.setImageFileName(getNextImageFileName(newBpkDocumentScanVO.getFolderName()) + ".pdf");
                 sqlCmd.append(newBpkDocumentScanVO.getObjectID()).append("', '").append(newBpkDocumentScanVO.getPatientId()).append("', (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.patient_id='").append(newBpkDocumentScanVO.getPatientId()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
                 sqlCmd.append(newBpkDocumentScanVO.getFolderName()).append("', '").append(newBpkDocumentScanVO.getImageFileName()).append("', '");
                 sqlCmd.append(newBpkDocumentScanVO.getScanDate()).append("', '").append(newBpkDocumentScanVO.getScanTime()).append("', '");
@@ -532,5 +533,216 @@ public class DocScanDAO
             return newBpkDocumentScanVO;
         }
         return newBpkDocumentScanVO;
+    }
+
+    public List listBpkPatientImageFolder()
+    {
+        List listFolderName = new ArrayList();
+        Connection conn = DocScanDAOFactory.getConnection();
+        Statement stmt = null;
+        ResultSet rs = null;
+        StringBuffer sqlCmd = null;
+
+        try
+        {
+
+            sqlCmd = new StringBuffer("SELECT folder_name FROM bpk_patient_image_folder ORDER BY folder_name ");
+
+            stmt = conn.createStatement();
+            Utility.printCoreDebug(this, sqlCmd.toString());
+            rs = stmt.executeQuery(sqlCmd.toString());
+
+            for (; rs.next();)
+            {
+                listFolderName.add(rs.getString("folder_name"));
+            }
+            rs.close();
+
+            stmt.close();
+            conn.close();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        finally
+        {
+            sqlCmd = null;
+            rs = null;
+            stmt = null;
+            conn = null;
+        }
+
+        return listFolderName;
+    }
+
+    public List listDocumentNameInFolder(String folderName)
+    {
+        List listDocumentName = new ArrayList();
+        Connection conn = DocScanDAOFactory.getConnection();
+        Statement stmt = null;
+        ResultSet rs = null;
+        StringBuffer sqlCmd = null;
+
+        try
+        {
+            sqlCmd = new StringBuffer("SELECT document_name FROM bpk_patient_image_document WHERE bpk_patient_image_folder_id=(SELECT bpk_patient_image_folder_id FROM bpk_patient_image_folder WHERE folder_name='").append(folderName).append("') ORDER BY document_name ");
+
+            stmt = conn.createStatement();
+            Utility.printCoreDebug(this, sqlCmd.toString());
+            rs = stmt.executeQuery(sqlCmd.toString());
+
+            for (; rs.next();)
+            {
+                listDocumentName.add(rs.getString("document_name"));
+            }
+            rs.close();
+
+            stmt.close();
+            conn.close();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        finally
+        {
+            sqlCmd = null;
+            rs = null;
+            stmt = null;
+            conn = null;
+        }
+
+        return listDocumentName;
+    }
+
+    public List searchPatient(String hn, String patName, String searchCount) throws Exception
+    {
+        List listPatientVO = new ArrayList();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rst = null;
+        StringBuffer sqlCmd = null;
+
+        if (Utility.isNotNull(hn) || Utility.isNotNull(patName))
+        {
+            try
+            {
+
+                sqlCmd = new StringBuffer(
+                        "SELECT DISTINCT patient_id, format_hn(hn) AS hn, imed_get_patient_name(patient_id) AS patient_name, fix_gender_id, bpkget_fix_gender_by_id(fix_gender_id) AS fix_gender_description, birthdate FROM patient WHERE active='1' ");
+
+                if (Utility.isNotNull(hn))
+                {
+                    sqlCmd.append(" AND format_hn(hn)='").append(hn).append("'");
+                }
+
+                if (Utility.isNotNull(patName))
+                {
+                    // ส่วนของ Patient name
+                    sqlCmd.append(" AND (");
+                    sqlCmd.append("imed_get_patient_name(patient_id) ILIKE '%").append(patName).append("%' ");
+                    sqlCmd.append(") ");
+                }
+                sqlCmd.append(" ORDER BY imed_get_patient_name(patient_id) ");
+                sqlCmd.append(" LIMIT ").append(searchCount).append(" OFFSET 0");
+
+                conn = DocScanDAOFactory.getConnection();
+                stmt = conn.createStatement();
+
+                Utility.printCoreDebug(this, sqlCmd.toString());
+                rst = stmt.executeQuery(sqlCmd.toString());
+                for (; rst.next();)
+                {
+                    PatientVO aPatientVO = new PatientVO();
+
+                    aPatientVO.setObjectID(rst.getString("patient_id"));
+                    aPatientVO.setHn(rst.getString("hn"));
+                    aPatientVO.setPatientName(rst.getString("patient_name"));
+                    aPatientVO.setBirthdate(rst.getString("birthdate"));
+                    aPatientVO.setFixGenderId(rst.getString("fix_gender_id"));
+                    aPatientVO.setFixGenderDescription(rst.getString("fix_gender_description"));
+
+                    listPatientVO.add(aPatientVO);
+                }
+
+                rst.close();
+                stmt.close();
+                conn.close();
+
+            }
+            catch (Exception ex)
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.close();
+                    }
+                    catch (Exception ex2)
+                    {
+                    }
+                }
+                ex.printStackTrace();
+                throw ex;
+            }
+            finally
+            {
+                rst = null;
+                stmt = null;
+                conn = null;
+            }
+        }
+        else
+        {
+        }
+        return listPatientVO;
+    }
+
+   public VisitVO readVisit(String visitId)
+    {
+        VisitVO aVisitVO = new VisitVO();
+        if (Utility.isNotNull(visitId))
+        {
+            Connection conn = DocScanDAOFactory.getConnection();
+            Statement stmt = null;
+            ResultSet rs = null;
+            StringBuilder sqlCmd = new StringBuilder("SELECT patient_id, format_hn(hn) AS hn, imed_get_patient_name(patient_id) AS patient_name, visit_id, vn AS orginalvn, format_vn(vn) AS vn, visit_date, visit_time, get_first_pdx_name(visit.visit_id) AS pdx ");
+            sqlCmd.append(" FROM visit ");
+            sqlCmd.append(" WHERE visit_id='").append(visitId).append("'");
+
+            try
+            {
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery(sqlCmd.toString());
+
+                if(rs.next())
+                {
+                    aVisitVO.setPatientId(rs.getString("patient_id"));
+                    aVisitVO.setHn(rs.getString("hn"));
+                    aVisitVO.setPatientName(rs.getString("patient_name"));
+                    aVisitVO.setVn(rs.getString("vn"));
+                    aVisitVO.setVisitDate(rs.getString("visit_date"));
+                    aVisitVO.setVisitTime(rs.getString("visit_time"));
+                    aVisitVO.setPDx(rs.getString("pdx"));
+                }
+                rs.close();
+                stmt.close();
+                conn.close();
+
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            finally
+            {
+                sqlCmd = null;
+                rs = null;
+                stmt = null;
+                conn = null;
+            }
+        }
+        return aVisitVO;
     }
 }
