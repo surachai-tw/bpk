@@ -26,16 +26,36 @@ import java.util.HashMap;
 public class ImageScanFromPath implements Runnable
 {
 
+    /** ใช้ List file ที่พบใน Path */
     public String[] scanFilenames = null;
+
+    /** ใช้แสดง Status ระหว่างการทำงานใน Thread */
     private int status = 0;
+    /** ใช้แสดง Status ระหว่างการทำงานใน Thread */
     private String statusText = "";
+
+    /** ใช้เก็บจำนวนภาพที่ Scan ไปแล้ว */
     private int numScan = 0;
+    /** ใช้เก็บจำนวนภาพที่ Scan สำเร็จ  */
     private int numSuccess = 0;
+    /** ใช้เก็บจำนวนภาพที่ Scan และนำเข้าระบบไม่ได้  */
     private int numFail = 0;
-    private BpkDocumentScanVO lastBpkDocumentScanVO = null;
-    private String lastImage = null;
+
+    /** ใช้สำหรับตรวจสอบกรณีที่กด Cancel ระหว่างการ Scan */
     private boolean isInterrupt = false;
+
+    /** ใช้สำหรับ List file ที่มาจาก Scanner เท่านั้น */
+    private boolean isForScannerOnly = false;
+
+    /** ใช้สำหรับกำหนดการ Scan แบบระบุ HN/VN */
+    private BpkDocumentScanVO bpkDocumentScanVO = null;
+    /** ใช้สำหรับแสดงผลการทำงานเท่านั้น */
+    private BpkDocumentScanVO lastBpkDocumentScanVO = null;
+    /** ใช้สำหรับแสดงผลการทำงานเท่านั้น */
+    private String lastImage = null;
+
     private String folderName = null;
+
     private DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
 
     public String getTextFromBarcodeWithThreshold(int precision, String scanFilename, String docScanInputPath)
@@ -62,21 +82,27 @@ public class ImageScanFromPath implements Runnable
         return result;
     }
 
+    public void setIsForScannerOnly(boolean isForScannerOnly)
+    {
+        this.isForScannerOnly = isForScannerOnly;
+    }
+
     public void run()
     {
+        // List file in folder 
         File scanPath = new File(DocScanDAOFactory.getDocScanInputPath());
         scanFilenames = scanPath.list(new FilenameFilter()
         {
-
             public boolean accept(File dir, String name)
             {
-                return name.toLowerCase().endsWith(".jpg") && !name.toUpperCase().startsWith("THRESHOLD_");
+                return name.toLowerCase().endsWith(".jpg") && !name.toUpperCase().startsWith("THRESHOLD_")
+                        && (isForScannerOnly ? name.toUpperCase().startsWith("_BPK") : true);
             }
         });
 
         int tmpStatusBeforeMatch = 10;
         int tmpStatusAfterMatch = 80;
-        if (scanFilenames != null)
+        if (scanFilenames != null && scanFilenames.length>0)
         {
             for (int i = 0; i < scanFilenames.length && !this.isInterrupt; i++)
             {
@@ -105,7 +131,7 @@ public class ImageScanFromPath implements Runnable
                             resultText = getTextFromBarcodeWithThreshold(j, scanFilenames[i], DocScanDAOFactory.getDocScanInputPath());
                         }
 
-                        j -= 2;
+                        j -= 4;
                         int tmpStatus = (int) (((float) (101 - j) / 101) * (tmpStatusAfterMatch - tmpStatusBeforeMatch));
                         this.status = tmpStatusBeforeMatch + tmpStatus;
 
@@ -122,6 +148,7 @@ public class ImageScanFromPath implements Runnable
                         }
                     }
                     while (j >= 1 && !this.isInterrupt);
+
                     if (!this.isInterrupt)
                     {
                         for (int chki = 0; allReadText != null && chki < allReadText.length; chki++)
@@ -131,26 +158,44 @@ public class ImageScanFromPath implements Runnable
 
                         this.status = tmpStatusAfterMatch;
                         this.statusText = "Create record in database";
-                        if (resultText != null)
+                        if (resultText != null || this.bpkDocumentScanVO!=null)
                         {
-                            HashMap result = aDocScanDAO.readPatient(allReadText[0]);
+                            HashMap result = aDocScanDAO.readPatient(this.bpkDocumentScanVO==null ? allReadText[0] : this.bpkDocumentScanVO.getHn());
                             Object aObj = result.get(EventNames.RESULT_DATA);
                             if (aObj != null && aObj instanceof PatientVO)
                             {
                                 aPatientVO = (PatientVO) aObj;
 
-                                // GetBarcodeServlet?code=958000003000+5802060286+D15317+20150206163207+LAB+LAB-RESULT&type=QR_CODE
-                                BpkDocumentScanVO newBpkDocumentScanVO = new BpkDocumentScanVO();
-                                newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
-                                newBpkDocumentScanVO.setHn(aPatientVO.getHn());
-                                newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
-                                newBpkDocumentScanVO.setVn(allReadText != null && allReadText.length >= 2 ? allReadText[1] : "");
-                                newBpkDocumentScanVO.setDoctorEid(allReadText != null && allReadText.length >= 3 ? allReadText[2] : "");
-                                newBpkDocumentScanVO.setPrintDate(BpkDocumentScanVO.getDateFromReadText(allReadText != null && allReadText.length >= 4 ? allReadText[3] : ""));
-                                newBpkDocumentScanVO.setPrintTime(BpkDocumentScanVO.getTimeFromReadText(allReadText != null && allReadText.length >= 4 ? allReadText[3] : ""));
-                                newBpkDocumentScanVO.setFolderName(allReadText != null && allReadText.length >= 5 ? allReadText[4] : "OTR");
-                                newBpkDocumentScanVO.setDocumentName(allReadText != null && allReadText.length >= 6 ? allReadText[5] : "");
-                                newBpkDocumentScanVO.setOption(allReadText != null && allReadText.length >= 7 ? allReadText[6] : "");
+                                BpkDocumentScanVO newBpkDocumentScanVO = null;
+                                if(this.bpkDocumentScanVO==null)
+                                {
+                                    // GetBarcodeServlet?code=958000003000+5802060286+D15317+20150206163207+LAB+LAB-RESULT&type=QR_CODE
+                                    newBpkDocumentScanVO = new BpkDocumentScanVO();
+                                    newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
+                                    newBpkDocumentScanVO.setHn(aPatientVO.getHn());
+                                    newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
+                                    newBpkDocumentScanVO.setVn(allReadText != null && allReadText.length >= 2 ? allReadText[1] : "");
+                                    newBpkDocumentScanVO.setDoctorEid(allReadText != null && allReadText.length >= 3 ? allReadText[2] : "");
+                                    newBpkDocumentScanVO.setPrintDate(BpkDocumentScanVO.getDateFromReadText(allReadText != null && allReadText.length >= 4 ? allReadText[3] : ""));
+                                    newBpkDocumentScanVO.setPrintTime(BpkDocumentScanVO.getTimeFromReadText(allReadText != null && allReadText.length >= 4 ? allReadText[3] : ""));
+                                    newBpkDocumentScanVO.setFolderName(allReadText != null && allReadText.length >= 5 ? allReadText[4] : "OTR");
+                                    newBpkDocumentScanVO.setDocumentName(allReadText != null && allReadText.length >= 6 ? allReadText[5] : "");
+                                    newBpkDocumentScanVO.setOption(allReadText != null && allReadText.length >= 7 ? allReadText[6] : "");
+                                }
+                                else
+                                {
+                                    newBpkDocumentScanVO = new BpkDocumentScanVO();
+                                    newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
+                                    newBpkDocumentScanVO.setHn(aPatientVO.getHn());
+                                    newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
+                                    newBpkDocumentScanVO.setVn(bpkDocumentScanVO.getVn());
+                                    newBpkDocumentScanVO.setDoctorEid(bpkDocumentScanVO.getDoctorEid());
+                                    newBpkDocumentScanVO.setPrintDate(bpkDocumentScanVO.getPrintDate());
+                                    newBpkDocumentScanVO.setPrintTime(bpkDocumentScanVO.getPrintTime());
+                                    newBpkDocumentScanVO.setFolderName(Utility.isNotNull(bpkDocumentScanVO.getFolderName()) ? bpkDocumentScanVO.getFolderName() : "OTR");
+                                    newBpkDocumentScanVO.setDocumentName(bpkDocumentScanVO.getDocumentName());
+                                    newBpkDocumentScanVO.setOption(bpkDocumentScanVO.getOption());
+                                }
 
                                 newBpkDocumentScanVO = aDocScanDAO.createBpkDocumentScan(newBpkDocumentScanVO);
 
@@ -398,5 +443,21 @@ public class ImageScanFromPath implements Runnable
     public void setIsInterrupt(boolean isInterrupt)
     {
         this.isInterrupt = isInterrupt;
+    }
+
+    /**
+     * @return the bpkDocumentScanVO
+     */
+    public BpkDocumentScanVO getBpkDocumentScanVO()
+    {
+        return bpkDocumentScanVO;
+    }
+
+    /**
+     * @param bpkDocumentScanVO the bpkDocumentScanVO to set
+     */
+    public void setBpkDocumentScanVO(BpkDocumentScanVO bpkDocumentScanVO)
+    {
+        this.bpkDocumentScanVO = bpkDocumentScanVO;
     }
 }

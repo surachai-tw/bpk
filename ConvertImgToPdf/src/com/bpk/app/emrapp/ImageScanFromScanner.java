@@ -1,5 +1,8 @@
 package com.bpk.app.emrapp;
 
+import SK.gnome.twain.TwainException;
+import SK.gnome.twain.TwainManager;
+import SK.gnome.twain.TwainSource;
 import com.bpk.core.emrcore.dao.DocScanDAO;
 import com.bpk.core.emrcore.dao.DocScanDAOFactory;
 import com.bpk.persistence.emrdto.BpkDocumentScanVO;
@@ -12,6 +15,13 @@ import javax.imageio.ImageIO;
 import com.bytescout.barcodereader.BarcodeType;
 import com.bytescout.barcodereader.FoundBarcode;
 import com.bytescout.barcodereader.Reader;
+import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.io.FilenameFilter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,251 +35,104 @@ import java.util.HashMap;
  */
 public class ImageScanFromScanner implements Runnable
 {
-    public String[] scanFilenames = null;
 
     private int status = 0;
     private String statusText = "";
-    private int numScan = 0;
-    private int numSuccess = 0;
-    private int numFail = 0;
-    private BpkDocumentScanVO lastBpkDocumentScanVO = null;
-    private String lastImage = null;
+    private boolean isInterrupt = false;
 
-    private String folderName = null;
-    private DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
-
-    public String getTextFromBarcodeWithThreshold(int precision, String scanFilename, String docScanInputPath)
+    public void connectScanner()
     {
-        String result = null;
+        int idx = 0;
+        this.status = 0;
+        this.statusText = "Connect to scanner...";
         try
         {
-            BufferedImage img = ImageIO.read(new File(docScanInputPath+scanFilename));
-            ImageTool.toBlackAndWhite(img, precision);
-            String newname = docScanInputPath+"THRESHOLD_"+scanFilename;
-            ImageIO.write(img, "jpg", new File(newname));
+            DocScanDAOFactory.newDocScanDAO();
+            TwainSource source = TwainManager.selectSource(null);
 
-            result = getTextFromBarcode(newname);
-            Utility.printCoreDebug(this, "Precision = "+precision+", TEXT = "+result);
-
-            // Delete threshold file 
-            File file = new File(newname);
-            file.delete();
-        }
-        catch(Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        return result;
-    }
-
-    public void run()
-    {
-        File scanPath = new File(DocScanDAOFactory.getDocScanInputPath());
-        scanFilenames = scanPath.list(new FilenameFilter()
-        {
-            public boolean accept(File dir, String name)
+            if (source != null)
             {
-                return name.toLowerCase().endsWith(".jpg") && !name.toUpperCase().startsWith("THRESHOLD_");
-            }
-        });
-
-        int tmpStatusBeforeMatch = 10;
-        int tmpStatusAfterMatch = 80;
-        if(scanFilenames!=null)
-        {
-            for(int i=0; i<scanFilenames.length; i++)
-            {
-                this.status = 0;
-                this.lastImage = DocScanDAOFactory.getDocScanInputPath()+scanFilenames[i];
-                PatientVO aPatientVO = null;
+                source.maskUnsupportedCapabilityException(false);
+                source.maskBadValueException(false);
                 try
                 {
-                    String resultText = null;
-                    String[] allReadText = null;
-
-                    this.status = tmpStatusBeforeMatch;
-                    this.statusText = "Matching HN in database";
-                    // Read text from barcode 
-                    int j = 101;
-                    CHECK_HN_VALID:
-                    do
-                    {
-                        // รอบแรก จะไม่ต้องทำ Threshold
-                        if(j==101)
-                        {
-                            resultText = getTextFromBarcode(getLastImage());
-                        }
-                        else
-                        {
-                            resultText = getTextFromBarcodeWithThreshold(j, scanFilenames[i], DocScanDAOFactory.getDocScanInputPath());
-                        }
-
-                        j-=2;
-                        int tmpStatus = (int)(((float)(101 - j)/101)*(tmpStatusAfterMatch-tmpStatusBeforeMatch));
-                        this.status = tmpStatusBeforeMatch + tmpStatus;
-
-                        if(resultText!=null)
-                        {
-                            allReadText = resultText.split(" ");
-                            if(allReadText!=null && allReadText.length>1)
-                            {
-                                if(aDocScanDAO.isPatientExistByHn(allReadText[0]))
-                                    break CHECK_HN_VALID;
-                            }
-                        }
-                    }
-                    while(j>=1);
-                    for(int chki=0; allReadText!=null && chki<allReadText.length; chki++)
-                        System.out.println("allReadText["+chki+"] = "+allReadText[chki]);
-
-                    this.status = tmpStatusAfterMatch;
-                    this.statusText = "Create record in database";
-                    if(resultText!=null)
-                    {
-                        HashMap result = aDocScanDAO.readPatient(allReadText[0]);
-                        Object aObj = result.get(EventNames.RESULT_DATA);
-                        if(aObj!=null && aObj instanceof PatientVO)
-                        {
-                            aPatientVO = (PatientVO)aObj;
-
-                            // GetBarcodeServlet?code=958000003000+5802060286+D15317+20150206163207+LAB+LAB-RESULT&type=QR_CODE
-                            BpkDocumentScanVO newBpkDocumentScanVO = new BpkDocumentScanVO();
-                            newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
-                            newBpkDocumentScanVO.setHn(aPatientVO.getHn());
-                            newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
-                            newBpkDocumentScanVO.setVn(allReadText!=null && allReadText.length>=2 ? allReadText[1] : "");
-                            newBpkDocumentScanVO.setDoctorEid(allReadText!=null && allReadText.length>=3 ? allReadText[2] : "");
-                            newBpkDocumentScanVO.setPrintDate(BpkDocumentScanVO.getDateFromReadText(allReadText!=null && allReadText.length>=4 ? allReadText[3] : ""));
-                            newBpkDocumentScanVO.setPrintTime(BpkDocumentScanVO.getTimeFromReadText(allReadText!=null && allReadText.length>=4 ? allReadText[3] : ""));
-                            newBpkDocumentScanVO.setFolderName(allReadText!=null && allReadText.length>=5 ? allReadText[4] : "OTR");
-                            newBpkDocumentScanVO.setDocumentName(allReadText!=null && allReadText.length>=6 ? allReadText[5] : "");
-                            newBpkDocumentScanVO.setOption(allReadText!=null && allReadText.length>=7 ? allReadText[6] : "");
-
-                            newBpkDocumentScanVO = aDocScanDAO.createBpkDocumentScan(newBpkDocumentScanVO);
-
-                            this.status = 90;
-                            this.statusText = "Copying file to path";
-                            if(Utility.isNotNull(newBpkDocumentScanVO.getObjectID()))
-                            {
-                                // Generate JRXML File
-                                String jrxmlFilename = GenerateJrxml.generateJrxmlPage(scanFilenames[i], DocScanDAOFactory.getDocScanInputPath(), false, 0, DocScanDAOFactory.getDocScanInputPath());
-                                // Convert PDF File
-                                String pdfFilename = Jrxml2Pdf.convertPage(jrxmlFilename, DocScanDAOFactory.getDocScanInputPath(), DocScanDAOFactory.getDocScanInputPath());
-
-                                // Delete JRXML after convert
-                                GenerateJrxml.deleteJrxmlFile(DocScanDAOFactory.getDocScanInputPath()+jrxmlFilename);
-                                
-                                // ถ้าได้ข้อมูล ObjectID มาได้ ต้อง copy file ไปไว้ที่ปลายทางให้ตรงกับ folder
-                                File srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + pdfFilename);
-                                File destPath = new File(DocScanDAOFactory.getDocScanOutputPath()+DocScanDAOFactory.getHnImageFolder(aPatientVO.getOriginalHn()) + System.getProperty("file.separator") + newBpkDocumentScanVO.getFolderName()+System.getProperty("file.separator"));
-                                if(!destPath.exists())
-                                {
-                                    destPath.mkdirs();
-                                }                                
-                                File destFile = new File(destPath.toString()+System.getProperty("file.separator")+newBpkDocumentScanVO.getImageFileName());
-                                Path rstPath = Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-                                // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
-                                File chkRstPath = new File(rstPath.toString());
-                                if(chkRstPath.exists())
-                                {
-                                    srcFile.delete();
-                                }
-
-                                File scanSrcFile = new File(getLastImage());
-                                File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathSuccess()+scanFilenames[i]);
-                                Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                                this.numSuccess++;
-
-                                this.setLastBpkDocumentScanVO(newBpkDocumentScanVO);
-                            }
-                            else
-                            {
-                                File scanSrcFile = new File(getLastImage());
-                                File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathFail()+scanFilenames[i]);
-                                Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                                this.numFail++;
-                            }
-                        }
-                        else
-                        {
-                            File scanSrcFile = new File(getLastImage());
-                            File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathFail()+scanFilenames[i]);
-                            Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                            this.numFail++;
-                        }
-                    }
-                    else
-                    {
-                        File scanSrcFile = new File(getLastImage());
-                        File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathFail()+scanFilenames[i]);
-                        Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                        this.numFail++;
-                    }
+                    source.setFeederEnabled(true);
+                    source.setAutoFeed(true);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    ex.printStackTrace();
+                    // ex.printStackTrace();
+                    Utility.printCoreDebug(this, ex.getMessage());
                 }
-                finally
+                this.status = 2;
+                this.statusText = "Get images from scanner...";
+
+                /*
+                MediaTracker tracker = new MediaTracker(this);
+                tracker.addImage(image, 0);
+                try
                 {
+                tracker.waitForAll();
                 }
-                this.status = 100;
-                this.statusText = "Finished";
-                this.numScan++;
+                catch (InterruptedException e)
+                {
+                e.printStackTrace();
+                }
+                tracker.removeImage(image);
+                 */
+
+                // Create a buffered image with a format that's compatible with the screen
+                BufferedImage bimage = null;
+                do
+                {
+                    java.awt.Image image = Toolkit.getDefaultToolkit().createImage(source);
+                    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                    try
+                    {
+                        // Determine the type of transparency of the new buffered image
+                        int transparency = Transparency.OPAQUE;
+
+                        // Create the buffered image
+                        GraphicsDevice gs = ge.getDefaultScreenDevice();
+                        GraphicsConfiguration gc = gs.getDefaultConfiguration();
+
+                        bimage = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), transparency);
+                    }
+                    catch (HeadlessException e)
+                    {
+                        // The system does not have a screen
+                        e.printStackTrace();
+                    }
+
+                    if (bimage == null)
+                    {
+                        // Create a buffered image using the default color model
+                        int type = BufferedImage.TYPE_INT_RGB;
+                        bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
+                    }
+
+                    // Copy image to buffered image
+                    Graphics g = bimage.createGraphics();
+
+                    // Paint the image onto the buffered image
+                    g.drawImage(image, 0, 0, null);
+                    g.dispose();
+
+                    File outputfile = new File(DocScanDAOFactory.getDocScanInputPath() + "_BPK" + Utility.getCurrentDate().replaceAll("-", "") + Utility.getCurrentTime().replaceAll(":", "") + (idx++) + ".jpg");
+                    ImageIO.write(bimage, "jpg", outputfile);
+                }
+                while (source!= null && source.hasMoreImages());
+                source = null;
+
+                // aLblImg.setIcon(new ImageIcon(bimage));
+                // aLblImg.setIcon(rescaleImage(new File(DocScanDAOFactory.getDocScanInputPath() + "SCANFILE.jpg"), aPnlImagePreview.getHeight(), aPnlImagePreview.getWidth()));
             }
+            this.status = 8;
+            this.statusText = "Prepare to match with HN...";
         }
-
-        this.status = 100;
-        this.statusText = "File not found";
-    }
-
-    public int getStatus()
-    {
-        return status;
-    }
-
-    public static String getTextFromBarcode(String filename)
-    {
-        String result = null;
-        try
+        catch (TwainException ex)
         {
-            Reader reader = new Reader();
-            reader.setRegistrationName("demo");
-            reader.setRegistrationKey("demo");
-            // Set barcode types to find:
-            reader.setBarcodeTypesToFind(EnumSet.of(BarcodeType.QRCode));
-
-            // Demonstrate barcode decoding from image file:
-            Utility.printCoreDebug(new ImageScanFromScanner(), "getTextFromBarcode, filename = "+filename);
-            FoundBarcode[] foundBarcodes = reader.readFromFile(filename);
-            if (foundBarcodes.length > 0)
-            {
-                for (int i = 0; i < foundBarcodes.length; i++)
-                {
-                    result = foundBarcodes[i].getValue();
-
-                    // System.out.println("result at "+i+" = "+result);
-
-                    if(result!=null && result.indexOf("(")!=-1)
-                    {
-                        result = result.substring(0,result.indexOf("(")).trim();
-                    }
-
-                    /*
-                    if(i==0)
-                    {
-                    String myData =foundBarcodes[i].getValue();
-                    qty= myData.substring(0,myData.indexOf("("));
-                    }
-                    if(i==1)
-                    {
-                    String myData =foundBarcodes[i].getValue();
-                    plateId= myData.substring(0,myData.indexOf("("));
-                    }
-                     */
-                }
-            }
+            ex.printStackTrace();
         }
         catch (Exception ex)
         {
@@ -278,7 +141,26 @@ public class ImageScanFromScanner implements Runnable
         finally
         {
         }
-        return result;
+    }
+
+    public void run()
+    {
+        connectScanner();
+    }
+
+    public void setStatus(int value)
+    {
+        status = value;
+    }
+
+    public int getStatus()
+    {
+        return status;
+    }
+
+    public void setStatusText(String txt)
+    {
+        statusText = txt;
     }
 
     public String getStatusText()
@@ -287,91 +169,19 @@ public class ImageScanFromScanner implements Runnable
     }
 
     /**
-     * @return the folderName
+     * @return the isInterrupt
      */
-    public String getFolderName()
+    public boolean isIsInterrupt()
     {
-        return Utility.getStringVO(folderName);
+        return isInterrupt;
     }
 
     /**
-     * @param folderName the folderName to set
+     * @param isInterrupt the isInterrupt to set
      */
-    public void setFolderName(String folderName)
+    public void setIsInterrupt(boolean isInterrupt)
     {
-        this.folderName = folderName;
-    }
-
-    /**
-     * @return the numScan
-     */
-    public int getNumScan()
-    {
-        return numScan;
-    }
-
-    /**
-     * @param numScan the numScan to set
-     */
-    public void setNumScan(int numScan)
-    {
-        this.numScan = numScan;
-    }
-
-    /**
-     * @return the numSuccess
-     */
-    public int getNumSuccess()
-    {
-        return numSuccess;
-    }
-
-    /**
-     * @param numSuccess the numSuccess to set
-     */
-    public void setNumMatched(int numMatched)
-    {
-        this.numSuccess = numMatched;
-    }
-
-    /**
-     * @return the numFail
-     */
-    public int getNumFail()
-    {
-        return numFail;
-    }
-
-    /**
-     * @param numFail the numFail to set
-     */
-    public void setNumFail(int numFail)
-    {
-        this.numFail = numFail;
-    }
-
-    /**
-     * @return the lastBpkDocumentScanVO
-     */
-    public BpkDocumentScanVO getLastBpkDocumentScanVO()
-    {
-        return lastBpkDocumentScanVO;
-    }
-
-    /**
-     * @param lastBpkDocumentScanVO the lastBpkDocumentScanVO to set
-     */
-    public void setLastBpkDocumentScanVO(BpkDocumentScanVO lastBpkDocumentScanVO)
-    {
-        this.lastBpkDocumentScanVO = lastBpkDocumentScanVO;
-    }
-
-    /**
-     * @return the lastImage
-     */
-    public String getLastImage()
-    {
-        return lastImage;
+        this.isInterrupt = isInterrupt;
     }
 
 }
