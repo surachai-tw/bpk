@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import com.bpk.utility.Utility;
 import com.bpk.utility.XPersistent;
+import com.bpk.utility.dto.EmployeeRoleVO;
 import java.text.NumberFormat;
 
 /**
@@ -699,7 +700,7 @@ public class DocScanDAO
         return listPatientVO;
     }
 
-   public VisitVO readVisit(String visitId)
+    public VisitVO readVisit(String visitId)
     {
         VisitVO aVisitVO = new VisitVO();
         if (Utility.isNotNull(visitId))
@@ -716,7 +717,7 @@ public class DocScanDAO
                 stmt = conn.createStatement();
                 rs = stmt.executeQuery(sqlCmd.toString());
 
-                if(rs.next())
+                if (rs.next())
                 {
                     aVisitVO.setPatientId(rs.getString("patient_id"));
                     aVisitVO.setHn(rs.getString("hn"));
@@ -744,5 +745,55 @@ public class DocScanDAO
             }
         }
         return aVisitVO;
+    }
+
+    public EmployeeRoleVO getEmployeeRoleVO(String username, String password) throws Exception
+    {
+        EmployeeRoleVO aEmployeeRoleVO = null;
+        Connection conn = null;
+        Statement stmt;
+        ResultSet rs;
+        StringBuffer sql = new StringBuffer(
+                "SELECT employee.employee_id, bpkget_employee_name(employee.employee_id) employee_name, employee_role.admin_manage_item_auth, bpk_employee_role.admin_manage_item_extend_auth FROM employee ");
+        sql.append(" INNER JOIN employee_role ON employee.employee_id=employee_role.employee_id ");
+        sql.append(" LEFT JOIN bpk_employee_role ON employee.employee_id=bpk_employee_role.employee_id ");
+        sql.append(" WHERE employee.employee_id='").append(username).append("' AND employee.password = md5('").append(password).append("') ORDER BY employee_role_id LIMIT 1");
+
+        try
+        {
+            conn = DocScanDAOFactory.getConnection();
+            stmt = conn.createStatement();
+
+            Utility.printCoreDebug(this, sql.toString());
+            rs = stmt.executeQuery(sql.toString());
+
+            if (rs.next())
+            {
+                aEmployeeRoleVO = new EmployeeRoleVO();
+
+                aEmployeeRoleVO.setEmployeeId(rs.getString("employee_id"));
+                aEmployeeRoleVO.setEmployeeName(rs.getString("employee_name"));
+                aEmployeeRoleVO.setAdminManageItemAuth(rs.getString("admin_manage_item_auth"));
+                aEmployeeRoleVO.setAdminManageItemExtendAuth(rs.getString("admin_manage_item_extend_auth"));
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            throw ex;
+        }
+        finally
+        {
+            sql = null;
+            rs = null;
+            stmt = null;
+            conn = null;
+        }
+
+        return aEmployeeRoleVO;
     }
 }

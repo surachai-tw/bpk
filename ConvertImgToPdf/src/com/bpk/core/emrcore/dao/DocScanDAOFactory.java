@@ -1,6 +1,7 @@
 package com.bpk.core.emrcore.dao;
 
 import com.bpk.core.emrcore.dao.DocScanDAO;
+import com.bpk.utility.dao.LoginDAO;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -106,6 +107,21 @@ public class DocScanDAOFactory
         }
 
         return new DocScanDAO();
+    }
+
+    public static LoginDAO newLoginDAO()
+    {
+        try
+        {
+            Connection conn = getConnection();
+            conn.close();
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return new LoginDAO();
     }
 
     /**
