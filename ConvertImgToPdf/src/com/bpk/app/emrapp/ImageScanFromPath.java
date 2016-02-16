@@ -20,8 +20,10 @@ import java.io.FilenameFilter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -99,6 +101,9 @@ public class ImageScanFromPath implements Runnable
                         && (isForScannerOnly ? name.toUpperCase().startsWith("_BPK") : true);
             }
         });
+
+        List listSrcFileForDel = new ArrayList();
+        List listDestFileForMove = new ArrayList();
 
         int tmpStatusBeforeMatch = 10;
         int tmpStatusAfterMatch = 80;
@@ -256,7 +261,8 @@ public class ImageScanFromPath implements Runnable
                                     // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ success folder
                                     File scanSrcFile = new File(getLastImage());
                                     File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathSuccess() + scanFilenames[i]);
-                                    Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                                    listSrcFileForDel.add(scanSrcFile);
+                                    listDestFileForMove.add(scanDestFile);
                                     this.numSuccess++;
 
                                     this.setLastBpkDocumentScanVO(newBpkDocumentScanVO);
@@ -306,6 +312,23 @@ public class ImageScanFromPath implements Runnable
             this.status = 100;
             this.statusText = "File not found";
         }
+
+        // Delete file after process
+        // ถ้าลบทันที อาจจะเกิดปัญหา is being used by another process.
+        for(int i=0, sizei=listSrcFileForDel.size(); i<sizei; i++)
+        {
+            try
+            {
+                File scanSrcFile = (File)listSrcFileForDel.get(i);
+                File scanDestFile = (File)listDestFileForMove.get(i);
+                Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+            catch(Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+
     }
 
     public int getStatus()
@@ -322,7 +345,7 @@ public class ImageScanFromPath implements Runnable
             reader.setRegistrationName("demo");
             reader.setRegistrationKey("demo");
             // Set barcode types to find:
-            reader.setBarcodeTypesToFind(EnumSet.of(BarcodeType.QRCode));
+            reader.setBarcodeTypesToFind(EnumSet.of(BarcodeType.QRCode, BarcodeType.Code39, BarcodeType.Code128));
 
             // Demonstrate barcode decoding from image file:
             Utility.printCoreDebug(new ImageScanFromPath(), "getTextFromBarcode, filename = " + filename);
@@ -407,12 +430,9 @@ public class ImageScanFromPath implements Runnable
         g.dispose();
         g.setComposite(AlphaComposite.Src);
 
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING,
-                RenderingHints.VALUE_RENDER_QUALITY);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         return resizedImage;
     }

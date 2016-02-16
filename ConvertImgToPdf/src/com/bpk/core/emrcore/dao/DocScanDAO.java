@@ -485,17 +485,34 @@ public class DocScanDAO
         {
             try
             {
-                sqlCmd = new StringBuffer("INSERT INTO bpk_document_scan (bpk_document_scan_id, patient_id, visit_id, folder_name, image_file_name, scan_date, scan_time, update_date, update_time) VALUES('");
+                sqlCmd = new StringBuffer("INSERT INTO bpk_document_scan (bpk_document_scan_id, patient_id, visit_id, folder_name, image_file_name, scan_date, scan_time, update_date, update_time, document_name, print_date, print_time) VALUES('");
                 newBpkDocumentScanVO.setObjectID(XPersistent.generateObjectID());
                 newBpkDocumentScanVO.setScanDate(Utility.getCurrentDate());
                 newBpkDocumentScanVO.setScanTime(Utility.getCurrentTime());
                 newBpkDocumentScanVO.setUpdateDate(Utility.getCurrentDate());
                 newBpkDocumentScanVO.setUpdateTime(Utility.getCurrentTime());
                 newBpkDocumentScanVO.setImageFileName(getNextImageFileName(newBpkDocumentScanVO.getFolderName()) + ".pdf");
-                sqlCmd.append(newBpkDocumentScanVO.getObjectID()).append("', '").append(newBpkDocumentScanVO.getPatientId()).append("', (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.patient_id='").append(newBpkDocumentScanVO.getPatientId()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                sqlCmd.append(newBpkDocumentScanVO.getObjectID()).append("', '").append(newBpkDocumentScanVO.getPatientId()).append("', ");
+                if(Utility.isNull(newBpkDocumentScanVO.getVn()))
+                {
+                    // กรณีที่ไม่ได้ส่งค่า VN ให้ใช้ VN ล่าสุด
+                    sqlCmd.append(" (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.patient_id='").append(newBpkDocumentScanVO.getPatientId()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                }
+                else
+                {
+                    if (newBpkDocumentScanVO.getVn().indexOf("-") != -1)
+                    {
+                        sqlCmd.append(" (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.format_vn(vn)='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                    }
+                    else
+                    {
+                        sqlCmd.append(" (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.vn='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                    }
+                }
                 sqlCmd.append(newBpkDocumentScanVO.getFolderName()).append("', '").append(newBpkDocumentScanVO.getImageFileName()).append("', '");
                 sqlCmd.append(newBpkDocumentScanVO.getScanDate()).append("', '").append(newBpkDocumentScanVO.getScanTime()).append("', '");
-                sqlCmd.append(newBpkDocumentScanVO.getUpdateDate()).append("', '").append(newBpkDocumentScanVO.getUpdateTime()).append("')");
+                sqlCmd.append(newBpkDocumentScanVO.getUpdateDate()).append("', '").append(newBpkDocumentScanVO.getUpdateTime()).append("', '");
+                sqlCmd.append(newBpkDocumentScanVO.getDocumentName()).append("', '").append(newBpkDocumentScanVO.getPrintDate()).append("', '").append(newBpkDocumentScanVO.getPrintTime()).append("')");
 
                 conn = DocScanDAOFactory.getConnection();
                 stmt = conn.createStatement();

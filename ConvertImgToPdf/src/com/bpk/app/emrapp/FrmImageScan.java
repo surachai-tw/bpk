@@ -168,7 +168,7 @@ public class FrmImageScan extends javax.swing.JFrame
         aMenuFileExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Image Scan by barcode");
+        setTitle("Document Scan");
 
         aPanelTop.setLayout(new java.awt.GridBagLayout());
 
@@ -177,7 +177,7 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlStatusMethod.setLayout(new java.awt.GridBagLayout());
 
         aBtnGrpScanMethod.add(aRadByBarcode);
-        aRadByBarcode.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        aRadByBarcode.setFont(new java.awt.Font("Tahoma", 0, 14));
         aRadByBarcode.setSelected(true);
         aRadByBarcode.setText("Barcode Reader");
         aRadByBarcode.addActionListener(new java.awt.event.ActionListener() {
@@ -193,7 +193,7 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlStatusMethod.add(aRadByBarcode, gridBagConstraints);
 
         aBtnGrpScanMethod.add(aRadByManualInput);
-        aRadByManualInput.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        aRadByManualInput.setFont(new java.awt.Font("Tahoma", 0, 14));
         aRadByManualInput.setText("Manual Input");
         aRadByManualInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -327,7 +327,7 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 0, 0, 0);
         aPnlTotalScan.add(jSeparator2, gridBagConstraints);
 
-        aBtnScanFromScanner.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        aBtnScanFromScanner.setFont(new java.awt.Font("Tahoma", 1, 12));
         aBtnScanFromScanner.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/bpk/app/emrapp/images/scanner.png"))); // NOI18N
         aBtnScanFromScanner.setText("By Scanner");
         aBtnScanFromScanner.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -433,7 +433,7 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlPatientDetailByBarcode.add(aLblPatientByBarcode, gridBagConstraints);
 
         aTxtPatientNameByBarcode.setEditable(false);
-        aTxtPatientNameByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtPatientNameByBarcode.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtPatientNameByBarcode.setMinimumSize(new java.awt.Dimension(240, 24));
         aTxtPatientNameByBarcode.setPreferredSize(new java.awt.Dimension(240, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -865,7 +865,6 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlDirectory.add(aPnlDirRight, gridBagConstraints);
 
         aBtnRefreshFolder.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/bpk/app/emrapp/images/refresh.png"))); // NOI18N
-        aBtnRefreshFolder.setText("");
         aBtnRefreshFolder.setMargin(new java.awt.Insets(0, 0, 0, 0));
         aBtnRefreshFolder.setMaximumSize(new java.awt.Dimension(24, 24));
         aBtnRefreshFolder.setMinimumSize(new java.awt.Dimension(24, 24));
@@ -883,7 +882,6 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlDirectory.add(aBtnRefreshFolder, gridBagConstraints);
 
         aBtnUpFolder.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/bpk/app/emrapp/images/upFolder.png"))); // NOI18N
-        aBtnUpFolder.setText("");
         aBtnUpFolder.setMargin(new java.awt.Insets(0, 0, 0, 0));
         aBtnUpFolder.setMaximumSize(new java.awt.Dimension(24, 24));
         aBtnUpFolder.setMinimumSize(new java.awt.Dimension(24, 24));
@@ -1010,7 +1008,7 @@ public class FrmImageScan extends javax.swing.JFrame
 
             public boolean accept(File dir, String name)
             {
-                return name.toLowerCase().endsWith(".jpg") 
+                return name.toLowerCase().endsWith(".jpg")
                         && !name.toUpperCase().startsWith("THRESHOLD_")
                         && !name.toUpperCase().startsWith("THUMBNAIL_");
             }
@@ -1023,20 +1021,23 @@ public class FrmImageScan extends javax.swing.JFrame
         header[3] = "Size";
         this.aTblMdlFile.createHeader(header);
 
-        SimpleDateFormat fmat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        for (int i = 0, sizei = filenames.length; i < sizei; i++)
+        if (filenames != null)
         {
-            Object[] rowData = new Object[header.length];
-            rowData[0] = " ";
-            rowData[1] = filenames[i];
+            SimpleDateFormat fmat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            for (int i = 0, sizei = filenames.length; i < sizei; i++)
+            {
+                Object[] rowData = new Object[header.length];
+                rowData[0] = " ";
+                rowData[1] = filenames[i];
 
-            File chkDetail = new File(DocScanDAOFactory.getDocScanInputPath() + filenames[i]);
+                File chkDetail = new File(DocScanDAOFactory.getDocScanInputPath() + filenames[i]);
 
-            rowData[2] = fmat.format(chkDetail.lastModified());
-            rowData[3] = (int) Math.ceil((float) chkDetail.length() / 1024) + " KB";
-            // (int)((float)chkDetail.length() / (1024 * 1024)) + " KB";
+                rowData[2] = fmat.format(chkDetail.lastModified());
+                rowData[3] = (int) Math.ceil((float) chkDetail.length() / 1024) + " KB";
+                // (int)((float)chkDetail.length() / (1024 * 1024)) + " KB";
 
-            this.aTblMdlFile.addRowData(rowData);
+                this.aTblMdlFile.addRowData(rowData);
+            }
         }
 
         this.aTblFile.getColumnModel().getColumn(0).setPreferredWidth(1);
@@ -1485,6 +1486,7 @@ public class FrmImageScan extends javax.swing.JFrame
 
         java.awt.EventQueue.invokeLater(new Runnable()
         {
+
             DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
 
             public void run()
