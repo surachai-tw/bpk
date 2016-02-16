@@ -119,7 +119,8 @@ ORDER BY tmp.stock_name COLLATE "th_TH", tmp.common_name COLLATE "th_TH", tmp.lo
 
 -- 9. item ที่ไม่เคลื่อนไหว หรือ ไม่ได้ใช้งานเป็นเวลานาน หรือ ไม่อยู่ใน Store ใดๆเลย 
 -- การตรวจสอบว่าไม่เคลื่อนไหว ให้ดูจาก stock card 
-DROP TABLE tmp_chk_item_last_movement;
+-- SELECT * FROM tmp_chk_item_last_movement
+-- DROP TABLE tmp_chk_item_last_movement;
 SELECT main_item.item_id, main_item.item_code "Item Code", main_item.common_name "Item Name", bpkget_hospital_item_by_id(hospital_item) "Type in hospital", 
 COALESCE(max(update_date), '') "Last movement", 
 (SELECT array_to_string(array(SELECT DISTINCT stock_name FROM item 
@@ -144,8 +145,7 @@ COALESCE(max(verify_date), '') "Last order",
 INTO tmp_chk_item_last_order 
 FROM item main_item 
 LEFT JOIN order_item ON order_item.item_id=main_item.item_id 
-WHERE main_item.active='1' AND main_item.fix_item_type_id IN 
-(SELECT DISTINCT item.fix_item_type_id FROM item INNER JOIN stock_mgnt ON item.item_id=stock_mgnt.item_id AND item.active='1') 
+WHERE main_item.active='1' 
 GROUP BY main_item.item_id, main_item.item_code, main_item.common_name, hospital_item
 ORDER BY "Item Name";
 
@@ -157,6 +157,25 @@ FROM
 ) tmp
 LEFT JOIN tmp_chk_item_last_movement ON tmp.item_id = tmp_chk_item_last_movement.item_id 
 LEFT JOIN tmp_chk_item_last_order ON tmp.item_id = tmp_chk_item_last_order.item_id;
+
+SELECT * FROM 
+(
+    SELECT bpkget_item_type_by_id((SELECT fix_item_type_id FROM item WHERE item.item_id=tmp2.item_id)) imed_type, * FROM 
+    (
+        SELECT DISTINCT tmp_chk_item_last_movement.*, tmp_chk_item_last_order."Last order"  
+        FROM 
+        (
+            SELECT item_id FROM tmp_chk_item_last_movement UNION 
+            SELECT item_id FROM tmp_chk_item_last_order 
+        ) tmp
+        LEFT JOIN tmp_chk_item_last_movement ON tmp.item_id = tmp_chk_item_last_movement.item_id 
+        LEFT JOIN tmp_chk_item_last_order ON tmp.item_id = tmp_chk_item_last_order.item_id
+    ) tmp2
+    WHERE ((tmp2."Last order" IS NULL OR tmp2."Last order"='') AND (tmp2."Last movement" IS NULL OR tmp2."Last movement"='')) 
+    OR (tmp2."Last order" < tmp2."Last movement" AND tmp2."Last movement"<='2015-02-16')
+    OR (tmp2."Last order" > tmp2."Last movement" AND tmp2."Last order"<='2015-02-16')
+) tmp3
+ORDER BY tmp3.imed_type COLLATE "th_TH", "Item Name" COLLATE "th_TH"
 
 -- 10. Lot ที่เก่ามาก และคาดว่าจะไม่มีผลต่อการทำงานแล้ว ควรย้ายข้อมูลไปไว้ที่ส่วนอื่น อาจจะสืบค้นได้โดย IT แต่ค้นทางหน้าจอไม่ได้ 
 -- เพื่อลดข้อมูลในระบบที่ไม่จำเป็น และป้องกันไม่ให้ user นำ Lot ดังกล่าวมาใช้งานอีก และช่วยเพิ่มเรื่อง Performance ระบบ ให้ทำงานได้เร็วขึ้น
