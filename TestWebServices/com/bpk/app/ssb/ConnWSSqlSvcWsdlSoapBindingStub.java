@@ -33,25 +33,25 @@ public class ConnWSSqlSvcWsdlSoapBindingStub extends org.apache.axis.client.Stub
         _operations[0] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("ExecuteNonQuery");
+        oper.setName("ns1:ExecuteNonQuery");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
         oper.setReturnClass(java.lang.String.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "ExecuteNonQueryReturn"));
+        oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "ns1:ExecuteNonQueryReturn"));
         oper.setStyle(org.apache.axis.constants.Style.RPC);
         oper.setUse(org.apache.axis.constants.Use.ENCODED);
         _operations[1] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("ExecuteDataTable");
+        oper.setName("ns1:ExecuteDataTable");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false);
         oper.addParameter(param);
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in1"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
         oper.setReturnClass(java.lang.String.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "ExecuteDataTableReturn"));
+        oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "ns1:ExecuteDataTableReturn"));
         oper.setStyle(org.apache.axis.constants.Style.RPC);
         oper.setUse(org.apache.axis.constants.Use.ENCODED);
         _operations[2] = oper;
@@ -149,7 +149,7 @@ public class ConnWSSqlSvcWsdlSoapBindingStub extends org.apache.axis.client.Stub
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://tempuri.org/IConnWSSql/ExecuteNonQuery");
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org", "ExecuteNonQuery"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org/", "ns1:ExecuteNonQuery"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
@@ -180,7 +180,7 @@ public class ConnWSSqlSvcWsdlSoapBindingStub extends org.apache.axis.client.Stub
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://tempuri.org/IConnWSSql/ExecuteDataTable");
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org", "ExecuteDataTable"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org/", "ns1:ExecuteDataTable"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
