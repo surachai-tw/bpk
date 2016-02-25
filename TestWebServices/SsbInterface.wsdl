@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://tempuri.org" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://tempuri.org" xmlns:intf="http://tempuri.org" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+
+   <wsdl:message name="GetConnectionStringRequest">
+
+   </wsdl:message>
+
+   <wsdl:message name="ExecuteNonQueryRequest">
+
+      <wsdl:part name="in0" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="ExecuteDataTableResponse">
+
+      <wsdl:part name="ExecuteDataTableReturn" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="ExecuteNonQueryResponse">
+
+      <wsdl:part name="ExecuteNonQueryReturn" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="ExecuteDataTableRequest">
+
+      <wsdl:part name="in0" type="soapenc:string"/>
+
+      <wsdl:part name="in1" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="GetConnectionStringResponse">
+
+      <wsdl:part name="GetConnectionStringReturn" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="SsbInterface">
+
+      <wsdl:operation name="ExecuteDataTable" parameterOrder="in0 in1">
+
+         <wsdl:input message="impl:ExecuteDataTableRequest" name="ExecuteDataTableRequest"/>
+
+         <wsdl:output message="impl:ExecuteDataTableResponse" name="ExecuteDataTableResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="ExecuteNonQuery" parameterOrder="in0">
+
+         <wsdl:input message="impl:ExecuteNonQueryRequest" name="ExecuteNonQueryRequest"/>
+
+         <wsdl:output message="impl:ExecuteNonQueryResponse" name="ExecuteNonQueryResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="GetConnectionString">
+
+         <wsdl:input message="impl:GetConnectionStringRequest" name="GetConnectionStringRequest"/>
+
+         <wsdl:output message="impl:GetConnectionStringResponse" name="GetConnectionStringResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="ConnWSSql.svc?wsdlSoapBinding" type="impl:SsbInterface">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="ExecuteDataTable">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="ExecuteDataTableRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://tempuri.org" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="ExecuteDataTableResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://tempuri.org" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="ExecuteNonQuery">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="ExecuteNonQueryRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://tempuri.org" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="ExecuteNonQueryResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://tempuri.org" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="GetConnectionString">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="GetConnectionStringRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://tempuri.org" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="GetConnectionStringResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://tempuri.org" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="SsbInterfaceService">
+
+      <wsdl:port binding="impl:ConnWSSql.svc?wsdlSoapBinding" name="ConnWSSql.svc?wsdl">
+
+         <wsdlsoap:address location="http://172.16.2.60:9002/ConnWSSql.svc?wsdl"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

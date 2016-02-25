@@ -1,0 +1,25 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from SsbInterfaceService WSDL service -->
+
+  <service name="ConnWSSql.svc?wsdl" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="http://tempuri.org"/>
+      <parameter name="wsdlServiceElement" value="SsbInterfaceService"/>
+      <parameter name="wsdlServicePort" value="ConnWSSql.svc?wsdl"/>
+      <parameter name="className" value="com.bpk.app.ssb.ConnWSSqlSvcWsdlSoapBindingSkeleton"/>
+      <parameter name="wsdlPortType" value="SsbInterface"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <parameter name="allowedMethods" value="*"/>
+
+  </service>
+</deployment>
