@@ -13,6 +13,7 @@ public class Example
             SsbInterfaceServiceLocator serviceLocator = new SsbInterfaceServiceLocator();
             SsbInterface service = serviceLocator.getConnWSSqlSvcWsdl();
             String result = service.getConnectionString();
+			// String result = service.executeDataTable("15", "PYHBPK_PATIENT");
             System.out.println("RESULT = "+result);
         } 
 		catch(Exception ex)

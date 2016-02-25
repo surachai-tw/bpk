@@ -24,14 +24,10 @@ public class ConnWSSqlSvcWsdlSoapBindingStub extends org.apache.axis.client.Stub
         org.apache.axis.description.OperationDesc oper;
         org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("ExecuteDataTable");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false);
-        oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in1"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false);
-        oper.addParameter(param);
+        oper.setName("ns1:GetConnectionString");
         oper.setReturnType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
         oper.setReturnClass(java.lang.String.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "ExecuteDataTableReturn"));
+        oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "ns1:GetConnectionStringReturn"));
         oper.setStyle(org.apache.axis.constants.Style.RPC);
         oper.setUse(org.apache.axis.constants.Use.ENCODED);
         _operations[0] = oper;
@@ -48,10 +44,14 @@ public class ConnWSSqlSvcWsdlSoapBindingStub extends org.apache.axis.client.Stub
         _operations[1] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("GetConnectionString");
+        oper.setName("ExecuteDataTable");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in1"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
         oper.setReturnClass(java.lang.String.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "GetConnectionStringReturn"));
+        oper.setReturnQName(new javax.xml.namespace.QName("", "ExecuteDataTableReturn"));
         oper.setStyle(org.apache.axis.constants.Style.RPC);
         oper.setUse(org.apache.axis.constants.Use.ENCODED);
         _operations[2] = oper;
@@ -109,20 +109,20 @@ public class ConnWSSqlSvcWsdlSoapBindingStub extends org.apache.axis.client.Stub
         }
     }
 
-    public java.lang.String executeDataTable(java.lang.String in0, java.lang.String in1) throws java.rmi.RemoteException {
+    public java.lang.String getConnectionString() throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[0]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("http://tempuri.org/IConnWSSql/ExecuteDataTable");
+        _call.setSOAPActionURI("http://tempuri.org/IConnWSSql/GetConnectionString");
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org", "ExecuteDataTable"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org/", "ns1:GetConnectionString"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {in0, in1});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -171,20 +171,20 @@ public class ConnWSSqlSvcWsdlSoapBindingStub extends org.apache.axis.client.Stub
 }
     }
 
-    public java.lang.String getConnectionString() throws java.rmi.RemoteException {
+    public java.lang.String executeDataTable(java.lang.String in0, java.lang.String in1) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[2]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("http://tempuri.org/IConnWSSql/GetConnectionString");
+        _call.setSOAPActionURI("http://tempuri.org/IConnWSSql/ExecuteDataTable");
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org", "GetConnectionString"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org", "ExecuteDataTable"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {in0, in1});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;

@@ -19,3 +19,6 @@
 8. แก้ไขไฟล์ใน Code\com\iMed\iMedApp\iMedInterfaceFXApp\FXInterfaceSoapBindingImpl.java สำหรับเขียน Code บอกว่าแต่ละ method จะให้ทำงานอะไร
 
 9. batch สำหรับ compile  / สร้าง jar อยู่ในโฟลเดอร์ Code
+
+*** ต้องแก้ setSoapAction("http://tempuri.org/IConnWSSql/GetConnectionString");
+*** ต้องแก้ setSOAPActionURI("http://tempuri.org/IConnWSSql/GetConnectionString");

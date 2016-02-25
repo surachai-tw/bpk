@@ -31,18 +31,16 @@ public class ConnWSSqlSvcWsdlSoapBindingSkeleton implements com.bpk.app.ssb.SsbI
         org.apache.axis.description.FaultDesc _fault;
         org.apache.axis.description.ParameterDesc [] _params;
         _params = new org.apache.axis.description.ParameterDesc [] {
-            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false), 
-            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in1"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false), 
         };
-        _oper = new org.apache.axis.description.OperationDesc("executeDataTable", _params, new javax.xml.namespace.QName("", "ExecuteDataTableReturn"));
+        _oper = new org.apache.axis.description.OperationDesc("getConnectionString", _params, new javax.xml.namespace.QName("http://tempuri.org/", "ns1:GetConnectionStringReturn"));
         _oper.setReturnType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
-        _oper.setElementQName(new javax.xml.namespace.QName("http://tempuri.org", "ExecuteDataTable"));
-        _oper.setSoapAction("http://tempuri.org/IConnWSSql/ExecuteDataTable");
+        _oper.setElementQName(new javax.xml.namespace.QName("http://tempuri.org/", "ns1:GetConnectionString"));
+        _oper.setSoapAction("http://tempuri.org/IConnWSSql/GetConnectionString");
         _myOperationsList.add(_oper);
-        if (_myOperations.get("executeDataTable") == null) {
-            _myOperations.put("executeDataTable", new java.util.ArrayList());
+        if (_myOperations.get("getConnectionString") == null) {
+            _myOperations.put("getConnectionString", new java.util.ArrayList());
         }
-        ((java.util.List)_myOperations.get("executeDataTable")).add(_oper);
+        ((java.util.List)_myOperations.get("getConnectionString")).add(_oper);
         _params = new org.apache.axis.description.ParameterDesc [] {
             new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false), 
         };
@@ -56,16 +54,18 @@ public class ConnWSSqlSvcWsdlSoapBindingSkeleton implements com.bpk.app.ssb.SsbI
         }
         ((java.util.List)_myOperations.get("executeNonQuery")).add(_oper);
         _params = new org.apache.axis.description.ParameterDesc [] {
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in0"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false), 
+            new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "in1"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"), java.lang.String.class, false, false), 
         };
-        _oper = new org.apache.axis.description.OperationDesc("getConnectionString", _params, new javax.xml.namespace.QName("", "GetConnectionStringReturn"));
+        _oper = new org.apache.axis.description.OperationDesc("executeDataTable", _params, new javax.xml.namespace.QName("", "ExecuteDataTableReturn"));
         _oper.setReturnType(new javax.xml.namespace.QName("http://schemas.xmlsoap.org/soap/encoding/", "string"));
-        _oper.setElementQName(new javax.xml.namespace.QName("http://tempuri.org", "GetConnectionString"));
-        _oper.setSoapAction("http://tempuri.org/IConnWSSql/GetConnectionString");
+        _oper.setElementQName(new javax.xml.namespace.QName("http://tempuri.org", "ExecuteDataTable"));
+        _oper.setSoapAction("http://tempuri.org/IConnWSSql/ExecuteDataTable");
         _myOperationsList.add(_oper);
-        if (_myOperations.get("getConnectionString") == null) {
-            _myOperations.put("getConnectionString", new java.util.ArrayList());
+        if (_myOperations.get("executeDataTable") == null) {
+            _myOperations.put("executeDataTable", new java.util.ArrayList());
         }
-        ((java.util.List)_myOperations.get("getConnectionString")).add(_oper);
+        ((java.util.List)_myOperations.get("executeDataTable")).add(_oper);
     }
 
     public ConnWSSqlSvcWsdlSoapBindingSkeleton() {
@@ -75,9 +75,9 @@ public class ConnWSSqlSvcWsdlSoapBindingSkeleton implements com.bpk.app.ssb.SsbI
     public ConnWSSqlSvcWsdlSoapBindingSkeleton(com.bpk.app.ssb.SsbInterface impl) {
         this.impl = impl;
     }
-    public java.lang.String executeDataTable(java.lang.String in0, java.lang.String in1) throws java.rmi.RemoteException
+    public java.lang.String getConnectionString() throws java.rmi.RemoteException
     {
-        java.lang.String ret = impl.executeDataTable(in0, in1);
+        java.lang.String ret = impl.getConnectionString();
         return ret;
     }
 
@@ -87,9 +87,9 @@ public class ConnWSSqlSvcWsdlSoapBindingSkeleton implements com.bpk.app.ssb.SsbI
         return ret;
     }
 
-    public java.lang.String getConnectionString() throws java.rmi.RemoteException
+    public java.lang.String executeDataTable(java.lang.String in0, java.lang.String in1) throws java.rmi.RemoteException
     {
-        java.lang.String ret = impl.getConnectionString();
+        java.lang.String ret = impl.executeDataTable(in0, in1);
         return ret;
     }
 

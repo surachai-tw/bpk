@@ -3,7 +3,9 @@
 <!--WSDL created by Apache Axis version: 1.4
 Built on Apr 22, 2006 (06:55:48 PDT)-->
 
-   <wsdl:message name="GetConnectionStringRequest">
+   <wsdl:message name="ExecuteDataTableResponse">
+
+      <wsdl:part name="ExecuteDataTableReturn" type="soapenc:string"/>
 
    </wsdl:message>
 
@@ -13,9 +15,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="ExecuteDataTableResponse">
-
-      <wsdl:part name="ExecuteDataTableReturn" type="soapenc:string"/>
+   <wsdl:message name="GetConnectionStringRequest">
 
    </wsdl:message>
 
@@ -41,11 +41,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    <wsdl:portType name="SsbInterface">
 
-      <wsdl:operation name="ExecuteDataTable" parameterOrder="in0 in1">
+      <wsdl:operation name="GetConnectionString">
 
-         <wsdl:input message="impl:ExecuteDataTableRequest" name="ExecuteDataTableRequest"/>
+         <wsdl:input message="impl:GetConnectionStringRequest" name="GetConnectionStringRequest"/>
 
-         <wsdl:output message="impl:ExecuteDataTableResponse" name="ExecuteDataTableResponse"/>
+         <wsdl:output message="impl:GetConnectionStringResponse" name="GetConnectionStringResponse"/>
 
       </wsdl:operation>
 
@@ -57,11 +57,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="GetConnectionString">
+      <wsdl:operation name="ExecuteDataTable" parameterOrder="in0 in1">
 
-         <wsdl:input message="impl:GetConnectionStringRequest" name="GetConnectionStringRequest"/>
+         <wsdl:input message="impl:ExecuteDataTableRequest" name="ExecuteDataTableRequest"/>
 
-         <wsdl:output message="impl:GetConnectionStringResponse" name="GetConnectionStringResponse"/>
+         <wsdl:output message="impl:ExecuteDataTableResponse" name="ExecuteDataTableResponse"/>
 
       </wsdl:operation>
 
@@ -71,17 +71,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
 
-      <wsdl:operation name="ExecuteDataTable">
+      <wsdl:operation name="GetConnectionString">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="ExecuteDataTableRequest">
+         <wsdl:input name="GetConnectionStringRequest">
 
             <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://tempuri.org" use="encoded"/>
 
          </wsdl:input>
 
-         <wsdl:output name="ExecuteDataTableResponse">
+         <wsdl:output name="GetConnectionStringResponse">
 
             <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://tempuri.org" use="encoded"/>
 
@@ -107,17 +107,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="GetConnectionString">
+      <wsdl:operation name="ExecuteDataTable">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="GetConnectionStringRequest">
+         <wsdl:input name="ExecuteDataTableRequest">
 
             <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://tempuri.org" use="encoded"/>
 
          </wsdl:input>
 
-         <wsdl:output name="GetConnectionStringResponse">
+         <wsdl:output name="ExecuteDataTableResponse">
 
             <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://tempuri.org" use="encoded"/>
 
