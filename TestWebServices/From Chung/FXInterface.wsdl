@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://ws.apache.org" xmlns:impl="http://ws.apache.org" xmlns:intf="http://ws.apache.org" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+
+   <wsdl:message name="fxPrintFormResponse">
+
+      <wsdl:part name="fxPrintFormReturn" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="fxLoginRequest">
+
+      <wsdl:part name="in0" type="soapenc:string"/>
+
+      <wsdl:part name="in1" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="fxLoginResponse">
+
+      <wsdl:part name="fxLoginReturn" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="fxVerifyHnVnAnResponse">
+
+      <wsdl:part name="fxVerifyHnVnAnReturn" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="fxVerifyHnVnAnRequest">
+
+      <wsdl:part name="in0" type="soapenc:string"/>
+
+      <wsdl:part name="in1" type="soapenc:string"/>
+
+      <wsdl:part name="in2" type="soapenc:string"/>
+
+      <wsdl:part name="in3" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="fxListFormResponse">
+
+      <wsdl:part name="fxListFormReturn" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="fxListFormRequest">
+
+      <wsdl:part name="in0" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="fxPrintFormRequest">
+
+      <wsdl:part name="in0" type="soapenc:string"/>
+
+      <wsdl:part name="in1" type="soapenc:string"/>
+
+      <wsdl:part name="in2" type="soapenc:string"/>
+
+      <wsdl:part name="in3" type="soapenc:string"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="FXInterface">
+
+      <wsdl:operation name="fxLogin" parameterOrder="in0 in1">
+
+         <wsdl:input name="fxLoginRequest" message="impl:fxLoginRequest"/>
+
+         <wsdl:output name="fxLoginResponse" message="impl:fxLoginResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="fxPrintForm" parameterOrder="in0 in1 in2 in3">
+
+         <wsdl:input name="fxPrintFormRequest" message="impl:fxPrintFormRequest"/>
+
+         <wsdl:output name="fxPrintFormResponse" message="impl:fxPrintFormResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="fxVerifyHnVnAn" parameterOrder="in0 in1 in2 in3">
+
+         <wsdl:input name="fxVerifyHnVnAnRequest" message="impl:fxVerifyHnVnAnRequest"/>
+
+         <wsdl:output name="fxVerifyHnVnAnResponse" message="impl:fxVerifyHnVnAnResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="fxListForm" parameterOrder="in0">
+
+         <wsdl:input name="fxListFormRequest" message="impl:fxListFormRequest"/>
+
+         <wsdl:output name="fxListFormResponse" message="impl:fxListFormResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="FXInterfaceSoapBinding" type="impl:FXInterface">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="fxLogin">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="fxLoginRequest">
+
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ws.apache.org"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="fxLoginResponse">
+
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ws.apache.org"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="fxPrintForm">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="fxPrintFormRequest">
+
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ws.apache.org"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="fxPrintFormResponse">
+
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ws.apache.org"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="fxVerifyHnVnAn">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="fxVerifyHnVnAnRequest">
+
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ws.apache.org"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="fxVerifyHnVnAnResponse">
+
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ws.apache.org"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="fxListForm">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="fxListFormRequest">
+
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ws.apache.org"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="fxListFormResponse">
+
+            <wsdlsoap:body use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://ws.apache.org"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="FXInterfaceService">
+
+      <wsdl:port name="FXInterface" binding="impl:FXInterfaceSoapBinding">
+
+         <wsdlsoap:address location="http://127.0.0.1:8080/axis/services/FXInterface"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
