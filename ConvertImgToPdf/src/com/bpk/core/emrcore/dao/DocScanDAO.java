@@ -14,6 +14,7 @@ import java.util.List;
 import com.bpk.utility.Utility;
 import com.bpk.utility.XPersistent;
 import com.bpk.utility.dto.EmployeeRoleVO;
+import com.bpk.utility.fix.FixDocumentScanStatus;
 import java.text.NumberFormat;
 
 /**
@@ -349,7 +350,7 @@ public class DocScanDAO
         ResultSet rst = null;
         StringBuffer sqlCmd = null;
 
-        Utility.printCoreDebug(this, "listFolderBpkDocumentScanVO(" + visitId + ")");
+        // Utility.printCoreDebug(this, "listFolderBpkDocumentScanVO(" + visitId + ")");
         if (Utility.isNotNull(visitId))
         {
             try
@@ -424,6 +425,7 @@ public class DocScanDAO
                 sqlCmd.append(" INNER JOIN bpk_document_scan ON visit.patient_id=bpk_document_scan.patient_id AND visit.visit_id=bpk_document_scan.visit_id ");
                 sqlCmd.append(" AND bpk_document_scan.folder_name='").append(folder).append("' ");
                 sqlCmd.append(" WHERE visit.active='1' AND visit.visit_id='").append(visitId).append("' ");
+                sqlCmd.append(" AND bpk_document_scan.fix_document_scan_status_id<>'").append(FixDocumentScanStatus.HISTORY_FILE).append("' ");
                 sqlCmd.append(" ORDER BY bpk_document_scan.image_file_name");
 
                 conn = DocScanDAOFactory.getConnection();
@@ -475,6 +477,90 @@ public class DocScanDAO
         return listBpkDocumentScanVO;
     }
 
+    public List checkDocumentIsAlreadyExist(BpkDocumentScanVO newBpkDocumentScanVO) throws Exception
+    {
+        List listId = null;
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rst = null;
+        StringBuffer sqlCmd = null;
+
+        try
+        {
+            sqlCmd = new StringBuffer("SELECT bpk_document_scan_id FROM bpk_document_scan WHERE fix_document_scan_status_id<>'").append(FixDocumentScanStatus.HISTORY_FILE).append("' AND ");
+            sqlCmd.append("patient_id=(SELECT patient_id FROM patient WHERE active='1' AND hn='").append(newBpkDocumentScanVO.getOriginalHn()).append("' LIMIT 1) AND ");
+            sqlCmd.append("visit_id=(SELECT visit_id FROM visit WHERE active='1' AND vn='").append(newBpkDocumentScanVO.getVn()).append("' LIMIT 1) AND ");
+            sqlCmd.append("folder_name='").append(newBpkDocumentScanVO.getFolderName()).append("' AND ");
+            sqlCmd.append("document_name='").append(newBpkDocumentScanVO.getDocumentName()).append("' AND ");
+            sqlCmd.append("print_date='").append(newBpkDocumentScanVO.getPrintDate()).append("' AND ");
+            sqlCmd.append("print_time='").append(newBpkDocumentScanVO.getPrintTime()).append("' AND ");
+            sqlCmd.append("doctor_eid='").append(newBpkDocumentScanVO.getDoctorEid()).append("'");
+            
+            conn = DocScanDAOFactory.getConnection();
+            stmt = conn.createStatement();
+
+            Utility.printCoreDebug(this, sqlCmd.toString());
+            rst = stmt.executeQuery(sqlCmd.toString());
+            if(rst.next())
+            {
+                if(listId==null)
+                    listId = new ArrayList();
+
+                String id = rst.getString("bpk_document_scan_id");
+                listId.add(id);
+            }
+
+            rst.close();
+            stmt.close();
+            conn.close();
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        finally
+        {
+            sqlCmd = null;
+            rst = null;
+            stmt = null;
+            conn = null;
+        }
+        return listId;
+    }
+
+    public void updateToHistory(String id) throws Exception 
+    {
+        Connection conn = null;
+        Statement stmt = null;
+        StringBuffer sqlCmd = null;
+
+        try
+        {
+            sqlCmd = new StringBuffer("UPDATE bpk_document_scan SET fix_document_scan_status_id='");
+            sqlCmd.append(FixDocumentScanStatus.HISTORY_FILE);
+            sqlCmd.append("' WHERE bpk_document_scan_id='").append(id).append("'");
+
+            conn = DocScanDAOFactory.getConnection();
+            stmt = conn.createStatement();
+
+            Utility.printCoreDebug(this, sqlCmd.toString());
+            stmt.executeUpdate(sqlCmd.toString());
+
+            stmt.close();
+            conn.close();
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        finally
+        {
+            sqlCmd = null;
+            stmt = null;
+            conn = null;
+        }
+    }
+
     public BpkDocumentScanVO createBpkDocumentScan(BpkDocumentScanVO newBpkDocumentScanVO) throws Exception
     {
         Connection conn = null;
@@ -485,13 +571,22 @@ public class DocScanDAO
         {
             try
             {
-                sqlCmd = new StringBuffer("INSERT INTO bpk_document_scan (bpk_document_scan_id, patient_id, visit_id, folder_name, image_file_name, scan_date, scan_time, update_date, update_time, document_name, print_date, print_time) VALUES('");
+                List listOldId = checkDocumentIsAlreadyExist(newBpkDocumentScanVO);
+                if(Utility.isNotNull(listOldId))
+                {
+                    for(int i=0, sizei=listOldId.size(); i<sizei; i++)
+                    {
+                        updateToHistory((String)listOldId.get(i));
+                    }
+                }
+
+                sqlCmd = new StringBuffer("INSERT INTO bpk_document_scan (bpk_document_scan_id, patient_id, visit_id, folder_name, image_file_name, scan_eid, scan_date, scan_time, update_eid, update_date, update_time, document_name, print_date, print_time, doctor_eid, fix_document_scan_status_id) VALUES('");
                 newBpkDocumentScanVO.setObjectID(XPersistent.generateObjectID());
                 newBpkDocumentScanVO.setScanDate(Utility.getCurrentDate());
                 newBpkDocumentScanVO.setScanTime(Utility.getCurrentTime());
                 newBpkDocumentScanVO.setUpdateDate(Utility.getCurrentDate());
                 newBpkDocumentScanVO.setUpdateTime(Utility.getCurrentTime());
-                newBpkDocumentScanVO.setImageFileName(getNextImageFileName(newBpkDocumentScanVO.getFolderName()) + ".pdf");
+                newBpkDocumentScanVO.setImageFileName(getNextImageFileName(newBpkDocumentScanVO.getFolderName()) + ".PDF");
                 sqlCmd.append(newBpkDocumentScanVO.getObjectID()).append("', '").append(newBpkDocumentScanVO.getPatientId()).append("', ");
                 if(Utility.isNull(newBpkDocumentScanVO.getVn()))
                 {
@@ -510,9 +605,11 @@ public class DocScanDAO
                     }
                 }
                 sqlCmd.append(newBpkDocumentScanVO.getFolderName()).append("', '").append(newBpkDocumentScanVO.getImageFileName()).append("', '");
-                sqlCmd.append(newBpkDocumentScanVO.getScanDate()).append("', '").append(newBpkDocumentScanVO.getScanTime()).append("', '");
-                sqlCmd.append(newBpkDocumentScanVO.getUpdateDate()).append("', '").append(newBpkDocumentScanVO.getUpdateTime()).append("', '");
-                sqlCmd.append(newBpkDocumentScanVO.getDocumentName()).append("', '").append(newBpkDocumentScanVO.getPrintDate()).append("', '").append(newBpkDocumentScanVO.getPrintTime()).append("')");
+                sqlCmd.append(newBpkDocumentScanVO.getScanEid()).append("', '").append(newBpkDocumentScanVO.getScanDate()).append("', '").append(newBpkDocumentScanVO.getScanTime()).append("', '");
+                sqlCmd.append(newBpkDocumentScanVO.getUpdateEid()).append("', '").append(newBpkDocumentScanVO.getUpdateDate()).append("', '").append(newBpkDocumentScanVO.getUpdateTime()).append("', '");
+                sqlCmd.append(newBpkDocumentScanVO.getDocumentName()).append("', '").append(newBpkDocumentScanVO.getPrintDate()).append("', '").append(newBpkDocumentScanVO.getPrintTime()).append("', '");
+                sqlCmd.append(newBpkDocumentScanVO.getDoctorEid()).append("', '");
+                sqlCmd.append(FixDocumentScanStatus.BEGIN_SCAN).append("')");
 
                 conn = DocScanDAOFactory.getConnection();
                 stmt = conn.createStatement();

@@ -43,6 +43,7 @@ public class FrmImageScan extends javax.swing.JFrame
     Thread aThread = null;
     Timer aTimer = null;
     private int status = 0;
+    private String currentUser;
 
     /** Creates new form FrmConvertDocScan */
     public FrmImageScan()
@@ -937,7 +938,7 @@ public class FrmImageScan extends javax.swing.JFrame
     private void aBtnScanFromScannerActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnScanFromScannerActionPerformed
     {//GEN-HEADEREND:event_aBtnScanFromScannerActionPerformed
         this.scanFromScanner();
-        this.aImageScanFromPath.setIsForScannerOnly(true);
+        this.aImageScanFromPath.setIsForScannerOnly(true);        
         this.scanFromPath();
         /*
         this.scanFromScanner();
@@ -1225,7 +1226,6 @@ public class FrmImageScan extends javax.swing.JFrame
 
             aTimer = new Timer(1000, new ActionListener()
             {
-
                 public void actionPerformed(ActionEvent evt)
                 {
                     if (!aImageScanFromPath.isIsInterrupt())
@@ -1498,6 +1498,7 @@ public class FrmImageScan extends javax.swing.JFrame
 
                 // MUserVO rememberUserVO = FreeMedSecure.readRememberUser();
 
+                String employeeId = null;
                 doLogin:
                 do
                 {
@@ -1510,6 +1511,8 @@ public class FrmImageScan extends javax.swing.JFrame
                         loginResultFail = !login(loginData[0], loginData[1]);
                         if (!loginResultFail)
                         {
+                            employeeId = loginData[0];
+
                             aFrmLogin.setProgressStatus(10);
                             aFrmImageScan = new FrmImageScan();
                             aFrmLogin.setParent(aFrmImageScan);
@@ -1524,6 +1527,7 @@ public class FrmImageScan extends javax.swing.JFrame
                 }
                 while (loginResultFail);
 
+                aFrmImageScan.setCurrentUser(employeeId);
                 aFrmImageScan.setVisible(true);
             }
 
@@ -1653,5 +1657,25 @@ public class FrmImageScan extends javax.swing.JFrame
     public void setStatus(int status)
     {
         this.status = status;
+    }
+
+    /**
+     * @return the currentUser
+     */
+    public String getCurrentUser()
+    {
+        return currentUser;
+    }
+
+    /**
+     * @param currentUser the currentUser to set
+     */
+    public void setCurrentUser(String currentUser)
+    {
+        this.currentUser = currentUser;
+        if(this.aImageScanFromPath!=null)
+        {
+            this.aImageScanFromPath.setCurrentUser(currentUser);
+        }
     }
 }
