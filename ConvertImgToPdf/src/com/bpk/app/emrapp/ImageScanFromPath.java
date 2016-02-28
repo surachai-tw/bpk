@@ -16,7 +16,15 @@ import java.awt.AlphaComposite;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -73,8 +81,7 @@ public class ImageScanFromPath implements Runnable
             // Delete threshold file 
             File file = new File(newname);
             file.delete();
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
         }
@@ -130,8 +137,7 @@ public class ImageScanFromPath implements Runnable
                         if (j == 101)
                         {
                             resultText = getTextFromBarcode(getLastImage());
-                        }
-                        else
+                        } else
                         {
                             resultText = getTextFromBarcodeWithThreshold(j, scanFilenames[i], DocScanDAOFactory.getDocScanInputPath());
                         }
@@ -151,8 +157,7 @@ public class ImageScanFromPath implements Runnable
                                 }
                             }
                         }
-                    }
-                    while (j >= 1 && !this.isInterrupt);
+                    } while (j >= 1 && !this.isInterrupt);
 
                     if (!this.isInterrupt)
                     {
@@ -178,6 +183,7 @@ public class ImageScanFromPath implements Runnable
                                     newBpkDocumentScanVO = new BpkDocumentScanVO();
                                     newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
                                     newBpkDocumentScanVO.setHn(aPatientVO.getHn());
+                                    newBpkDocumentScanVO.setOriginalHn(aPatientVO.getOriginalHn());
                                     newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
                                     newBpkDocumentScanVO.setVn(allReadText != null && allReadText.length >= 2 ? allReadText[1] : "");
                                     newBpkDocumentScanVO.setDoctorEid(allReadText != null && allReadText.length >= 3 ? allReadText[2] : "");
@@ -186,12 +192,12 @@ public class ImageScanFromPath implements Runnable
                                     newBpkDocumentScanVO.setFolderName(allReadText != null && allReadText.length >= 5 ? allReadText[4] : "OTR");
                                     newBpkDocumentScanVO.setDocumentName(allReadText != null && allReadText.length >= 6 ? allReadText[5] : "");
                                     newBpkDocumentScanVO.setOption(allReadText != null && allReadText.length >= 7 ? allReadText[6] : "");
-                                }
-                                else
+                                } else
                                 {
                                     newBpkDocumentScanVO = new BpkDocumentScanVO();
                                     newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
                                     newBpkDocumentScanVO.setHn(aPatientVO.getHn());
+                                    newBpkDocumentScanVO.setOriginalHn(aPatientVO.getOriginalHn());
                                     newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
                                     newBpkDocumentScanVO.setVn(bpkDocumentScanVO.getVn());
                                     newBpkDocumentScanVO.setDoctorEid(bpkDocumentScanVO.getDoctorEid());
@@ -217,6 +223,7 @@ public class ImageScanFromPath implements Runnable
                                     GenerateJrxml.deleteJrxmlFile(DocScanDAOFactory.getDocScanInputPath() + jrxmlFilename);
 
                                     // ถ้าได้ข้อมูล ObjectID มาได้ ต้อง copy file ไปไว้ที่ปลายทางให้ตรงกับ folder
+                                    /*
                                     File srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + pdfFilename);
                                     File destPath = new File(DocScanDAOFactory.getDocScanOutputPath() + DocScanDAOFactory.getHnImageFolder(aPatientVO.getOriginalHn()) + System.getProperty("file.separator") + newBpkDocumentScanVO.getFolderName() + System.getProperty("file.separator"));
                                     if (!destPath.exists())
@@ -225,23 +232,27 @@ public class ImageScanFromPath implements Runnable
                                     }
                                     File destFile = new File(destPath.toString() + System.getProperty("file.separator") + newBpkDocumentScanVO.getImageFileName());
                                     Path rstPath = Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                                    */
+                                    newBpkDocumentScanVO.setPdfBytes(this.convertFile2Bytes(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + pdfFilename));
 
                                     // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
+                                    /*
                                     File chkRstPath = new File(rstPath.toString());
                                     if (chkRstPath.exists())
                                     {
                                         srcFile.delete();
-                                    }
+                                    }*/
 
                                     // ส่วนของ thumbnail Resize image ให้เล็ก เพื่อใช้ Preview
-                                    String thumbnailFilename = newBpkDocumentScanVO.getImageFileName()!=null ? "THUMBNAIL_"+newBpkDocumentScanVO.getImageFileName().toUpperCase().replaceAll(".PDF", ".jpg") : "THUMBNAIL.jpg";
-                                    BufferedImage originalImg = ImageIO.read(new File(DocScanDAOFactory.getDocScanInputPath()+scanFilenames[i]));
+                                    String thumbnailFilename = newBpkDocumentScanVO.getImageFileName() != null ? "THUMBNAIL_" + newBpkDocumentScanVO.getImageFileName().toUpperCase().replaceAll(".PDF", ".jpg") : "THUMBNAIL.jpg";
+                                    BufferedImage originalImg = ImageIO.read(new File(DocScanDAOFactory.getDocScanInputPath() + scanFilenames[i]));
                                     int type = originalImg.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImg.getType();
                                     BufferedImage resizeImageHintJpg = this.resizeImageWithHint(originalImg, type);
-                                    String resizeFile = DocScanDAOFactory.getDocScanInputPath()+thumbnailFilename;
+                                    String resizeFile = DocScanDAOFactory.getDocScanInputPath() + thumbnailFilename;
                                     ImageIO.write(resizeImageHintJpg, "jpg", new File(resizeFile));
 
                                     // ส่วนของ THUMBNAIL ต้อง copy file ไปไว้ที่ปลายทางให้ตรงกับ folder
+                                    /*
                                     srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + thumbnailFilename);
                                     if (!destPath.exists())
                                     {
@@ -255,8 +266,11 @@ public class ImageScanFromPath implements Runnable
                                     if (chkRstPath.exists())
                                     {
                                         srcFile.delete();
-                                    }
+                                    }*/
+                                    newBpkDocumentScanVO.setJpgBytes(this.convertFile2Bytes(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + thumbnailFilename));
 
+                                    // ใช้แบบ Http Upload
+                                    sendDocScan(newBpkDocumentScanVO);
 
                                     // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ success folder
                                     File scanSrcFile = new File(getLastImage());
@@ -266,8 +280,7 @@ public class ImageScanFromPath implements Runnable
                                     this.numSuccess++;
 
                                     this.setLastBpkDocumentScanVO(newBpkDocumentScanVO);
-                                }
-                                else
+                                } else
                                 {
                                     // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ fail folder
                                     File scanSrcFile = new File(getLastImage());
@@ -275,8 +288,7 @@ public class ImageScanFromPath implements Runnable
                                     Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                                     this.numFail++;
                                 }
-                            }
-                            else
+                            } else
                             {
                                 // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ fail folder
                                 File scanSrcFile = new File(getLastImage());
@@ -284,8 +296,7 @@ public class ImageScanFromPath implements Runnable
                                 Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                                 this.numFail++;
                             }
-                        }
-                        else
+                        } else
                         {
                             // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ fail folder
                             File scanSrcFile = new File(getLastImage());
@@ -294,20 +305,17 @@ public class ImageScanFromPath implements Runnable
                             this.numFail++;
                         }
                     }
-                }
-                catch (Exception ex)
+                } catch (Exception ex)
                 {
                     ex.printStackTrace();
-                }
-                finally
+                } finally
                 {
                 }
                 this.status = 100;
                 this.statusText = "Finished";
                 this.numScan++;
             }
-        }
-        else
+        } else
         {
             this.status = 100;
             this.statusText = "File not found";
@@ -315,15 +323,14 @@ public class ImageScanFromPath implements Runnable
 
         // Delete file after process
         // ถ้าลบทันที อาจจะเกิดปัญหา is being used by another process.
-        for(int i=0, sizei=listSrcFileForDel.size(); i<sizei; i++)
+        for (int i = 0, sizei = listSrcFileForDel.size(); i < sizei; i++)
         {
             try
             {
-                File scanSrcFile = (File)listSrcFileForDel.get(i);
-                File scanDestFile = (File)listDestFileForMove.get(i);
+                File scanSrcFile = (File) listSrcFileForDel.get(i);
+                File scanDestFile = (File) listDestFileForMove.get(i);
                 Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            }
-            catch(Exception ex)
+            } catch (Exception ex)
             {
                 ex.printStackTrace();
             }
@@ -377,12 +384,10 @@ public class ImageScanFromPath implements Runnable
                      */
                 }
             }
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
-        }
-        finally
+        } finally
         {
         }
         return result;
@@ -400,8 +405,7 @@ public class ImageScanFromPath implements Runnable
         {
             newHeight = MAX_DIM_FOR_THUMBNAIL;
             newWidth = (int) (newHeight * (float) width / (float) height);
-        }
-        else
+        } else
         {
             newWidth = MAX_DIM_FOR_THUMBNAIL;
             newHeight = (int) (newWidth * (float) height / (float) width);
@@ -560,5 +564,88 @@ public class ImageScanFromPath implements Runnable
     public void setBpkDocumentScanVO(BpkDocumentScanVO bpkDocumentScanVO)
     {
         this.bpkDocumentScanVO = bpkDocumentScanVO;
+    }
+
+    public byte[] convertFile2Bytes(String absFilename)
+    {
+        File file = new File(absFilename);
+        byte[] bytes = null;
+
+        try
+        {
+            FileInputStream fis = new FileInputStream(file);
+            //System.out.println(file.exists() + "!!");
+            //InputStream in = resource.openStream();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024*1024];
+            try
+            {
+                for (int readNum; (readNum = fis.read(buf)) != -1;)
+                {
+                    bos.write(buf, 0, readNum); //no doubt here is 0
+                    //Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
+                    System.out.println("Read " + readNum + " bytes");
+                }
+            } catch (IOException ex)
+            {
+                // Logger.getLogger(genJpeg.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
+            }
+            
+            bytes = bos.toByteArray();
+
+            //below is the different part
+            /*
+            File someFile = new File("java2.pdf");
+            FileOutputStream fos = new FileOutputStream(someFile);
+            fos.write(bytes);
+            fos.flush();
+            fos.close();
+            */
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return bytes;
+    }
+
+    public static String sendDocScan(BpkDocumentScanVO aBpkDocumentScanVO)
+    {
+        try
+        {
+            // Create an object we can use to communicate with the servlet
+            String url = DocScanDAOFactory.getDocScanInputUrl();
+            Utility.printCoreDebug(new ImageScanFromPath(), url);
+            URL servletURL = new URL(url);
+            URLConnection servletConnection = servletURL.openConnection();
+            servletConnection.setDoOutput(true);  // to allow us to write to the URL
+            servletConnection.setUseCaches(false);  // to ensure that we do contact
+            // the servlet and don't get
+            // anything from the browser's
+            // cache
+
+            ObjectOutputStream outputToServlet = new ObjectOutputStream(servletConnection.getOutputStream());
+            outputToServlet.writeObject(aBpkDocumentScanVO);
+
+            outputToServlet.flush();
+            outputToServlet.close();
+
+            // ห้ามเอาส่วนนี้ออก เพราะจะทำให้ไม่สามารถ upload ได้
+            InputStream in = servletConnection.getInputStream();
+            StringBuilder response = new StringBuilder();
+            int chr;
+            while ((chr=in.read())!=-1)
+            {
+                response.append((char) chr);
+            }
+            in.close();
+            return response.toString();
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return "";
     }
 }

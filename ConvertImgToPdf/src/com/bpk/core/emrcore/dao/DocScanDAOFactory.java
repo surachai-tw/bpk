@@ -21,6 +21,7 @@ public class DocScanDAOFactory
     private static String password = null;
     private static String docScanOutputPath = null;
     private static String docScanInputPath = null;
+    private static String docScanInputUrl = null;
     private static String docScanInputPathSuccess = null;
     private static String docScanInputPathFail = null;
     private static String docScanUrl = null;
@@ -60,6 +61,10 @@ public class DocScanDAOFactory
                     else if ("doc_scan_output_path".equalsIgnoreCase(key))
                     {
                         docScanOutputPath = value;
+                    }
+                    else if ("doc_scan_input_url".equalsIgnoreCase(key))
+                    {
+                        docScanInputUrl = value;
                     }
                     else if ("doc_scan_input_path".equalsIgnoreCase(key))
                     {
@@ -140,6 +145,11 @@ public class DocScanDAOFactory
         return docScanInputPath!=null && !docScanInputPath.endsWith("\\") ? docScanInputPath+System.getProperty("file.separator") : docScanInputPath;
     }
 
+    public static String getDocScanInputUrl()
+    {
+        return docScanInputUrl;
+    }
+
     /**
      * @return the docScanOutputPath
      */
@@ -173,6 +183,9 @@ public class DocScanDAOFactory
             newConnFile.append("doc_scan_input_path");
             newConnFile.append("=").append(getDocScanInputPath());
             newConnFile.append(System.getProperty("line.separator"));
+            newConnFile.append("doc_scan_input_url");
+            newConnFile.append("=").append(getDocScanInputUrl());
+            newConnFile.append(System.getProperty("line.separator"));
             newConnFile.append("doc_scan_output_path");
             newConnFile.append("=").append(getDocScanOutputPath());
             newConnFile.append(System.getProperty("line.separator"));
@@ -201,29 +214,6 @@ public class DocScanDAOFactory
     public static String getDocScanUrl()
     {
         return docScanUrl;
-    }
-
-    public static String getHnImageFolder(String hn, String separator)
-    {
-      String hnYear = hn.substring(1, 3);
-      int hnRunningLength = 9;
-      int hnRunning = Integer.parseInt(hn.substring(3));
-      int mod = 100;
-      long minHnRange = ((int)(hnRunning/mod)*mod)+1;
-      java.text.NumberFormat nfHnFolder = java.text.NumberFormat.getInstance();
-      nfHnFolder.setGroupingUsed(false);
-      nfHnFolder.setMinimumIntegerDigits(hnRunningLength);
-
-      String hnFolderRange = nfHnFolder.format(minHnRange);
-      // System.out.println("/" + hnYear + "/" + hnFolderRange.substring(0, hnFolderRange.length()-2) + "XX/" + hn + "/");
-
-      return separator + hnYear + separator + hnFolderRange.substring(0, hnFolderRange.length()-2) + "XX" + separator + hn + separator;
-    }
-
-    /** HN ที่ส่งเข้ามาเป็นแบบ FULL */
-    public static String getHnImageFolder(String hn)
-    {
-        return getHnImageFolder(hn, "/");
     }
 
     /**
