@@ -168,7 +168,7 @@ public class FrmImageScan extends javax.swing.JFrame
         aMenuFile = new javax.swing.JMenu();
         aMenuFileExit = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Document Scan");
 
         aPanelTop.setLayout(new java.awt.GridBagLayout());
@@ -366,7 +366,7 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 11);
         aPnlTotalScan.add(aBtnCancel, gridBagConstraints);
 
-        aBtnScanFromPath.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        aBtnScanFromPath.setFont(new java.awt.Font("Tahoma", 1, 12));
         aBtnScanFromPath.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/bpk/app/emrapp/images/folder.png"))); // NOI18N
         aBtnScanFromPath.setText("By Path");
         aBtnScanFromPath.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -919,6 +919,19 @@ public class FrmImageScan extends javax.swing.JFrame
         setBounds((screenSize.width-1024)/2, (screenSize.height-720)/2, 1024, 720);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Overridden so we can exit when window is closed
+     * @param ev WindowEvent
+     */
+    protected void processWindowEvent(java.awt.event.WindowEvent ev)
+    {
+        super.processWindowEvent(ev);
+        if (ev.getID() == java.awt.event.WindowEvent.WINDOW_CLOSING)
+        {
+            aMenuFileExitActionPerformed(null);
+        }
+    }
+    
     public void setInProgress(boolean isInProgress)
     {
         this.aBtnScanFromScanner.setEnabled(!isInProgress);
@@ -1126,7 +1139,14 @@ public class FrmImageScan extends javax.swing.JFrame
 
     private void aMenuFileExitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aMenuFileExitActionPerformed
     {//GEN-HEADEREND:event_aMenuFileExitActionPerformed
-        System.exit(1);
+        if(JOptionPane.showConfirmDialog(this, "Exit program ?", "Confirm", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+        {
+            System.exit(1);
+        }
+        else
+        {
+            this.setVisible(true);
+        }
     }//GEN-LAST:event_aMenuFileExitActionPerformed
 
     private void aRadByManualInputActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aRadByManualInputActionPerformed

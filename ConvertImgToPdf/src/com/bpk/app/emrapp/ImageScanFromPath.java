@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -67,9 +68,9 @@ public class ImageScanFromPath implements Runnable
     private String folderName = null;
     private DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
 
-    public String getTextFromBarcodeWithThreshold(int precision, String scanFilename, String docScanInputPath)
+    public String[] getTextFromBarcodeWithThreshold(int precision, String scanFilename, String docScanInputPath)
     {
-        String result = null;
+        String[] result = null;
         try
         {
             BufferedImage img = ImageIO.read(new File(docScanInputPath + scanFilename));
@@ -78,7 +79,11 @@ public class ImageScanFromPath implements Runnable
             ImageIO.write(img, "jpg", new File(newname));
 
             result = getTextFromBarcode(newname);
-            Utility.printCoreDebug(this, "Precision = " + precision + ", TEXT = " + result);
+            if(result!=null && result.length>0)
+            {
+                for(int i=0; i<result.length; i++)
+                    Utility.printCoreDebug(this, "Precision = " + precision + ", TEXT["+i+"] = " + result[i]);
+            }
 
             // Delete threshold file 
             File file = new File(newname);
@@ -125,7 +130,7 @@ public class ImageScanFromPath implements Runnable
                 PatientVO aPatientVO = null;
                 try
                 {
-                    String resultText = null;
+                    String[] resultText = null;
                     String[] allReadText = null;
 
                     this.status = tmpStatusBeforeMatch;
@@ -148,14 +153,23 @@ public class ImageScanFromPath implements Runnable
                         int tmpStatus = (int) (((float) (101 - j) / 101) * (tmpStatusAfterMatch - tmpStatusBeforeMatch));
                         this.status = tmpStatusBeforeMatch + tmpStatus;
 
-                        if (resultText != null)
+                        if (resultText != null && resultText.length>0)
                         {
-                            allReadText = resultText.split(" ");
-                            if (allReadText != null && allReadText.length > 1)
+                            for(int x=0; x<resultText.length; x++)
                             {
-                                if (aDocScanDAO.isPatientExistByHn(allReadText[0]))
+                                // Library ของ bytescout จะได้ " " เป็นตัว split แม้ว่าจะใช้เครื่องหมาย + คั่น
+                                // allReadText = resultText.split(" ");
+                                // Library ของ bytescout จะได้ "+" เป็นตัว split ตามที่ใช้เครื่องหมาย + คั่นไว้
+                                allReadText = resultText[x].split(Pattern.quote("+"));
+                                if (allReadText != null && allReadText.length > 1)
                                 {
-                                    break CHECK_HN_VALID;
+                                    for(int k=0; k<allReadText.length; k++)
+                                    {
+                                        if (aDocScanDAO.isPatientExistByHn(allReadText[k]))
+                                        {
+                                            break CHECK_HN_VALID;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -395,9 +409,9 @@ public class ImageScanFromPath implements Runnable
         return status;
     }
 
-    public static String getTextFromBarcode(String filename)
+    public static String[] getTextFromBarcode(String filename)
     {
-        String result = null;
+        List listResult = new ArrayList();
         try
         {
             Reader reader = new Reader();
@@ -413,13 +427,15 @@ public class ImageScanFromPath implements Runnable
             {
                 for (int i = 0; i < foundBarcodes.length; i++)
                 {
-                    result = foundBarcodes[i].getValue();
+                    String result = foundBarcodes[i].getValue();
 
                     // System.out.println("result at "+i+" = "+result);
 
                     if (result != null && result.indexOf("(") != -1)
                     {
                         result = result.substring(0, result.indexOf("(")).trim();
+                        
+                        listResult.add(result);
                     }
 
                     /*
@@ -442,7 +458,7 @@ public class ImageScanFromPath implements Runnable
         } finally
         {
         }
-        return result;
+        return (String[])listResult.toArray(new String[listResult.size()]);
     }
     private static final int MAX_DIM_FOR_THUMBNAIL = 200;
 
