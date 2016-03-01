@@ -1,0 +1,1 @@
+java -cp lib\postgresql-8.1-412.jdbc3.jar;lib\sqljdbc4.jar;dist\PgToSqlServer.jar com.bpk.pgToSqlServer.ui.FrmPgToSqlServer 
