@@ -114,21 +114,6 @@ public class DocScanDAOFactory
         return new DocScanDAO();
     }
 
-    public static LoginDAO newLoginDAO()
-    {
-        try
-        {
-            Connection conn = getConnection();
-            conn.close();
-        }
-        catch(Exception ex)
-        {
-            ex.printStackTrace();
-        }
-
-        return new LoginDAO();
-    }
-
     /**
      * @return the docScanOutputPath
      */

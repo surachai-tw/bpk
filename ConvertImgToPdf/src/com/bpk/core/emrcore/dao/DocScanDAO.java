@@ -44,8 +44,7 @@ public class DocScanDAO
                 if (hn.indexOf("-") != -1)
                 {
                     sqlCmd = new StringBuffer("SELECT patient_id FROM patient WHERE active='1' AND format_hn(hn)='").append(hn).append("' LIMIT 1");
-                }
-                else
+                } else
                 {
                     sqlCmd = new StringBuffer("SELECT patient_id FROM patient WHERE active='1' AND hn='").append(hn).append("' LIMIT 1");
                 }
@@ -63,12 +62,10 @@ public class DocScanDAO
 
                 stmt.close();
                 conn.close();
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 ex.printStackTrace();
-            }
-            finally
+            } finally
             {
                 sqlCmd = null;
                 rs = null;
@@ -123,8 +120,7 @@ public class DocScanDAO
                     {
                         fileNamePrefix = "";
                     }
-                }
-                else
+                } else
                 {
                     seqValue = "0";
                     fileNamePrefix = "";
@@ -145,12 +141,10 @@ public class DocScanDAO
                 cDate = cDate.replaceAll("-", "");
 
                 result = fileNamePrefix + Utility.getCurrentYearInBuddhist() + cDate + nf4.format(intSeqValue);
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 ex.printStackTrace();
-            }
-            finally
+            } finally
             {
                 sqlCmd = null;
                 rs = null;
@@ -181,8 +175,7 @@ public class DocScanDAO
                 if (hn.indexOf("-") != -1)
                 {
                     sqlCmd = new StringBuilder("SELECT patient_id, hn AS original_hn, format_hn(hn) AS hn, bpkget_patient_name(patient_id) AS patient_name FROM patient WHERE active='1' AND format_hn(hn)='").append(hn).append("' LIMIT 1");
-                }
-                else
+                } else
                 {
                     sqlCmd = new StringBuilder("SELECT patient_id, hn AS original_hn, format_hn(hn) AS hn, bpkget_patient_name(patient_id) AS patient_name FROM patient WHERE active='1' AND hn='").append(hn).append("' LIMIT 1");
                 }
@@ -237,18 +230,15 @@ public class DocScanDAO
                     result.put("COUNT_VISIT", cntVisit);
                     result.put("COUNT_DOC_SCAN", cntDocScan);
                     result.put(EventNames.RESULT_DATA, aPatientVO);
-                }
-                else
+                } else
                 {
                 }
 
                 conn.close();
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 ex.printStackTrace();
-            }
-            finally
+            } finally
             {
                 sqlCmd = null;
                 rs = null;
@@ -310,31 +300,27 @@ public class DocScanDAO
                 rst.close();
                 stmt.close();
                 conn.close();
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 if (conn != null)
                 {
                     try
                     {
                         conn.close();
-                    }
-                    catch (Exception ex2)
+                    } catch (Exception ex2)
                     {
                     }
                 }
                 ex.printStackTrace();
                 throw ex;
-            }
-            finally
+            } finally
             {
                 conn = null;
                 stmt = null;
                 rst = null;
                 sqlCmd = null;
             }
-        }
-        else
+        } else
         {
             return null;
         }
@@ -377,31 +363,27 @@ public class DocScanDAO
                 rst.close();
                 stmt.close();
                 conn.close();
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 if (conn != null)
                 {
                     try
                     {
                         conn.close();
-                    }
-                    catch (Exception ex2)
+                    } catch (Exception ex2)
                     {
                     }
                 }
                 ex.printStackTrace();
                 throw ex;
-            }
-            finally
+            } finally
             {
                 conn = null;
                 stmt = null;
                 rst = null;
                 sqlCmd = null;
             }
-        }
-        else
+        } else
         {
             return null;
         }
@@ -446,31 +428,27 @@ public class DocScanDAO
                 rst.close();
                 stmt.close();
                 conn.close();
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 if (conn != null)
                 {
                     try
                     {
                         conn.close();
-                    }
-                    catch (Exception ex2)
+                    } catch (Exception ex2)
                     {
                     }
                 }
                 ex.printStackTrace();
                 throw ex;
-            }
-            finally
+            } finally
             {
                 conn = null;
                 stmt = null;
                 rst = null;
                 sqlCmd = null;
             }
-        }
-        else
+        } else
         {
             return null;
         }
@@ -495,16 +473,18 @@ public class DocScanDAO
             sqlCmd.append("print_date='").append(newBpkDocumentScanVO.getPrintDate()).append("' AND ");
             sqlCmd.append("print_time='").append(newBpkDocumentScanVO.getPrintTime()).append("' AND ");
             sqlCmd.append("doctor_eid='").append(newBpkDocumentScanVO.getDoctorEid()).append("'");
-            
+
             conn = DocScanDAOFactory.getConnection();
             stmt = conn.createStatement();
 
             Utility.printCoreDebug(this, sqlCmd.toString());
             rst = stmt.executeQuery(sqlCmd.toString());
-            if(rst.next())
+            if (rst.next())
             {
-                if(listId==null)
+                if (listId == null)
+                {
                     listId = new ArrayList();
+                }
 
                 String id = rst.getString("bpk_document_scan_id");
                 listId.add(id);
@@ -513,12 +493,10 @@ public class DocScanDAO
             rst.close();
             stmt.close();
             conn.close();
-        }
-        catch(Exception ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
-        }
-        finally
+        } finally
         {
             sqlCmd = null;
             rst = null;
@@ -528,7 +506,7 @@ public class DocScanDAO
         return listId;
     }
 
-    public void updateToHistory(String id) throws Exception 
+    public void updateToHistory(String id) throws Exception
     {
         Connection conn = null;
         Statement stmt = null;
@@ -548,12 +526,10 @@ public class DocScanDAO
 
             stmt.close();
             conn.close();
-        }
-        catch(Exception ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
-        }
-        finally
+        } finally
         {
             sqlCmd = null;
             stmt = null;
@@ -572,11 +548,11 @@ public class DocScanDAO
             try
             {
                 List listOldId = checkDocumentIsAlreadyExist(newBpkDocumentScanVO);
-                if(Utility.isNotNull(listOldId))
+                if (Utility.isNotNull(listOldId))
                 {
-                    for(int i=0, sizei=listOldId.size(); i<sizei; i++)
+                    for (int i = 0, sizei = listOldId.size(); i < sizei; i++)
                     {
-                        updateToHistory((String)listOldId.get(i));
+                        updateToHistory((String) listOldId.get(i));
                     }
                 }
 
@@ -588,27 +564,25 @@ public class DocScanDAO
                 newBpkDocumentScanVO.setUpdateTime(Utility.getCurrentTime());
                 newBpkDocumentScanVO.setImageFileName(getNextImageFileName(newBpkDocumentScanVO.getFolderName()) + ".PDF");
                 sqlCmd.append(newBpkDocumentScanVO.getObjectID()).append("', '").append(newBpkDocumentScanVO.getPatientId()).append("', ");
-                if(Utility.isNull(newBpkDocumentScanVO.getVn()))
+                if (Utility.isNull(newBpkDocumentScanVO.getVn()))
                 {
                     // กรณีที่ไม่ได้ส่งค่า VN ให้ใช้ VN ล่าสุด
                     sqlCmd.append(" (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.patient_id='").append(newBpkDocumentScanVO.getPatientId()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
-                }
-                else
+                } else
                 {
                     if (newBpkDocumentScanVO.getVn().indexOf("-") != -1)
                     {
-                        sqlCmd.append(" (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.format_vn(vn)='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
-                    }
-                    else
+                        sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getHn()).append("' AND v.format_vn(vn)='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                    } else
                     {
-                        sqlCmd.append(" (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.vn='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                        sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getHn()).append("' AND v.vn='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
                     }
                 }
                 sqlCmd.append(newBpkDocumentScanVO.getFolderName()).append("', '").append(newBpkDocumentScanVO.getImageFileName()).append("', '");
                 sqlCmd.append(newBpkDocumentScanVO.getScanEid()).append("', '").append(newBpkDocumentScanVO.getScanDate()).append("', '").append(newBpkDocumentScanVO.getScanTime()).append("', '");
                 sqlCmd.append(newBpkDocumentScanVO.getUpdateEid()).append("', '").append(newBpkDocumentScanVO.getUpdateDate()).append("', '").append(newBpkDocumentScanVO.getUpdateTime()).append("', '");
                 sqlCmd.append(newBpkDocumentScanVO.getDocumentName()).append("', '").append(newBpkDocumentScanVO.getPrintDate()).append("', '").append(newBpkDocumentScanVO.getPrintTime()).append("', '");
-                sqlCmd.append(newBpkDocumentScanVO.getDoctorEid()).append("', '");
+                sqlCmd.append(validateEmployeeId(newBpkDocumentScanVO.getDoctorEid())).append("', '");
                 sqlCmd.append(FixDocumentScanStatus.BEGIN_SCAN).append("')");
 
                 conn = DocScanDAOFactory.getConnection();
@@ -619,30 +593,26 @@ public class DocScanDAO
 
                 stmt.close();
                 conn.close();
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 if (conn != null)
                 {
                     try
                     {
                         conn.close();
-                    }
-                    catch (Exception ex2)
+                    } catch (Exception ex2)
                     {
                     }
                 }
                 ex.printStackTrace();
                 throw ex;
-            }
-            finally
+            } finally
             {
                 conn = null;
                 stmt = null;
                 sqlCmd = null;
             }
-        }
-        else
+        } else
         {
             newBpkDocumentScanVO.setObjectID(null);
             return newBpkDocumentScanVO;
@@ -675,12 +645,10 @@ public class DocScanDAO
 
             stmt.close();
             conn.close();
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
-        }
-        finally
+        } finally
         {
             sqlCmd = null;
             rs = null;
@@ -715,12 +683,10 @@ public class DocScanDAO
 
             stmt.close();
             conn.close();
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
-        }
-        finally
+        } finally
         {
             sqlCmd = null;
             rs = null;
@@ -785,30 +751,26 @@ public class DocScanDAO
                 stmt.close();
                 conn.close();
 
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 if (conn != null)
                 {
                     try
                     {
                         conn.close();
-                    }
-                    catch (Exception ex2)
+                    } catch (Exception ex2)
                     {
                     }
                 }
                 ex.printStackTrace();
                 throw ex;
-            }
-            finally
+            } finally
             {
                 rst = null;
                 stmt = null;
                 conn = null;
             }
-        }
-        else
+        } else
         {
         }
         return listPatientVO;
@@ -845,12 +807,10 @@ public class DocScanDAO
                 stmt.close();
                 conn.close();
 
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 ex.printStackTrace();
-            }
-            finally
+            } finally
             {
                 sqlCmd = null;
                 rs = null;
@@ -894,13 +854,11 @@ public class DocScanDAO
             rs.close();
             stmt.close();
             conn.close();
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
             throw ex;
-        }
-        finally
+        } finally
         {
             sql = null;
             rs = null;
@@ -909,5 +867,45 @@ public class DocScanDAO
         }
 
         return aEmployeeRoleVO;
+    }
+
+    private String validateEmployeeId(String doctorCode) throws Exception
+    {
+        String employeeId = null;
+        Connection conn = null;
+        Statement stmt;
+        ResultSet rs;
+        StringBuffer sql = new StringBuffer(
+                "SELECT employee.employee_id FROM employee WHERE employee.employee_id='").append(doctorCode).append("' OR employee.employee_code = '").append(doctorCode).append("' ORDER BY employee_id LIMIT 1");
+
+        try
+        {
+            conn = DocScanDAOFactory.getConnection();
+            stmt = conn.createStatement();
+
+            Utility.printCoreDebug(this, sql.toString());
+            rs = stmt.executeQuery(sql.toString());
+
+            if (rs.next())
+            {
+                employeeId = rs.getString("employee_id");
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            throw ex;
+        } finally
+        {
+            sql = null;
+            rs = null;
+            stmt = null;
+            conn = null;
+        }
+
+        return employeeId;
     }
 }

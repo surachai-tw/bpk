@@ -52,9 +52,9 @@ public class ConvertDocScan implements Runnable
                                 {
                                     BpkDocumentScanVO tmpBpkDocumentScanVO = (BpkDocumentScanVO) listBpkDocumentScanVO.get(k);
 
-                                    String url = DocScanDAOFactory.getDocScanUrl() + BpkDocumentScanVO.getHnImageFolder(this.getPatientVO().getOriginalHn()) + "/" + tmpFolderVO.getObjectID() + "/" + tmpBpkDocumentScanVO.getImageFileName();
+                                    String url = DocScanDAOFactory.getDocScanUrl() + Utility.getHnImageFolder(this.getPatientVO().getOriginalHn()) + "/" + tmpFolderVO.getObjectID() + "/" + tmpBpkDocumentScanVO.getImageFileName();
                                     Utility.printCoreDebug(this, url);
-                                    String path = DocScanDAOFactory.getDocScanOutputPath() + BpkDocumentScanVO.getHnImageFolder(this.getPatientVO().getOriginalHn(), System.getProperty("file.separator")) + System.getProperty("file.separator") + tmpFolderVO.getObjectID() + System.getProperty("file.separator");
+                                    String path = DocScanDAOFactory.getDocScanOutputPath() + Utility.getHnImageFolder(this.getPatientVO().getOriginalHn(), System.getProperty("file.separator")) + System.getProperty("file.separator") + tmpFolderVO.getObjectID() + System.getProperty("file.separator");
                                     Utility.printCoreDebug(this, path);
 
                                     // Generate JRXML File

@@ -105,6 +105,8 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlTotalScan = new javax.swing.JPanel();
         aLblTotalScan = new javax.swing.JLabel();
         aTxtTotalScan = new javax.swing.JTextField();
+        aLblTotalCover = new javax.swing.JLabel();
+        aTxtTotalCover = new javax.swing.JTextField();
         aLblTotalSuccess = new javax.swing.JLabel();
         aTxtTotalSuccess = new javax.swing.JTextField();
         aLblTotalFail = new javax.swing.JLabel();
@@ -249,8 +251,8 @@ public class FrmImageScan extends javax.swing.JFrame
 
         aPnlTotalScan.setLayout(new java.awt.GridBagLayout());
 
-        aLblTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblTotalScan.setText("Scanned:");
+        aLblTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalScan.setText("จำนวนเอกสาร:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -259,7 +261,7 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlTotalScan.add(aLblTotalScan, gridBagConstraints);
 
         aTxtTotalScan.setEditable(false);
-        aTxtTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         aTxtTotalScan.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtTotalScan.setMinimumSize(new java.awt.Dimension(60, 24));
         aTxtTotalScan.setPreferredSize(new java.awt.Dimension(60, 24));
@@ -270,43 +272,64 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
         aPnlTotalScan.add(aTxtTotalScan, gridBagConstraints);
 
-        aLblTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblTotalSuccess.setText("Success:");
+        aLblTotalCover.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalCover.setText("ใบนำสแกน:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
+        aPnlTotalScan.add(aLblTotalCover, gridBagConstraints);
+
+        aTxtTotalCover.setEditable(false);
+        aTxtTotalCover.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtTotalCover.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        aTxtTotalCover.setMinimumSize(new java.awt.Dimension(60, 24));
+        aTxtTotalCover.setPreferredSize(new java.awt.Dimension(60, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
+        aPnlTotalScan.add(aTxtTotalCover, gridBagConstraints);
+
+        aLblTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalSuccess.setText("พบ HN:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
         aPnlTotalScan.add(aLblTotalSuccess, gridBagConstraints);
 
         aTxtTotalSuccess.setEditable(false);
-        aTxtTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         aTxtTotalSuccess.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtTotalSuccess.setMinimumSize(new java.awt.Dimension(60, 24));
         aTxtTotalSuccess.setPreferredSize(new java.awt.Dimension(60, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
         aPnlTotalScan.add(aTxtTotalSuccess, gridBagConstraints);
 
-        aLblTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12));
-        aLblTotalFail.setText("Fail:");
+        aLblTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalFail.setText("ผิดพลาด:");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
         aPnlTotalScan.add(aLblTotalFail, gridBagConstraints);
 
         aTxtTotalFail.setEditable(false);
-        aTxtTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         aTxtTotalFail.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtTotalFail.setMinimumSize(new java.awt.Dimension(60, 24));
         aTxtTotalFail.setPreferredSize(new java.awt.Dimension(60, 24));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridx = 7;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
@@ -314,14 +337,14 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 9;
+        gridBagConstraints.gridwidth = 11;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         aPnlTotalScan.add(jSeparator1, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 9;
+        gridBagConstraints.gridwidth = 11;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
@@ -341,7 +364,7 @@ public class FrmImageScan extends javax.swing.JFrame
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridx = 8;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 24, 0, 0);
@@ -360,7 +383,7 @@ public class FrmImageScan extends javax.swing.JFrame
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 8;
+        gridBagConstraints.gridx = 10;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 11);
@@ -379,7 +402,7 @@ public class FrmImageScan extends javax.swing.JFrame
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 7;
+        gridBagConstraints.gridx = 9;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
@@ -1251,6 +1274,7 @@ public class FrmImageScan extends javax.swing.JFrame
                     if (!aImageScanFromPath.isIsInterrupt())
                     {
                         aTxtTotalScan.setText(String.valueOf(aImageScanFromPath.getNumScan()));
+                        aTxtTotalCover.setText(String.valueOf(aImageScanFromPath.getNumCover()));
                         aTxtTotalSuccess.setText(String.valueOf(aImageScanFromPath.getNumSuccess()));
                         aTxtTotalFail.setText(String.valueOf(aImageScanFromPath.getNumFail()));
                         aLblProgress.setText(aImageScanFromPath.getStatusText());
@@ -1604,6 +1628,7 @@ public class FrmImageScan extends javax.swing.JFrame
     private javax.swing.JLabel aLblPatientByBarcode;
     private javax.swing.JLabel aLblPatientByManual;
     private javax.swing.JLabel aLblProgress;
+    private javax.swing.JLabel aLblTotalCover;
     private javax.swing.JLabel aLblTotalFail;
     private javax.swing.JLabel aLblTotalScan;
     private javax.swing.JLabel aLblTotalSuccess;
@@ -1644,6 +1669,7 @@ public class FrmImageScan extends javax.swing.JFrame
     private javax.swing.JTextField aTxtPatientNameByManual;
     private javax.swing.JTextField aTxtPrintDateTimeByBarcode;
     private javax.swing.JTextField aTxtPrintDateTimeByManual;
+    private javax.swing.JTextField aTxtTotalCover;
     private javax.swing.JTextField aTxtTotalFail;
     private javax.swing.JTextField aTxtTotalScan;
     private javax.swing.JTextField aTxtTotalSuccess;

@@ -55,6 +55,8 @@ public class ImageScanFromPath implements Runnable
     private int numSuccess = 0;
     /** ใช้เก็บจำนวนภาพที่ Scan และนำเข้าระบบไม่ได้  */
     private int numFail = 0;
+    /** ใช้เก็บจำนวนภาพที่ Scan และใช้เป็นใบนำ  */
+    private int numCover = 0;
     /** ใช้สำหรับตรวจสอบกรณีที่กด Cancel ระหว่างการ Scan */
     private boolean isInterrupt = false;
     /** ใช้สำหรับ List file ที่มาจาก Scanner เท่านั้น */
@@ -102,6 +104,8 @@ public class ImageScanFromPath implements Runnable
 
     public void run()
     {
+        String[] coverText = null;
+        boolean isCover = false;
         // List file in folder 
         File scanPath = new File(DocScanDAOFactory.getDocScanInputPath());
         scanFilenames = scanPath.list(new FilenameFilter()
@@ -158,9 +162,9 @@ public class ImageScanFromPath implements Runnable
                             for(int x=0; x<resultText.length; x++)
                             {
                                 // Library ของ bytescout จะได้ " " เป็นตัว split แม้ว่าจะใช้เครื่องหมาย + คั่น
-                                // allReadText = resultText.split(" ");
+                                allReadText = resultText[x].split(" ");
                                 // Library ของ bytescout จะได้ "+" เป็นตัว split ตามที่ใช้เครื่องหมาย + คั่นไว้
-                                allReadText = resultText[x].split(Pattern.quote("+"));
+                                // allReadText = resultText[x].split(Pattern.quote("+"));
                                 if (allReadText != null && allReadText.length > 1)
                                 {
                                     for(int k=0; k<allReadText.length; k++)
@@ -180,11 +184,29 @@ public class ImageScanFromPath implements Runnable
                         for (int chki = 0; allReadText != null && chki < allReadText.length; chki++)
                         {
                             System.out.println("allReadText[" + chki + "] = " + allReadText[chki]);
+
+                        }
+                        if(allReadText!=null && allReadText.length>=7 && "COVER".equalsIgnoreCase(allReadText[6]))
+                        {
+                            isCover = true;
+                            coverText = allReadText;
+                        }
+                        else
+                        {
+                            isCover = false;
                         }
 
                         this.status = tmpStatusAfterMatch;
                         this.statusText = "Create record in database";
-                        if (resultText != null || this.bpkDocumentScanVO != null)
+
+                        // ถ้าเป็นใบนำ ไม่ต้อง Scan แต่จำค่าไว้ในใบถัดไปในกรณีที่ไม่มี Barcode 
+                        // ถ้าไม่ใช่ใบนำ และอ่านค่า Barcode ไม่ได้ ให้ใช้ข้อมูลของใบนำ
+                        if(!isCover && allReadText == null && coverText!=null)
+                            allReadText = coverText;
+
+                        // ถ้าไม่ใช่ใบนำ และมีข้อมูล Barcode ครบ ให้ Scan เข้าปกติ
+                        // this.bpkDocumentScanVO ใช้ในกรณีที่ Scan ด้วยการระบุ HN เอง
+                        if ((!isCover && allReadText != null) || this.bpkDocumentScanVO != null)
                         {
                             HashMap result = aDocScanDAO.readPatient(this.bpkDocumentScanVO == null ? allReadText[0] : this.bpkDocumentScanVO.getHn());
                             Object aObj = result.get(EventNames.RESULT_DATA);
@@ -354,7 +376,10 @@ public class ImageScanFromPath implements Runnable
                             File scanSrcFile = new File(getLastImage());
                             File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathFail() + scanFilenames[i]);
                             Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                            this.numFail++;
+                            if(!isCover)
+                                this.numFail++;
+                            else
+                                this.setNumCover(this.getNumCover() + 1);
                         }
                     }
                 } catch (Exception ex)
@@ -730,5 +755,21 @@ public class ImageScanFromPath implements Runnable
     public void setCurrentUser(String currentUser)
     {
         this.currentUser = currentUser;
+    }
+
+    /**
+     * @return the numCover
+     */
+    public int getNumCover()
+    {
+        return numCover;
+    }
+
+    /**
+     * @param numCover the numCover to set
+     */
+    public void setNumCover(int numCover)
+    {
+        this.numCover = numCover;
     }
 }
