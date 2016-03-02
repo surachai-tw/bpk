@@ -237,7 +237,7 @@ public class SsbDAO extends SqlServerToPgDAO
                 sqlCmd.append(" WHERE	a.HN = '").append(hn).append("' ");
                 sqlCmd.append(" ORDER BY a.VisitDate, c.MakeDateTime");
                 stmtSrc = connSrc.createStatement();
-                // Utility.printCoreDebug(this, sqlCmd.toString());
+                Utility.printCoreDebug(this, sqlCmd.toString());
                 rsSrc = stmtSrc.executeQuery(sqlCmd.toString());
                 for (; rsSrc.next();)
                 {

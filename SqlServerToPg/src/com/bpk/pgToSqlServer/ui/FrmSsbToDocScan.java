@@ -20,15 +20,19 @@ import javax.swing.UIManager;
 public class FrmSsbToDocScan extends javax.swing.JFrame
 {
 
-    private final SyncPatient aSyncPatient = new SyncPatient();
-    private Thread aThreadPatient = null;
-    private Timer aTimerPatient = null;
-    private final SyncVisit aSyncVisit = new SyncVisit();
-    private Thread aThreadVisit = null;
-    private Timer aTimerVisit = null;
-    private final SyncDiagnosis aSyncDiagnosis = new SyncDiagnosis();
-    private Thread aThreadDiagnosis = null;
-    private Timer aTimerDiagnosis = null;
+    private final SyncPatientAll aSyncPatientAll = new SyncPatientAll();
+    private Thread aThreadPatientAll = null;
+    private Timer aTimerPatientAll = null;
+    private final SyncVisitAll aSyncVisitAll = new SyncVisitAll();
+    private Thread aThreadVisitAll = null;
+    private Timer aTimerVisitAll = null;
+    private final SyncDiagnosisByDate aSyncDiagnosisByDate = new SyncDiagnosisByDate();
+    private Thread aThreadDiagnosisByDate = null;
+    private Timer aTimerDiagnosisByDate = null;
+
+    private final SyncAllByHn aSyncAllByHn = new SyncAllByHn();
+    private Thread aThreadAllByHn = null;
+    private Timer aTimerAllByHn = null;
 
     /** Creates new form FrmSsbToDocScan */
     public FrmSsbToDocScan()
@@ -57,34 +61,36 @@ public class FrmSsbToDocScan extends javax.swing.JFrame
         java.awt.GridBagConstraints gridBagConstraints;
 
         aPnlCenter = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        aBtnSyncPatient = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        aBtnSyncVisit = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        aBtnSyncDx = new javax.swing.JButton();
+        aPnlSyncPatient = new javax.swing.JPanel();
+        aBtnSyncPatientAll = new javax.swing.JButton();
+        aPnlSyncVisitAll = new javax.swing.JPanel();
+        aBtnSyncVisitAll = new javax.swing.JButton();
+        aPnlSyncAllByHn = new javax.swing.JPanel();
+        aBtnSyncAllByHn = new javax.swing.JButton();
+        aPnlSyncDxByDate = new javax.swing.JPanel();
+        aBtnSyncDxByDate = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Sync Data SSB - DocScan");
 
         aPnlCenter.setLayout(new java.awt.GridBagLayout());
 
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+        aPnlSyncPatient.setLayout(new java.awt.GridBagLayout());
 
-        aBtnSyncPatient.setText("Sync Patient");
-        aBtnSyncPatient.setMaximumSize(new java.awt.Dimension(100, 24));
-        aBtnSyncPatient.setMinimumSize(new java.awt.Dimension(100, 24));
-        aBtnSyncPatient.setPreferredSize(new java.awt.Dimension(100, 24));
-        aBtnSyncPatient.addActionListener(new java.awt.event.ActionListener() {
+        aBtnSyncPatientAll.setText("Sync Patient All");
+        aBtnSyncPatientAll.setMaximumSize(new java.awt.Dimension(120, 24));
+        aBtnSyncPatientAll.setMinimumSize(new java.awt.Dimension(120, 24));
+        aBtnSyncPatientAll.setPreferredSize(new java.awt.Dimension(120, 24));
+        aBtnSyncPatientAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aBtnSyncPatientActionPerformed(evt);
+                aBtnSyncPatientAllActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 0);
-        jPanel1.add(aBtnSyncPatient, gridBagConstraints);
+        aPnlSyncPatient.add(aBtnSyncPatientAll, gridBagConstraints);
 
         aPrgStatusPatient.setMinimumSize(new java.awt.Dimension(24, 24));
         aPrgStatusPatient.setPreferredSize(new java.awt.Dimension(24, 24));
@@ -95,89 +101,124 @@ public class FrmSsbToDocScan extends javax.swing.JFrame
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 11);
-        jPanel1.add(aPrgStatusPatient, gridBagConstraints);
+        aPnlSyncPatient.add(aPrgStatusPatient, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        aPnlCenter.add(jPanel1, gridBagConstraints);
+        aPnlCenter.add(aPnlSyncPatient, gridBagConstraints);
 
-        jPanel2.setLayout(new java.awt.GridBagLayout());
+        aPnlSyncVisitAll.setLayout(new java.awt.GridBagLayout());
 
-        aBtnSyncVisit.setText("Sync Visit");
-        aBtnSyncVisit.setMaximumSize(new java.awt.Dimension(100, 24));
-        aBtnSyncVisit.setMinimumSize(new java.awt.Dimension(100, 24));
-        aBtnSyncVisit.setPreferredSize(new java.awt.Dimension(100, 24));
-        aBtnSyncVisit.addActionListener(new java.awt.event.ActionListener() {
+        aBtnSyncVisitAll.setText("Sync Visit All");
+        aBtnSyncVisitAll.setMaximumSize(new java.awt.Dimension(120, 24));
+        aBtnSyncVisitAll.setMinimumSize(new java.awt.Dimension(120, 24));
+        aBtnSyncVisitAll.setPreferredSize(new java.awt.Dimension(120, 24));
+        aBtnSyncVisitAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aBtnSyncVisitActionPerformed(evt);
+                aBtnSyncVisitAllActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 0);
-        jPanel2.add(aBtnSyncVisit, gridBagConstraints);
+        aPnlSyncVisitAll.add(aBtnSyncVisitAll, gridBagConstraints);
 
-        aPrgStatusVisit.setMinimumSize(new java.awt.Dimension(24, 24));
-        aPrgStatusVisit.setPreferredSize(new java.awt.Dimension(24, 24));
-        aPrgStatusVisit.setStringPainted(true);
+        aPrgStatusVisitAll.setMinimumSize(new java.awt.Dimension(24, 24));
+        aPrgStatusVisitAll.setPreferredSize(new java.awt.Dimension(24, 24));
+        aPrgStatusVisitAll.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 11);
-        jPanel2.add(aPrgStatusVisit, gridBagConstraints);
+        aPnlSyncVisitAll.add(aPrgStatusVisitAll, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        aPnlCenter.add(jPanel2, gridBagConstraints);
+        aPnlCenter.add(aPnlSyncVisitAll, gridBagConstraints);
 
-        jPanel3.setLayout(new java.awt.GridBagLayout());
+        aPnlSyncAllByHn.setLayout(new java.awt.GridBagLayout());
 
-        aBtnSyncDx.setText("Sync Dx");
-        aBtnSyncDx.setMaximumSize(new java.awt.Dimension(100, 24));
-        aBtnSyncDx.setMinimumSize(new java.awt.Dimension(100, 24));
-        aBtnSyncDx.setPreferredSize(new java.awt.Dimension(100, 24));
-        aBtnSyncDx.addActionListener(new java.awt.event.ActionListener() {
+        aBtnSyncAllByHn.setText("Sync All By HN");
+        aBtnSyncAllByHn.setMaximumSize(new java.awt.Dimension(120, 24));
+        aBtnSyncAllByHn.setMinimumSize(new java.awt.Dimension(120, 24));
+        aBtnSyncAllByHn.setPreferredSize(new java.awt.Dimension(120, 24));
+        aBtnSyncAllByHn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aBtnSyncDxActionPerformed(evt);
+                aBtnSyncAllByHnActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 0);
-        jPanel3.add(aBtnSyncDx, gridBagConstraints);
+        aPnlSyncAllByHn.add(aBtnSyncAllByHn, gridBagConstraints);
 
-        aPrgStatusDx.setMinimumSize(new java.awt.Dimension(24, 24));
-        aPrgStatusDx.setPreferredSize(new java.awt.Dimension(24, 24));
-        aPrgStatusDx.setStringPainted(true);
+        aPrgStatusAllByHn.setMinimumSize(new java.awt.Dimension(24, 24));
+        aPrgStatusAllByHn.setPreferredSize(new java.awt.Dimension(24, 24));
+        aPrgStatusAllByHn.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 11);
-        jPanel3.add(aPrgStatusDx, gridBagConstraints);
+        aPnlSyncAllByHn.add(aPrgStatusAllByHn, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        aPnlCenter.add(aPnlSyncAllByHn, gridBagConstraints);
+
+        aPnlSyncDxByDate.setLayout(new java.awt.GridBagLayout());
+
+        aBtnSyncDxByDate.setText("Sync Dx By Date");
+        aBtnSyncDxByDate.setMaximumSize(new java.awt.Dimension(120, 24));
+        aBtnSyncDxByDate.setMinimumSize(new java.awt.Dimension(120, 24));
+        aBtnSyncDxByDate.setPreferredSize(new java.awt.Dimension(120, 24));
+        aBtnSyncDxByDate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aBtnSyncDxByDateActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 0);
+        aPnlSyncDxByDate.add(aBtnSyncDxByDate, gridBagConstraints);
+
+        aPrgStatusDxByDate.setMinimumSize(new java.awt.Dimension(24, 24));
+        aPrgStatusDxByDate.setPreferredSize(new java.awt.Dimension(24, 24));
+        aPrgStatusDxByDate.setStringPainted(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 11);
+        aPnlSyncDxByDate.add(aPrgStatusDxByDate, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        aPnlCenter.add(jPanel3, gridBagConstraints);
+        aPnlCenter.add(aPnlSyncDxByDate, gridBagConstraints);
 
         getContentPane().add(aPnlCenter, java.awt.BorderLayout.CENTER);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-400)/2, (screenSize.height-240)/2, 400, 240);
+        setBounds((screenSize.width-800)/2, (screenSize.height-240)/2, 800, 240);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -200,65 +241,100 @@ public class FrmSsbToDocScan extends javax.swing.JFrame
         }
     }
 
-    private void aBtnSyncPatientActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnSyncPatientActionPerformed
-    {//GEN-HEADEREND:event_aBtnSyncPatientActionPerformed
-        aTimerPatient = new Timer(1000, new ActionListener()
+    private void aBtnSyncPatientAllActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnSyncPatientAllActionPerformed
+    {//GEN-HEADEREND:event_aBtnSyncPatientAllActionPerformed
+        aTimerPatientAll = new Timer(1000, new ActionListener()
+        {
+            public void actionPerformed(ActionEvent evt)
+            {
+                aPrgStatusPatient.setValue(aSyncPatientAll.getStatus());
+                if (aSyncPatientAll.getStatus() == 100)
+                {
+                    Toolkit.getDefaultToolkit().beep();
+                    aTimerPatientAll.stop();
+                }
+            }
+        });
+        aThreadPatientAll = new Thread(aSyncPatientAll);
+        aThreadPatientAll.start();
+        aTimerPatientAll.start();
+    }//GEN-LAST:event_aBtnSyncPatientAllActionPerformed
+
+    private void aBtnSyncVisitAllActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnSyncVisitAllActionPerformed
+    {//GEN-HEADEREND:event_aBtnSyncVisitAllActionPerformed
+        aTimerVisitAll = new Timer(1000, new ActionListener()
         {
 
             public void actionPerformed(ActionEvent evt)
             {
-                aPrgStatusPatient.setValue(aSyncPatient.getStatus());
-                if (aSyncPatient.getStatus() == 100)
+                aPrgStatusVisitAll.setValue(aSyncVisitAll.getStatus());
+                if (aSyncVisitAll.getStatus() == 100)
                 {
                     Toolkit.getDefaultToolkit().beep();
-                    aTimerPatient.stop();
+                    aTimerVisitAll.stop();
                 }
             }
         });
-        aThreadPatient = new Thread(aSyncPatient);
-        aThreadPatient.start();
-        aTimerPatient.start();
-    }//GEN-LAST:event_aBtnSyncPatientActionPerformed
+        aThreadVisitAll = new Thread(aSyncVisitAll);
+        aThreadVisitAll.start();
+        aTimerVisitAll.start();
+    }//GEN-LAST:event_aBtnSyncVisitAllActionPerformed
 
-    private void aBtnSyncVisitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnSyncVisitActionPerformed
-    {//GEN-HEADEREND:event_aBtnSyncVisitActionPerformed
-        aTimerVisit = new Timer(1000, new ActionListener()
+    private void aBtnSyncDxByDateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnSyncDxByDateActionPerformed
+    {//GEN-HEADEREND:event_aBtnSyncDxByDateActionPerformed
+        String txtDay = JOptionPane.showInputDialog("จำนวนวันย้อนหลัง: ").trim();
+        int numDay = 0;
+        Utility.printCoreDebug(this, "จำนวนวันย้อนหลัง: "+txtDay);
+        try
         {
+            numDay = Integer.parseInt(txtDay);
+        }
+        catch(Exception ex)
+        {
+            JOptionPane.showMessageDialog(this, "กรุณากรอกจำนวนวันในรูปแบบตัวเลข", "Error", JOptionPane.ERROR_MESSAGE);
+            return ;
+        }
+        aSyncDiagnosisByDate.setBackDate(numDay);
 
+        aTimerDiagnosisByDate = new Timer(1000, new ActionListener()
+        {
             public void actionPerformed(ActionEvent evt)
             {
-                aPrgStatusVisit.setValue(aSyncVisit.getStatus());
-                if (aSyncVisit.getStatus() == 100)
+                aPrgStatusDxByDate.setValue(aSyncDiagnosisByDate.getStatus());
+                if (aSyncDiagnosisByDate.getStatus() == 100)
                 {
                     Toolkit.getDefaultToolkit().beep();
-                    aTimerVisit.stop();
+                    aTimerDiagnosisByDate.stop();
                 }
             }
         });
-        aThreadVisit = new Thread(aSyncVisit);
-        aThreadVisit.start();
-        aTimerVisit.start();
-    }//GEN-LAST:event_aBtnSyncVisitActionPerformed
+        aThreadDiagnosisByDate = new Thread(aSyncDiagnosisByDate);
+        aThreadDiagnosisByDate.start();
+        aTimerDiagnosisByDate.start();
+    }//GEN-LAST:event_aBtnSyncDxByDateActionPerformed
 
-    private void aBtnSyncDxActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnSyncDxActionPerformed
-    {//GEN-HEADEREND:event_aBtnSyncDxActionPerformed
-        aTimerDiagnosis = new Timer(1000, new ActionListener()
+    private void aBtnSyncAllByHnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnSyncAllByHnActionPerformed
+    {//GEN-HEADEREND:event_aBtnSyncAllByHnActionPerformed
+        String txtHn = JOptionPane.showInputDialog("HN: ").trim();
+        Utility.printCoreDebug(this, "Input HN: "+txtHn);
+        aSyncAllByHn.setHn(txtHn);
+
+        aTimerAllByHn = new Timer(1000, new ActionListener()
         {
-
             public void actionPerformed(ActionEvent evt)
             {
-                aPrgStatusDx.setValue(aSyncDiagnosis.getStatus());
-                if (aSyncDiagnosis.getStatus() == 100)
+                aPrgStatusAllByHn.setValue(aSyncAllByHn.getStatus());
+                if (aSyncAllByHn.getStatus() == 100)
                 {
                     Toolkit.getDefaultToolkit().beep();
-                    aTimerDiagnosis.stop();
+                    aTimerAllByHn.stop();
                 }
             }
         });
-        aThreadDiagnosis = new Thread(aSyncDiagnosis);
-        aThreadDiagnosis.start();
-        aTimerDiagnosis.start();
-    }//GEN-LAST:event_aBtnSyncDxActionPerformed
+        aThreadAllByHn = new Thread(aSyncAllByHn);
+        aThreadAllByHn.start();
+        aTimerAllByHn.start();
+    }//GEN-LAST:event_aBtnSyncAllByHnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -275,15 +351,18 @@ public class FrmSsbToDocScan extends javax.swing.JFrame
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton aBtnSyncDx;
-    private javax.swing.JButton aBtnSyncPatient;
-    private javax.swing.JButton aBtnSyncVisit;
+    private javax.swing.JButton aBtnSyncAllByHn;
+    private javax.swing.JButton aBtnSyncDxByDate;
+    private javax.swing.JButton aBtnSyncPatientAll;
+    private javax.swing.JButton aBtnSyncVisitAll;
     private javax.swing.JPanel aPnlCenter;
-    private final javax.swing.JProgressBar aPrgStatusDx = new javax.swing.JProgressBar();
+    private javax.swing.JPanel aPnlSyncAllByHn;
+    private javax.swing.JPanel aPnlSyncDxByDate;
+    private javax.swing.JPanel aPnlSyncPatient;
+    private javax.swing.JPanel aPnlSyncVisitAll;
+    private final javax.swing.JProgressBar aPrgStatusAllByHn = new javax.swing.JProgressBar();
+    private final javax.swing.JProgressBar aPrgStatusDxByDate = new javax.swing.JProgressBar();
     private final javax.swing.JProgressBar aPrgStatusPatient = new javax.swing.JProgressBar();
-    private final javax.swing.JProgressBar aPrgStatusVisit = new javax.swing.JProgressBar();
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
+    private final javax.swing.JProgressBar aPrgStatusVisitAll = new javax.swing.JProgressBar();
     // End of variables declaration//GEN-END:variables
 }

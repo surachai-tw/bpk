@@ -253,7 +253,8 @@ public class DocScanDAO extends SqlServerToPgDAO
             connDest = this.getDestinationConnection();
             stmtDest = connDest.createStatement();
 
-            sqlCmd.append("SELECT * FROM visit WHERE vn='").append(aVisitVO.getOriginalVn()).append("' AND patient_id='").append(aVisitVO.getPatientId()).append("'");
+            sqlCmd.append("SELECT * FROM visit WHERE visit_id='").append(aVisitVO.getVisitId()).append("' AND patient_id='").append(aVisitVO.getPatientId()).append("'");
+            Utility.printCoreDebug(this, sqlCmd.toString());
             rst = stmtDest.executeQuery(sqlCmd.toString());
             if (!rst.next())
             {
@@ -271,7 +272,7 @@ public class DocScanDAO extends SqlServerToPgDAO
                 sqlCmd.append(Utility.getCurrentDate()).append("', '");
                 sqlCmd.append(Utility.getCurrentTime()).append("')");
 
-                // Utility.printCoreDebug(this, sqlCmd.toString());
+                Utility.printCoreDebug(this, sqlCmd.toString());
                 stmtDest.executeUpdate(sqlCmd.toString());
             }
             rst.close();            
@@ -356,6 +357,7 @@ public class DocScanDAO extends SqlServerToPgDAO
             rst = stmtDest.executeQuery(sqlCmd.toString());
             if (!rst.next())
             {
+                sqlCmd = new StringBuilder();
                 sqlCmd.append("INSERT INTO diagnosis_icd10(diagnosis_icd10_id, visit_id, beginning_diagnosis, beginning_diagnosis_th, icd10_code, icd10_description, fix_diagnosis_type_id, modify_eid, modify_date, modify_time) VALUES('");
                 sqlCmd.append(Utility.generateObjectID()).append("', '");
                 sqlCmd.append(aDiagnosisVO.getVisitId()).append("', '");
