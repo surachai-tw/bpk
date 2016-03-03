@@ -120,6 +120,14 @@ public class ImageScanFromScanner implements Runnable
 
                     File outputfile = new File(DocScanDAOFactory.getDocScanInputPath() + "_BPK" + Utility.getCurrentDate().replaceAll("-", "") + Utility.getCurrentTime().replaceAll(":", "") + (idx++) + ".jpg");
                     ImageIO.write(bimage, "jpg", outputfile);
+
+                    try
+                    {
+                        Thread.sleep(500);
+                    }
+                    catch(Exception ex)
+                    {
+                    }
                 }
                 while (source!= null && source.hasMoreImages());
                 source = null;
