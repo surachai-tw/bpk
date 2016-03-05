@@ -159,6 +159,7 @@ public class ImageScanFromPath implements Runnable
 
                         if (resultText != null && resultText.length>0)
                         {
+                            // resultText คือ BARCODE ทั้งหมดที่มี 
                             for(int x=0; x<resultText.length; x++)
                             {
                                 // Library ของ bytescout จะได้ " " เป็นตัว split แม้ว่าจะใช้เครื่องหมาย + คั่น
@@ -167,13 +168,14 @@ public class ImageScanFromPath implements Runnable
                                 // allReadText = resultText[x].split(Pattern.quote("+"));
                                 if (allReadText != null && allReadText.length > 1)
                                 {
-                                    for(int k=0; k<allReadText.length; k++)
-                                    {
-                                        if (aDocScanDAO.isPatientExistByHn(allReadText[k]))
+                                    // for(int k=0; k<allReadText.length; k++)
+                                    //{
+                                        // allReadText[0] คือ HN เสมอ ไม่ต้องตรวจสอบ
+                                        if (aDocScanDAO.isPatientExistByHn(allReadText[0]))
                                         {
                                             break CHECK_HN_VALID;
                                         }
-                                    }
+                                    ///}
                                 }
                             }
                         }

@@ -1305,15 +1305,15 @@ public class FrmImageScan extends javax.swing.JFrame
 
                         try
                         {
-                            if (aImageScanFromPath.getStatus() < 90)
+                            // if (aImageScanFromPath.getStatus() < 90)
                             {
                                 // aLblImg.setIcon(new ImageIcon(ImageIO.read(new File(aImageScanFromPath.getLastImage()))));
                                 aLblImg.setIcon(rescaleImage(new File(aImageScanFromPath.getLastImage()), aPnlImagePreview.getHeight(), aPnlImagePreview.getWidth()));
                             }
-                            else
-                            {
-                                aLblImg.setIcon(null);
-                            }
+                            // else
+                            // {
+                            //    aLblImg.setIcon(null);
+                            // }
                         }
                         catch (Exception ex)
                         {
