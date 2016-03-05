@@ -36,8 +36,8 @@ public class DocScanDAO extends SqlServerToPgDAO
                 sqlCmd = new StringBuilder();
                 sqlCmd.append("INSERT INTO patient(patient_id, hn, prename, firstname, lastname, firstname_en, lastname_en, fix_gender_id, birthdate, birthdate_true, fix_nationality_id, active, is_death, register_date, register_time, modify_date, modify_time) VALUES('");
                 sqlCmd.append(aPatientVO.getPatientId()).append("', '");
-                sqlCmd.append(aPatientVO.getHn()).append("', '");
-                sqlCmd.append(Utility.addSingleQuote(aPatientVO.getPrename())).append("', '");
+                sqlCmd.append(aPatientVO.getHn()).append("', ");
+                sqlCmd.append("SELECT COALESCE(base_prename.description, '").append(aPatientVO.getPrename()).append("') FROM base_prename WHERE base_prename.base_prename_id='").append(aPatientVO.getPrename()).append("', '");
                 sqlCmd.append(Utility.addSingleQuote(aPatientVO.getFirstname())).append("', '");
                 sqlCmd.append(Utility.addSingleQuote(aPatientVO.getLastname())).append("', '");
                 sqlCmd.append(Utility.addSingleQuote(aPatientVO.getFirstnameEn())).append("', '");
@@ -109,6 +109,49 @@ public class DocScanDAO extends SqlServerToPgDAO
             }
         }
         return list;
+    }
+
+    /** ขอรายการ Prefix ทั้งหมดจาก patient.hn */
+    public String getEmployeeIdFromCode(String employeeCode)
+    {
+        String employeeId = null;
+        if (employeeCode!=null)
+        {
+            Connection connSrc = this.getDestinationConnection();
+            Statement stmtSrc = null;
+            ResultSet rsSrc = null;
+            StringBuilder sqlCmd = null;
+
+            try
+            {
+                sqlCmd = new StringBuilder("SELECT employee_id FROM employee WHERE employee_code='").append(employeeCode).append("' ORDER BY employee_id LIMIT 1");
+                stmtSrc = connSrc.createStatement();
+                // Utility.printCoreDebug(this, sqlCmd.toString());
+                rsSrc = stmtSrc.executeQuery(sqlCmd.toString());
+                for (; rsSrc.next();)
+                {
+                    employeeId = rsSrc.getString("employee_id");
+                }
+
+                if(employeeId==null || "".equals(employeeId))
+                    employeeId = employeeCode;
+
+                rsSrc.close();
+                stmtSrc.close();
+                connSrc.close();
+            } catch (Exception ex)
+            {
+                Utility.printCoreDebug(this, sqlCmd.toString());
+                Utility.keepLog(sqlCmd.toString());
+                ex.printStackTrace();
+            } finally
+            {
+                connSrc = null;
+                stmtSrc = null;
+                rsSrc = null;
+            }
+        }
+        return employeeId;
     }
 
     /** List รายการ HN ทั้งหมด ที่นำหน้าด้วย Parameter */
@@ -315,7 +358,7 @@ public class DocScanDAO extends SqlServerToPgDAO
                 sqlCmd.append("docscan").append("', '");
                 sqlCmd.append(aVisitVO.getVisitDate()).append("', '");
                 sqlCmd.append(aVisitVO.getVisitTime()).append("', '");
-                sqlCmd.append(aVisitVO.getDoctorCode()).append("', '");
+                sqlCmd.append(getEmployeeIdFromCode(aVisitVO.getDoctorCode())).append("', '");
                 sqlCmd.append("1").append("', '");
                 sqlCmd.append("docscan").append("', '");
                 sqlCmd.append(Utility.getCurrentDate()).append("', '");

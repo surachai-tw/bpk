@@ -60,6 +60,45 @@ public class SsbDAO extends SqlServerToPgDAO
         return list;
     }
 
+    /** ขอรายการ Prefix ทั้งหมดจาก DNHOSPITAL.dbo.HNPAT_INFO.HN */
+    public List listHnByLastVisitDate(int numBackDate)
+    {
+        List list = new ArrayList();
+        if (numBackDate > 0)
+        {
+            Connection connSrc = this.getSourceConnection();
+            Statement stmtSrc = null;
+            ResultSet rsSrc = null;
+            StringBuilder sqlCmd = null;
+
+            try
+            {
+                sqlCmd = new StringBuilder("SELECT HN FROM DNHOSPITAL.dbo.HNPAT_INFO WHERE Convert(varchar(10), LastVisitDateTime, 120) BETWEEN Convert(varchar(10), getdate()-").append(numBackDate).append(", 120) AND Convert(varchar(10), getdate(), 120) ORDER BY LastVisitDateTime DESC ");
+                stmtSrc = connSrc.createStatement();
+                // Utility.printCoreDebug(this, sqlCmd.toString());
+                rsSrc = stmtSrc.executeQuery(sqlCmd.toString());
+                for (; rsSrc.next();)
+                {
+                    list.add(rsSrc.getString("HN"));
+                }
+                rsSrc.close();
+                stmtSrc.close();
+                connSrc.close();
+            } catch (Exception ex)
+            {
+                Utility.printCoreDebug(this, sqlCmd.toString());
+                Utility.keepLog(sqlCmd.toString());
+                ex.printStackTrace();
+            } finally
+            {
+                connSrc = null;
+                stmtSrc = null;
+                rsSrc = null;
+            }
+        }
+        return list;
+    }
+
     /** List รายการ HN ทั้งหมด ที่นำหน้าด้วย Parameter */
     public List listPatientByHnWithPrefix(String prefix)
     {

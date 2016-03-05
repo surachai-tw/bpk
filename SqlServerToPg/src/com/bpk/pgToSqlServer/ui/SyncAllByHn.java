@@ -18,6 +18,28 @@ public class SyncAllByHn implements Runnable
     private String hn;
     private int status;
 
+    public static void main(String args[])
+    {
+        Utility.printCoreDebug(new SyncAllByHn(), "arguments.length = "+args.length);
+        if (args.length > 0)
+        {
+            syncAllByHn(args[0]);
+        }
+    }
+
+    public static void syncAllByHn(String hn)
+    {
+        if(hn!=null)
+        {
+            SyncAllByHn aSyncAllByHn = new SyncAllByHn();
+            Utility.printCoreDebug(new SyncAllByHn(), "Input HN: " + hn);
+            aSyncAllByHn.setHn(hn);
+
+            Thread aThreadAllByHn = new Thread(aSyncAllByHn);
+            aThreadAllByHn.start();
+        }
+    }
+
     public void run()
     {
         SsbDAO aSsbDAO = new SsbDAO();
@@ -38,7 +60,7 @@ public class SyncAllByHn implements Runnable
                     aDocScanDAO.updateIssuedFile(aVisitVO);
 
                     List listDiagnosisVO = aSsbDAO.listDxByHnAndVisitId(hn, aVisitVO.getVisitId());
-                    if(Utility.isNotNull(listDiagnosisVO))
+                    if (Utility.isNotNull(listDiagnosisVO))
                     {
                         Utility.printCoreDebug(this, "Found Dx " + listDiagnosisVO.size());
 
@@ -52,8 +74,7 @@ public class SyncAllByHn implements Runnable
                     }
                     status = (int) Math.floor(100 * (float) j / sizej);
                 }
-            }
-            else
+            } else
             {
                 Utility.printCoreDebug(this, "No visit found");
             }
