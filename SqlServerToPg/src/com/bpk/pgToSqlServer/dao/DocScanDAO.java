@@ -63,6 +63,15 @@ public class DocScanDAO extends SqlServerToPgDAO
         {
             Utility.printCoreDebug(this, sqlCmd.toString());
             Utility.keepLog(sqlCmd.toString());
+            if (connDest != null)
+            {
+                try
+                {
+                    connDest.close();
+                } catch (Exception ex2)
+                {
+                }
+            }
             ex.printStackTrace();
         } finally
         {
@@ -78,34 +87,43 @@ public class DocScanDAO extends SqlServerToPgDAO
         List list = new ArrayList();
         if (numDigit > 0)
         {
-            Connection connSrc = this.getDestinationConnection();
-            Statement stmtSrc = null;
-            ResultSet rsSrc = null;
+            Connection conn = this.getDestinationConnection();
+            Statement stmt = null;
+            ResultSet rs = null;
             StringBuilder sqlCmd = null;
 
             try
             {
                 sqlCmd = new StringBuilder("SELECT substring(hn, 1, ").append(numDigit).append(") yyy, count(hn) Cnt FROM patient GROUP BY substring(hn, 1, ").append(numDigit).append(") ORDER BY substring(hn, 1, ").append(numDigit).append(")");
-                stmtSrc = connSrc.createStatement();
+                stmt = conn.createStatement();
                 // Utility.printCoreDebug(this, sqlCmd.toString());
-                rsSrc = stmtSrc.executeQuery(sqlCmd.toString());
-                for (; rsSrc.next();)
+                rs = stmt.executeQuery(sqlCmd.toString());
+                for (; rs.next();)
                 {
-                    list.add(rsSrc.getString("yyy"));
+                    list.add(rs.getString("yyy"));
                 }
-                rsSrc.close();
-                stmtSrc.close();
-                connSrc.close();
+                rs.close();
+                stmt.close();
+                conn.close();
             } catch (Exception ex)
             {
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 Utility.keepLog(sqlCmd.toString());
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.close();
+                    } catch (Exception ex2)
+                    {
+                    }
+                }
                 ex.printStackTrace();
             } finally
             {
-                connSrc = null;
-                stmtSrc = null;
-                rsSrc = null;
+                conn = null;
+                stmt = null;
+                rs = null;
             }
         }
         return list;
@@ -115,7 +133,7 @@ public class DocScanDAO extends SqlServerToPgDAO
     public String getEmployeeIdFromCode(String employeeCode)
     {
         String employeeId = null;
-        if (employeeCode!=null)
+        if (employeeCode != null)
         {
             Connection connSrc = this.getDestinationConnection();
             Statement stmtSrc = null;
@@ -133,8 +151,10 @@ public class DocScanDAO extends SqlServerToPgDAO
                     employeeId = rsSrc.getString("employee_id");
                 }
 
-                if(employeeId==null || "".equals(employeeId))
+                if (employeeId == null || "".equals(employeeId))
+                {
                     employeeId = employeeCode;
+                }
 
                 rsSrc.close();
                 stmtSrc.close();
@@ -160,40 +180,49 @@ public class DocScanDAO extends SqlServerToPgDAO
         List list = new ArrayList();
         if (prefix != null)
         {
-            Connection connSrc = this.getDestinationConnection();
-            Statement stmtSrc = null;
-            ResultSet rsSrc = null;
+            Connection conn = this.getDestinationConnection();
+            Statement stmt = null;
+            ResultSet rs = null;
             StringBuilder sqlCmd = new StringBuilder();
 
             try
             {
                 sqlCmd.append(" SELECT patient_id, hn ");
                 sqlCmd.append(" FROM patient WHERE hn LIKE '").append(prefix).append("%'");
-                stmtSrc = connSrc.createStatement();
+                stmt = conn.createStatement();
                 // Utility.printCoreDebug(this, sqlCmd.toString());
-                rsSrc = stmtSrc.executeQuery(sqlCmd.toString());
-                for (; rsSrc.next();)
+                rs = stmt.executeQuery(sqlCmd.toString());
+                for (; rs.next();)
                 {
                     PatientVO aPatientVO = new PatientVO();
 
-                    aPatientVO.setPatientId(rsSrc.getString("patient_id"));
-                    aPatientVO.setHn(rsSrc.getString("hn"));
+                    aPatientVO.setPatientId(rs.getString("patient_id"));
+                    aPatientVO.setHn(rs.getString("hn"));
 
                     list.add(aPatientVO);
                 }
-                rsSrc.close();
-                stmtSrc.close();
-                connSrc.close();
+                rs.close();
+                stmt.close();
+                conn.close();
             } catch (Exception ex)
             {
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 Utility.keepLog(sqlCmd.toString());
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.close();
+                    } catch (Exception ex2)
+                    {
+                    }
+                }
                 ex.printStackTrace();
             } finally
             {
-                connSrc = null;
-                stmtSrc = null;
-                rsSrc = null;
+                conn = null;
+                stmt = null;
+                rs = null;
             }
         }
         return list;
@@ -205,34 +234,43 @@ public class DocScanDAO extends SqlServerToPgDAO
         List list = new ArrayList();
         if (backDate > 0)
         {
-            Connection connSrc = this.getDestinationConnection();
-            Statement stmtSrc = null;
-            ResultSet rsSrc = null;
+            Connection conn = this.getDestinationConnection();
+            Statement stmt = null;
+            ResultSet rs = null;
             StringBuilder sqlCmd = null;
 
             try
             {
                 sqlCmd = new StringBuilder("SELECT DISTINCT visit_date FROM visit ORDER BY visit_date DESC LIMIT " + backDate);
-                stmtSrc = connSrc.createStatement();
+                stmt = conn.createStatement();
                 // Utility.printCoreDebug(this, sqlCmd.toString());
-                rsSrc = stmtSrc.executeQuery(sqlCmd.toString());
-                for (; rsSrc.next();)
+                rs = stmt.executeQuery(sqlCmd.toString());
+                for (; rs.next();)
                 {
-                    list.add(rsSrc.getString("visit_date"));
+                    list.add(rs.getString("visit_date"));
                 }
-                rsSrc.close();
-                stmtSrc.close();
-                connSrc.close();
+                rs.close();
+                stmt.close();
+                conn.close();
             } catch (Exception ex)
             {
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 Utility.keepLog(sqlCmd.toString());
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.close();
+                    } catch (Exception ex2)
+                    {
+                    }
+                }
                 ex.printStackTrace();
             } finally
             {
-                connSrc = null;
-                stmtSrc = null;
-                rsSrc = null;
+                conn = null;
+                stmt = null;
+                rs = null;
             }
         }
         return list;
@@ -244,41 +282,50 @@ public class DocScanDAO extends SqlServerToPgDAO
         List list = new ArrayList();
         if (visitDate != null)
         {
-            Connection connSrc = this.getDestinationConnection();
-            Statement stmtSrc = null;
-            ResultSet rsSrc = null;
+            Connection conn = this.getDestinationConnection();
+            Statement stmt = null;
+            ResultSet rs = null;
             StringBuilder sqlCmd = new StringBuilder();
 
             try
             {
                 sqlCmd.append(" SELECT visit_id, vn, hn ");
                 sqlCmd.append(" FROM visit WHERE visit_date='").append(visitDate).append("' ORDER BY vn");
-                stmtSrc = connSrc.createStatement();
+                stmt = conn.createStatement();
                 // Utility.printCoreDebug(this, sqlCmd.toString());
-                rsSrc = stmtSrc.executeQuery(sqlCmd.toString());
-                for (; rsSrc.next();)
+                rs = stmt.executeQuery(sqlCmd.toString());
+                for (; rs.next();)
                 {
                     VisitVO aVisitVO = new VisitVO();
 
-                    aVisitVO.setVisitId(rsSrc.getString("visit_id"));
-                    aVisitVO.setVn(rsSrc.getString("vn"));
-                    aVisitVO.setHn(rsSrc.getString("hn"));
+                    aVisitVO.setVisitId(rs.getString("visit_id"));
+                    aVisitVO.setVn(rs.getString("vn"));
+                    aVisitVO.setHn(rs.getString("hn"));
 
                     list.add(aVisitVO);
                 }
-                rsSrc.close();
-                stmtSrc.close();
-                connSrc.close();
+                rs.close();
+                stmt.close();
+                conn.close();
             } catch (Exception ex)
             {
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 Utility.keepLog(sqlCmd.toString());
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.close();
+                    } catch (Exception ex2)
+                    {
+                    }
+                }
                 ex.printStackTrace();
             } finally
             {
-                connSrc = null;
-                stmtSrc = null;
-                rsSrc = null;
+                conn = null;
+                stmt = null;
+                rs = null;
             }
         }
         return list;
@@ -318,13 +365,22 @@ public class DocScanDAO extends SqlServerToPgDAO
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 stmtDest.executeUpdate(sqlCmd.toString());
             }
-            rst.close();            
+            rst.close();
             stmtDest.close();
             connDest.close();
         } catch (Exception ex)
         {
             Utility.printCoreDebug(this, sqlCmd.toString());
             Utility.keepLog(sqlCmd.toString());
+            if (connDest != null)
+            {
+                try
+                {
+                    connDest.close();
+                } catch (Exception ex2)
+                {
+                }
+            }
             ex.printStackTrace();
         } finally
         {
@@ -375,6 +431,15 @@ public class DocScanDAO extends SqlServerToPgDAO
         {
             Utility.printCoreDebug(this, sqlCmd.toString());
             Utility.keepLog(sqlCmd.toString());
+            if (connDest != null)
+            {
+                try
+                {
+                    connDest.close();
+                } catch (Exception ex2)
+                {
+                }
+            }
             ex.printStackTrace();
         } finally
         {
@@ -423,6 +488,15 @@ public class DocScanDAO extends SqlServerToPgDAO
         {
             Utility.printCoreDebug(this, sqlCmd.toString());
             Utility.keepLog(sqlCmd.toString());
+            if (connDest != null)
+            {
+                try
+                {
+                    connDest.close();
+                } catch (Exception ex2)
+                {
+                }
+            }
             ex.printStackTrace();
         } finally
         {
