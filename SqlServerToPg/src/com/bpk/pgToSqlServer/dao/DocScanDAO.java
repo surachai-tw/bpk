@@ -17,6 +17,10 @@ import java.util.List;
 public class DocScanDAO extends SqlServerToPgDAO
 {
 
+    public DocScanDAO()
+    {
+    }
+
     public void updatePatient(PatientVO aPatientVO)
     {
         Connection connDest = null;
@@ -58,24 +62,22 @@ public class DocScanDAO extends SqlServerToPgDAO
             }
             rst.close();
             stmtDest.close();
-            connDest.close();
         } catch (Exception ex)
         {
             Utility.printCoreDebug(this, sqlCmd.toString());
             Utility.keepLog(sqlCmd.toString());
-            if (connDest != null)
+            try
             {
-                try
+                if (!stmtDest.isClosed())
                 {
-                    connDest.close();
-                } catch (Exception ex2)
-                {
+                    stmtDest.close();
                 }
+            } catch (Exception ex2)
+            {
             }
             ex.printStackTrace();
         } finally
         {
-            connDest = null;
             stmtDest = null;
             sqlCmd = null;
         }
@@ -104,24 +106,22 @@ public class DocScanDAO extends SqlServerToPgDAO
                 }
                 rs.close();
                 stmt.close();
-                conn.close();
             } catch (Exception ex)
             {
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 Utility.keepLog(sqlCmd.toString());
-                if (conn != null)
+                try
                 {
-                    try
+                    if (!stmt.isClosed())
                     {
-                        conn.close();
-                    } catch (Exception ex2)
-                    {
+                        stmt.close();
                     }
+                } catch (Exception ex2)
+                {
                 }
                 ex.printStackTrace();
             } finally
             {
-                conn = null;
                 stmt = null;
                 rs = null;
             }
@@ -158,15 +158,22 @@ public class DocScanDAO extends SqlServerToPgDAO
 
                 rsSrc.close();
                 stmtSrc.close();
-                connSrc.close();
             } catch (Exception ex)
             {
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 Utility.keepLog(sqlCmd.toString());
+                try
+                {
+                    if (!stmtSrc.isClosed())
+                    {
+                        stmtSrc.close();
+                    }
+                } catch (Exception ex2)
+                {
+                }
                 ex.printStackTrace();
             } finally
             {
-                connSrc = null;
                 stmtSrc = null;
                 rsSrc = null;
             }
@@ -203,24 +210,22 @@ public class DocScanDAO extends SqlServerToPgDAO
                 }
                 rs.close();
                 stmt.close();
-                conn.close();
             } catch (Exception ex)
             {
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 Utility.keepLog(sqlCmd.toString());
-                if (conn != null)
+                try
                 {
-                    try
+                    if (!stmt.isClosed())
                     {
-                        conn.close();
-                    } catch (Exception ex2)
-                    {
+                        stmt.close();
                     }
+                } catch (Exception ex2)
+                {
                 }
                 ex.printStackTrace();
             } finally
             {
-                conn = null;
                 stmt = null;
                 rs = null;
             }
@@ -251,24 +256,22 @@ public class DocScanDAO extends SqlServerToPgDAO
                 }
                 rs.close();
                 stmt.close();
-                conn.close();
             } catch (Exception ex)
             {
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 Utility.keepLog(sqlCmd.toString());
-                if (conn != null)
+                try
                 {
-                    try
+                    if (!stmt.isClosed())
                     {
-                        conn.close();
-                    } catch (Exception ex2)
-                    {
+                        stmt.close();
                     }
+                } catch (Exception ex2)
+                {
                 }
                 ex.printStackTrace();
             } finally
             {
-                conn = null;
                 stmt = null;
                 rs = null;
             }
@@ -306,24 +309,22 @@ public class DocScanDAO extends SqlServerToPgDAO
                 }
                 rs.close();
                 stmt.close();
-                conn.close();
             } catch (Exception ex)
             {
                 Utility.printCoreDebug(this, sqlCmd.toString());
                 Utility.keepLog(sqlCmd.toString());
-                if (conn != null)
+                try
                 {
-                    try
+                    if (!stmt.isClosed())
                     {
-                        conn.close();
-                    } catch (Exception ex2)
-                    {
+                        stmt.close();
                     }
+                } catch (Exception ex2)
+                {
                 }
                 ex.printStackTrace();
             } finally
             {
-                conn = null;
                 stmt = null;
                 rs = null;
             }
@@ -367,24 +368,22 @@ public class DocScanDAO extends SqlServerToPgDAO
             }
             rst.close();
             stmtDest.close();
-            connDest.close();
         } catch (Exception ex)
         {
             Utility.printCoreDebug(this, sqlCmd.toString());
             Utility.keepLog(sqlCmd.toString());
-            if (connDest != null)
+            try
             {
-                try
+                if (!stmtDest.isClosed())
                 {
-                    connDest.close();
-                } catch (Exception ex2)
-                {
+                    stmtDest.close();
                 }
+            } catch (Exception ex2)
+            {
             }
             ex.printStackTrace();
         } finally
         {
-            connDest = null;
             stmtDest = null;
             sqlCmd = null;
         }
@@ -426,24 +425,22 @@ public class DocScanDAO extends SqlServerToPgDAO
 
             rst.close();
             stmtDest.close();
-            connDest.close();
         } catch (Exception ex)
         {
             Utility.printCoreDebug(this, sqlCmd.toString());
             Utility.keepLog(sqlCmd.toString());
-            if (connDest != null)
+            try
             {
-                try
+                if (!stmtDest.isClosed())
                 {
-                    connDest.close();
-                } catch (Exception ex2)
-                {
+                    stmtDest.close();
                 }
+            } catch (Exception ex2)
+            {
             }
             ex.printStackTrace();
         } finally
         {
-            connDest = null;
             stmtDest = null;
             sqlCmd = null;
         }
@@ -483,24 +480,22 @@ public class DocScanDAO extends SqlServerToPgDAO
             }
             rst.close();
             stmtDest.close();
-            connDest.close();
         } catch (Exception ex)
         {
             Utility.printCoreDebug(this, sqlCmd.toString());
             Utility.keepLog(sqlCmd.toString());
-            if (connDest != null)
+            try
             {
-                try
+                if (!stmtDest.isClosed())
                 {
-                    connDest.close();
-                } catch (Exception ex2)
-                {
+                    stmtDest.close();
                 }
+            } catch (Exception ex2)
+            {
             }
             ex.printStackTrace();
         } finally
         {
-            connDest = null;
             stmtDest = null;
             sqlCmd = null;
         }

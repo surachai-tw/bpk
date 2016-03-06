@@ -107,13 +107,16 @@ public class SqlServerToPgDAO
         return null;
     }
 
+    public static Connection connDest = null;
+
     public Connection getDestinationConnection()
     {
         try
         {
             Class.forName("org.postgresql.Driver");
 
-            Connection connDest = DriverManager.getConnection(destUrl, destUsername, destPassword);
+            if(connDest==null)
+                connDest = DriverManager.getConnection(destUrl, destUsername, destPassword);
 
             return connDest;
         }
