@@ -42,6 +42,8 @@ public class ImageScanFromScanner implements Runnable
 
     public void connectScanner()
     {
+        // System.load(System.getProperty("user.dir")+System.getProperty("file.separator")+"lib"+System.getProperty("file.separator")+"twain.dll");
+
         int idx = 0;
         this.status = 0;
         this.statusText = "Connect to scanner...";

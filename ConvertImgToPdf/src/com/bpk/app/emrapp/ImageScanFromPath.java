@@ -120,8 +120,10 @@ public class ImageScanFromPath implements Runnable
             }
         });
 
-        List listSrcFileForDel = new ArrayList();
-        List listDestFileForMove = new ArrayList();
+        List listSrcFileSuccessForDel = new ArrayList();
+        List listDestFileSuccessForMove = new ArrayList();
+        List listSrcFileFailForDel = new ArrayList();
+        List listDestFileFailForMove = new ArrayList();
 
         int tmpStatusBeforeMatch = 10;
         int tmpStatusAfterMatch = 80;
@@ -141,6 +143,7 @@ public class ImageScanFromPath implements Runnable
                     this.statusText = "Matching HN in database";
                     // Read text from barcode 
                     int j = 101;
+                    boolean isHnValid = false;
                     CHECK_HN_VALID:
                     do
                     {
@@ -171,7 +174,8 @@ public class ImageScanFromPath implements Runnable
                                     // for(int k=0; k<allReadText.length; k++)
                                     //{
                                         // allReadText[0] คือ HN เสมอ ไม่ต้องตรวจสอบ
-                                        if (aDocScanDAO.isPatientExistByHn(allReadText[0]))
+                                        isHnValid = aDocScanDAO.isPatientExistByHn(allReadText[0]);
+                                        if (isHnValid)
                                         {
                                             break CHECK_HN_VALID;
                                         }
@@ -186,7 +190,6 @@ public class ImageScanFromPath implements Runnable
                         for (int chki = 0; allReadText != null && chki < allReadText.length; chki++)
                         {
                             System.out.println("allReadText[" + chki + "] = " + allReadText[chki]);
-
                         }
                         if(allReadText!=null && allReadText.length>=7 && "COVER".equalsIgnoreCase(allReadText[6]))
                         {
@@ -203,7 +206,8 @@ public class ImageScanFromPath implements Runnable
 
                         // ถ้าเป็นใบนำ ไม่ต้อง Scan แต่จำค่าไว้ในใบถัดไปในกรณีที่ไม่มี Barcode 
                         // ถ้าไม่ใช่ใบนำ และอ่านค่า Barcode ไม่ได้ ให้ใช้ข้อมูลของใบนำ
-                        if(!isCover && allReadText == null && coverText!=null)
+                        // ถ้าไม่ใช่ใบนำ และอ่านค่า Barcode ได้แต่ไม่มี HN ในนั้น ให้ใช้ข้อมูลของใบนำ
+                        if(!isCover && (allReadText == null || !isHnValid) && coverText!=null)
                             allReadText = coverText;
 
                         // ถ้าไม่ใช่ใบนำ และมีข้อมูล Barcode ครบ ให้ Scan เข้าปกติ
@@ -351,17 +355,19 @@ public class ImageScanFromPath implements Runnable
                                     // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ success folder
                                     File scanSrcFile = new File(getLastImage());
                                     File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathSuccess() + scanFilenames[i]);
-                                    listSrcFileForDel.add(scanSrcFile);
-                                    listDestFileForMove.add(scanDestFile);
+                                    listSrcFileSuccessForDel.add(scanSrcFile);
+                                    listDestFileSuccessForMove.add(scanDestFile);
                                     this.numSuccess++;
 
                                     this.setLastBpkDocumentScanVO(newBpkDocumentScanVO);
                                 } else
                                 {
-                                    // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ fail folder
+                                    // กรณีที่ทำงานไม่สำเร็จให้ move file ไปไว้ที่ fail folder
                                     File scanSrcFile = new File(getLastImage());
                                     File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathFail() + scanFilenames[i]);
-                                    Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                                    listSrcFileFailForDel.add(scanSrcFile);
+                                    listDestFileFailForMove.add(scanDestFile);
+                                    // Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                                     this.numFail++;
                                 }
                             } else
@@ -369,7 +375,9 @@ public class ImageScanFromPath implements Runnable
                                 // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ fail folder
                                 File scanSrcFile = new File(getLastImage());
                                 File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathFail() + scanFilenames[i]);
-                                Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                                listSrcFileFailForDel.add(scanSrcFile);
+                                listDestFileFailForMove.add(scanDestFile);
+                                // Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                                 this.numFail++;
                             }
                         } else
@@ -377,7 +385,9 @@ public class ImageScanFromPath implements Runnable
                             // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ fail folder
                             File scanSrcFile = new File(getLastImage());
                             File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathFail() + scanFilenames[i]);
-                            Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                            listSrcFileFailForDel.add(scanSrcFile);
+                            listDestFileFailForMove.add(scanDestFile);
+                            // Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                             if(!isCover)
                                 this.numFail++;
                             else
@@ -408,7 +418,7 @@ public class ImageScanFromPath implements Runnable
 
         // Delete file after process
         // ถ้าลบทันที อาจจะเกิดปัญหา is being used by another process.
-        for (int i = 0, sizei = listSrcFileForDel.size(); i < sizei; i++)
+        for (int i = 0, sizei = listSrcFileSuccessForDel.size(); i < sizei; i++)
         {
             boolean chkRstMove = true;
             // สั่งลบจนกว่าจะสำเร็จ
@@ -416,8 +426,28 @@ public class ImageScanFromPath implements Runnable
             {
                 try
                 {
-                    File scanSrcFile = (File) listSrcFileForDel.get(i);
-                    File scanDestFile = (File) listDestFileForMove.get(i);
+                    File scanSrcFile = (File) listSrcFileSuccessForDel.get(i);
+                    File scanDestFile = (File) listDestFileSuccessForMove.get(i);
+                    Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                    chkRstMove = true;
+                } catch (Exception ex)
+                {
+                    chkRstMove = false;
+                    // ex.printStackTrace();
+                }
+            }while(!chkRstMove);
+        }
+        for (int i = 0, sizei = listSrcFileFailForDel.size(); i < sizei; i++)
+        {
+            boolean chkRstMove = true;
+            // สั่งลบจนกว่าจะสำเร็จ
+            do
+            {
+                try
+                {
+                    File scanSrcFile = (File) listSrcFileFailForDel.get(i);
+                    File scanDestFile = (File) listDestFileFailForMove.get(i);
                     Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
                     chkRstMove = true;
