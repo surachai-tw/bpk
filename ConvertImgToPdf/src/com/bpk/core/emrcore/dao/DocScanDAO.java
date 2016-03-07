@@ -264,7 +264,7 @@ public class DocScanDAO
                 sqlCmd = new StringBuffer(
                         "SELECT DISTINCT visit.visit_id, format_vn(visit.vn) AS vn, format_an(visit.an) AS an, visit.fix_visit_type_id, visit.visit_date, visit.visit_time, get_first_pdx_name(visit.visit_id) AS pdx ");
                 sqlCmd.append(" FROM visit ");
-                sqlCmd.append(" INNER JOIN bpk_document_scan ON visit.patient_id=bpk_document_scan.patient_id AND visit.visit_id=bpk_document_scan.visit_id ");
+                sqlCmd.append(" LEFT JOIN bpk_document_scan ON visit.patient_id=bpk_document_scan.patient_id AND visit.visit_id=bpk_document_scan.visit_id ");
                 sqlCmd.append(" WHERE visit.active='1' AND visit.patient_id='").append(patientId).append("' ");
                 sqlCmd.append(" ORDER BY visit.visit_date DESC, visit.visit_time DESC");
 
@@ -285,6 +285,7 @@ public class DocScanDAO
                     aVisitVO.setFixVisitTypeId(rst.getString("fix_visit_type_id"));
                     aVisitVO.setPDx(rst.getString("pdx"));
 
+                    /*
                     aVisitVO.setListFolderVO(this.listFolderBpkDocumentScanVO(aVisitVO.getObjectID()));
                     List listFolder = aVisitVO.getListFolderVO();
                     for (int i = 0, sizei = listFolder.size(); i < sizei; i++)
@@ -293,7 +294,7 @@ public class DocScanDAO
 
                         tmpFolderVO.setListBpkDocumentScanVO(this.listBpkDocumentScanVO(aVisitVO.getObjectID(), tmpFolderVO.getObjectID()));
                     }
-
+                    */
                     listVisitVO.add(aVisitVO);
                 }
 
@@ -576,11 +577,10 @@ public class DocScanDAO
                     sqlCmd.append("', '");
                 } else
                 {
-                    if(VisitVO.NO_VN.equals(newBpkDocumentScanVO.getVn()))
+                    if (VisitVO.NO_VN.equals(newBpkDocumentScanVO.getVn()))
                     {
                         sqlCmd.append("', '");
-                    }
-                    else
+                    } else
                     {
                         if (newBpkDocumentScanVO.getVn().indexOf("-") != -1)
                         {
@@ -887,41 +887,43 @@ public class DocScanDAO
 
     private String validateEmployeeId(String doctorCode) throws Exception
     {
-        String employeeId = null;
-        Connection conn = null;
-        Statement stmt;
-        ResultSet rs;
-        StringBuffer sql = new StringBuffer(
-                "SELECT employee.employee_id FROM employee WHERE employee.employee_id='").append(doctorCode).append("' OR employee.employee_code = '").append(doctorCode).append("' ORDER BY employee_id LIMIT 1");
-
-        try
+        String employeeId = "";
+        if (Utility.isNotNull(doctorCode) && !"".equals(doctorCode.trim()))
         {
-            conn = DocScanDAOFactory.getConnection();
-            stmt = conn.createStatement();
+            Connection conn = null;
+            Statement stmt;
+            ResultSet rs;
+            StringBuffer sql = new StringBuffer(
+                    "SELECT employee.employee_id FROM employee WHERE employee.employee_id='").append(doctorCode).append("' OR employee.employee_code = '").append(doctorCode).append("' ORDER BY employee_id LIMIT 1");
 
-            Utility.printCoreDebug(this, sql.toString());
-            rs = stmt.executeQuery(sql.toString());
-
-            if (rs.next())
+            try
             {
-                employeeId = rs.getString("employee_id");
+                conn = DocScanDAOFactory.getConnection();
+                stmt = conn.createStatement();
+
+                Utility.printCoreDebug(this, sql.toString());
+                rs = stmt.executeQuery(sql.toString());
+
+                if (rs.next())
+                {
+                    employeeId = rs.getString("employee_id");
+                }
+
+                rs.close();
+                stmt.close();
+                conn.close();
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                throw ex;
+            } finally
+            {
+                sql = null;
+                rs = null;
+                stmt = null;
+                conn = null;
             }
-
-            rs.close();
-            stmt.close();
-            conn.close();
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            throw ex;
-        } finally
-        {
-            sql = null;
-            rs = null;
-            stmt = null;
-            conn = null;
         }
-
         return employeeId;
     }
 }

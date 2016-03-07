@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
  */
 public class ImageScanFromPath implements Runnable
 {
+
     /** ใช้ในการระบุผู้ทำการ Scan */
     private String currentUser = null;
     /** ใช้ List file ที่พบใน Path */
@@ -69,6 +70,8 @@ public class ImageScanFromPath implements Runnable
     private String lastImage = null;
     private String folderName = null;
     private DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
+    /** ใช้ในการตรวจสอบว่าให้ระบบ Check barcode อื่นๆในเอกสารหรือไม่ ในกรณีที่ทำ Manual Inpput */
+    private boolean securityCheckBarcode = false;
 
     public String[] getTextFromBarcodeWithThreshold(int precision, String scanFilename, String docScanInputPath)
     {
@@ -81,10 +84,12 @@ public class ImageScanFromPath implements Runnable
             ImageIO.write(img, "jpg", new File(newname));
 
             result = getTextFromBarcode(newname);
-            if(result!=null && result.length>0)
+            if (result != null && result.length > 0)
             {
-                for(int i=0; i<result.length; i++)
-                    Utility.printCoreDebug(this, "Precision = " + precision + ", TEXT["+i+"] = " + result[i]);
+                for (int i = 0; i < result.length; i++)
+                {
+                    Utility.printCoreDebug(this, "Precision = " + precision + ", TEXT[" + i + "] = " + result[i]);
+                }
             }
 
             // Delete threshold file 
@@ -129,9 +134,15 @@ public class ImageScanFromPath implements Runnable
         int tmpStatusAfterMatch = 80;
         if (scanFilenames != null && scanFilenames.length > 0)
         {
+            this.setNumScan(scanFilenames.length);
+            this.setNumCover(0);
+            this.setNumMatched(0);
+            this.setNumFail(0);
+            
             for (int i = 0; i < scanFilenames.length && !this.isInterrupt; i++)
             {
                 this.status = 0;
+                this.statusText = "Prepared scan...";
                 this.lastImage = DocScanDAOFactory.getDocScanInputPath() + scanFilenames[i];
                 PatientVO aPatientVO = null;
                 try
@@ -139,240 +150,238 @@ public class ImageScanFromPath implements Runnable
                     String[] resultText = null;
                     String[] allReadText = null;
 
-                    this.status = tmpStatusBeforeMatch;
-                    this.statusText = "Matching HN in database";
-                    // Read text from barcode 
-                    int j = 101;
-                    boolean isHnValid = false;
-                    CHECK_HN_VALID:
-                    do
+                    // กรณีที่ไม่ได้ตั้งค่า this.bpkDocumentScanVO เข้ามา ให้ทำ Matching HN
+                    // กรณีที่ตั้งค่า this.bpkDocumentScanVO เข้ามา ให้ตรวจสอบเพิ่ม ว่าตตรวจสอบเรื่อง Security ด้วยไหม
+                    if (this.bpkDocumentScanVO == null || (this.bpkDocumentScanVO != null && this.isSecurityCheckBarcode()))
                     {
-                        // รอบแรก จะไม่ต้องทำ Threshold
-                        if (j == 101)
+                        this.status = tmpStatusBeforeMatch;
+                        this.statusText = "Matching HN in database";
+                        // Read text from barcode
+                        int j = 101;
+                        boolean isHnValid = false;
+                        CHECK_HN_VALID:
+                        do
                         {
-                            resultText = getTextFromBarcode(getLastImage());
-                        } else
-                        {
-                            resultText = getTextFromBarcodeWithThreshold(j, scanFilenames[i], DocScanDAOFactory.getDocScanInputPath());
-                        }
-
-                        j -= 4;
-                        int tmpStatus = (int) (((float) (101 - j) / 101) * (tmpStatusAfterMatch - tmpStatusBeforeMatch));
-                        this.status = tmpStatusBeforeMatch + tmpStatus;
-
-                        if (resultText != null && resultText.length>0)
-                        {
-                            // resultText คือ BARCODE ทั้งหมดที่มี 
-                            for(int x=0; x<resultText.length; x++)
+                            // รอบแรก จะไม่ต้องทำ Threshold
+                            if (j == 101)
                             {
-                                // Library ของ bytescout จะได้ " " เป็นตัว split แม้ว่าจะใช้เครื่องหมาย + คั่น
-                                allReadText = resultText[x].split(" ");
-                                // Library ของ bytescout จะได้ "+" เป็นตัว split ตามที่ใช้เครื่องหมาย + คั่นไว้
-                                // allReadText = resultText[x].split(Pattern.quote("+"));
-                                if (allReadText != null && allReadText.length > 1)
+                                resultText = getTextFromBarcode(getLastImage());
+                            } else
+                            {
+                                resultText = getTextFromBarcodeWithThreshold(j, scanFilenames[i], DocScanDAOFactory.getDocScanInputPath());
+                            }
+
+                            j -= 4;
+                            int tmpStatus = (int) (((float) (101 - j) / 101) * (tmpStatusAfterMatch - tmpStatusBeforeMatch));
+                            this.status = tmpStatusBeforeMatch + tmpStatus;
+
+                            if (resultText != null && resultText.length > 0)
+                            {
+                                // resultText คือ BARCODE ทั้งหมดที่มี
+                                for (int x = 0; x < resultText.length; x++)
                                 {
-                                    // for(int k=0; k<allReadText.length; k++)
-                                    //{
+                                    // Library ของ bytescout จะได้ " " เป็นตัว split แม้ว่าจะใช้เครื่องหมาย + คั่น
+                                    allReadText = resultText[x].split(" ");
+                                    // Library ของ bytescout จะได้ "+" เป็นตัว split ตามที่ใช้เครื่องหมาย + คั่นไว้
+                                    // allReadText = resultText[x].split(Pattern.quote("+"));
+                                    if (allReadText != null && allReadText.length > 1)
+                                    {
+                                        // for(int k=0; k<allReadText.length; k++)
+                                        //{
                                         // allReadText[0] คือ HN เสมอ ไม่ต้องตรวจสอบ
                                         isHnValid = aDocScanDAO.isPatientExistByHn(allReadText[0]);
                                         if (isHnValid)
                                         {
                                             break CHECK_HN_VALID;
                                         }
-                                    ///}
+                                        ///}
+                                    }
                                 }
                             }
-                        }
-                    } while (j >= 1 && !this.isInterrupt);
+                        } while (j >= 1 && !this.isInterrupt);
 
-                    if (!this.isInterrupt)
-                    {
-                        for (int chki = 0; allReadText != null && chki < allReadText.length; chki++)
+                        if (!this.isInterrupt)
                         {
-                            System.out.println("allReadText[" + chki + "] = " + allReadText[chki]);
-                        }
-                        if(allReadText!=null && allReadText.length>=7 && "COVER".equalsIgnoreCase(allReadText[6]))
-                        {
-                            isCover = true;
-                            coverText = allReadText;
-                        }
-                        else
-                        {
-                            isCover = false;
-                        }
-
-                        this.status = tmpStatusAfterMatch;
-                        this.statusText = "Create record in database";
-
-                        // ถ้าเป็นใบนำ ไม่ต้อง Scan แต่จำค่าไว้ในใบถัดไปในกรณีที่ไม่มี Barcode 
-                        // ถ้าไม่ใช่ใบนำ และอ่านค่า Barcode ไม่ได้ ให้ใช้ข้อมูลของใบนำ
-                        // ถ้าไม่ใช่ใบนำ และอ่านค่า Barcode ได้แต่ไม่มี HN ในนั้น ให้ใช้ข้อมูลของใบนำ
-                        if(!isCover && (allReadText == null || !isHnValid) && coverText!=null)
-                            allReadText = coverText;
-
-                        // ถ้าไม่ใช่ใบนำ และมีข้อมูล Barcode ครบ ให้ Scan เข้าปกติ
-                        // this.bpkDocumentScanVO ใช้ในกรณีที่ Scan ด้วยการระบุ HN เอง
-                        if ((!isCover && allReadText != null) || this.bpkDocumentScanVO != null)
-                        {
-                            HashMap result = aDocScanDAO.readPatient(this.bpkDocumentScanVO == null ? allReadText[0] : this.bpkDocumentScanVO.getHn());
-                            Object aObj = result.get(EventNames.RESULT_DATA);
-                            if (aObj != null && aObj instanceof PatientVO)
+                            for (int chki = 0; allReadText != null && chki < allReadText.length; chki++)
                             {
-                                aPatientVO = (PatientVO) aObj;
-
-                                BpkDocumentScanVO newBpkDocumentScanVO = null;
-                                if (this.bpkDocumentScanVO == null)
-                                {
-                                    // GetBarcodeServlet?code=958000003000+5802060286+D15317+20150206163207+LAB+LAB-RESULT&type=QR_CODE
-                                    newBpkDocumentScanVO = new BpkDocumentScanVO();
-                                    newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
-                                    newBpkDocumentScanVO.setHn(aPatientVO.getHn());
-                                    newBpkDocumentScanVO.setOriginalHn(aPatientVO.getOriginalHn());
-                                    newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
-                                    newBpkDocumentScanVO.setVn(allReadText != null && allReadText.length >= 2 ? allReadText[1] : "");
-                                    newBpkDocumentScanVO.setDoctorEid(allReadText != null && allReadText.length >= 3 ? allReadText[2] : "");
-                                    newBpkDocumentScanVO.setPrintDate(BpkDocumentScanVO.getDateFromReadText(allReadText != null && allReadText.length >= 4 ? allReadText[3] : ""));
-                                    newBpkDocumentScanVO.setPrintTime(BpkDocumentScanVO.getTimeFromReadText(allReadText != null && allReadText.length >= 4 ? allReadText[3] : ""));
-                                    newBpkDocumentScanVO.setFolderName(allReadText != null && allReadText.length >= 5 ? allReadText[4] : "OTR");
-                                    newBpkDocumentScanVO.setDocumentName(allReadText != null && allReadText.length >= 6 ? allReadText[5] : "");
-                                    newBpkDocumentScanVO.setOption(allReadText != null && allReadText.length >= 7 ? allReadText[6] : "");
-                                    newBpkDocumentScanVO.setScanEid(this.getCurrentUser());
-                                    newBpkDocumentScanVO.setUpdateEid(this.getCurrentUser());
-                                } else
-                                {
-                                    newBpkDocumentScanVO = new BpkDocumentScanVO();
-                                    newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
-                                    newBpkDocumentScanVO.setHn(aPatientVO.getHn());
-                                    newBpkDocumentScanVO.setOriginalHn(aPatientVO.getOriginalHn());
-                                    newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
-                                    newBpkDocumentScanVO.setVn(bpkDocumentScanVO.getVn());
-                                    newBpkDocumentScanVO.setDoctorEid(bpkDocumentScanVO.getDoctorEid());
-                                    newBpkDocumentScanVO.setPrintDate(bpkDocumentScanVO.getPrintDate());
-                                    newBpkDocumentScanVO.setPrintTime(bpkDocumentScanVO.getPrintTime());
-                                    newBpkDocumentScanVO.setFolderName(Utility.isNotNull(bpkDocumentScanVO.getFolderName()) ? bpkDocumentScanVO.getFolderName() : "OTR");
-                                    newBpkDocumentScanVO.setDocumentName(bpkDocumentScanVO.getDocumentName());
-                                    newBpkDocumentScanVO.setOption(bpkDocumentScanVO.getOption());
-                                    newBpkDocumentScanVO.setScanEid(this.getCurrentUser());
-                                    newBpkDocumentScanVO.setUpdateEid(this.getCurrentUser());
-                                }
-
-                                newBpkDocumentScanVO = aDocScanDAO.createBpkDocumentScan(newBpkDocumentScanVO);
-
-                                this.status = 90;
-                                this.statusText = "Copying file to path";
-                                if (Utility.isNotNull(newBpkDocumentScanVO.getObjectID()))
-                                {
-                                    // Generate JRXML File
-                                    String jrxmlFilename = GenerateJrxml.generateJrxmlPage(scanFilenames[i], DocScanDAOFactory.getDocScanInputPath(), false, 0, DocScanDAOFactory.getDocScanInputPath());
-                                    // Convert PDF File
-                                    String pdfFilename = Jrxml2Pdf.convertPage(jrxmlFilename, DocScanDAOFactory.getDocScanInputPath(), DocScanDAOFactory.getDocScanInputPath());
-
-                                    // Delete JRXML after convert
-                                    GenerateJrxml.deleteJrxmlFile(DocScanDAOFactory.getDocScanInputPath() + jrxmlFilename);
-
-                                    // ถ้าได้ข้อมูล ObjectID มาได้ ต้อง copy file ไปไว้ที่ปลายทางให้ตรงกับ folder
-                                    /*
-                                    File srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + pdfFilename);
-                                    File destPath = new File(DocScanDAOFactory.getDocScanOutputPath() + DocScanDAOFactory.getHnImageFolder(aPatientVO.getOriginalHn()) + System.getProperty("file.separator") + newBpkDocumentScanVO.getFolderName() + System.getProperty("file.separator"));
-                                    if (!destPath.exists())
-                                    {
-                                    destPath.mkdirs();
-                                    }
-                                    File destFile = new File(destPath.toString() + System.getProperty("file.separator") + newBpkDocumentScanVO.getImageFileName());
-                                    Path rstPath = Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                                     */
-                                    newBpkDocumentScanVO.setPdfBytes(this.convertFile2Bytes(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + pdfFilename));
-
-                                    // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
-                                    /*
-                                    File chkRstPath = new File(rstPath.toString());
-                                    if (chkRstPath.exists())
-                                    {
-                                    srcFile.delete();
-                                    }*/
-
-                                    // ส่วนของ thumbnail Resize image ให้เล็ก เพื่อใช้ Preview
-                                    String thumbnailFilename = newBpkDocumentScanVO.getImageFileName() != null ? "THUMBNAIL_" + newBpkDocumentScanVO.getImageFileName().toUpperCase().replaceAll(".PDF", ".JPG") : "THUMBNAIL.JPG";
-                                    newBpkDocumentScanVO.setThumbnailImageFileName(thumbnailFilename);
-                                    BufferedImage originalImg = ImageIO.read(new File(DocScanDAOFactory.getDocScanInputPath() + scanFilenames[i]));
-                                    int type = originalImg.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImg.getType();
-                                    BufferedImage resizeImageHintJpg = this.resizeImageWithHint(originalImg, type);
-                                    String resizeFile = DocScanDAOFactory.getDocScanInputPath() + thumbnailFilename;
-                                    ImageIO.write(resizeImageHintJpg, "jpg", new File(resizeFile));
-
-                                    // ส่วนของ THUMBNAIL ต้อง copy file ไปไว้ที่ปลายทางให้ตรงกับ folder
-                                    /*
-                                    srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + thumbnailFilename);
-                                    if (!destPath.exists())
-                                    {
-                                    destPath.mkdirs();
-                                    }
-                                    destFile = new File(destPath.toString() + System.getProperty("file.separator") + thumbnailFilename);
-                                    rstPath = Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-                                    // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
-                                    chkRstPath = new File(rstPath.toString());
-                                    if (chkRstPath.exists())
-                                    {
-                                    srcFile.delete();
-                                    }*/
-                                    newBpkDocumentScanVO.setJpgBytes(this.convertFile2Bytes(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + thumbnailFilename));
-
-                                    // ใช้แบบ Http Upload
-                                    String rst = sendDocScan(newBpkDocumentScanVO);
-                                    // Utility.printCoreDebug(this, "Result from sendDocScan = '"+rst+"'");
-                                    if (rst!=null && FixBooleanStatus.TRUE.equals(rst.trim()))
-                                    {
-                                        boolean chkRstDel = true;
-
-                                        // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
-                                        File srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + pdfFilename);
-                                        Utility.printCoreDebug(this, srcFile.toString());
-                                        do
-                                        {
-                                            chkRstDel = srcFile.delete();
-                                            if(!chkRstDel)
-                                            {
-                                            //    Utility.printCoreDebug(this, "Delete pdf fail");
-                                                Thread.sleep(1000);
-                                            }
-                                        }while(!chkRstDel);
-
-                                        // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
-                                        srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + thumbnailFilename);
-                                        Utility.printCoreDebug(this, srcFile.toString());
-                                        do
-                                        {
-                                            chkRstDel = srcFile.delete();
-                                            if(!chkRstDel)
-                                            {
-                                            //   Utility.printCoreDebug(this, "Delete thumnail fail");
-                                                Thread.sleep(1000);
-                                            }
-                                        }while(!chkRstDel);
-                                    }
-
-                                    // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ success folder
-                                    File scanSrcFile = new File(getLastImage());
-                                    File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathSuccess() + scanFilenames[i]);
-                                    listSrcFileSuccessForDel.add(scanSrcFile);
-                                    listDestFileSuccessForMove.add(scanDestFile);
-                                    this.numSuccess++;
-
-                                    this.setLastBpkDocumentScanVO(newBpkDocumentScanVO);
-                                } else
-                                {
-                                    // กรณีที่ทำงานไม่สำเร็จให้ move file ไปไว้ที่ fail folder
-                                    File scanSrcFile = new File(getLastImage());
-                                    File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathFail() + scanFilenames[i]);
-                                    listSrcFileFailForDel.add(scanSrcFile);
-                                    listDestFileFailForMove.add(scanDestFile);
-                                    // Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                                    this.numFail++;
-                                }
+                                System.out.println("allReadText[" + chki + "] = " + allReadText[chki]);
+                            }
+                            if (allReadText != null && allReadText.length >= 7 && "COVER".equalsIgnoreCase(allReadText[6]))
+                            {
+                                isCover = true;
+                                coverText = allReadText;
                             } else
                             {
-                                // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ fail folder
+                                isCover = false;
+                            }
+
+                            this.status = tmpStatusAfterMatch;
+                            this.statusText = "Create record in database";
+
+                            // ถ้าเป็นใบนำ ไม่ต้อง Scan แต่จำค่าไว้ในใบถัดไปในกรณีที่ไม่มี Barcode
+                            // ถ้าไม่ใช่ใบนำ และอ่านค่า Barcode ไม่ได้ ให้ใช้ข้อมูลของใบนำ
+                            // ถ้าไม่ใช่ใบนำ และอ่านค่า Barcode ได้แต่ไม่มี HN ในนั้น ให้ใช้ข้อมูลของใบนำ
+                            if (!isCover && (allReadText == null || !isHnValid) && coverText != null)
+                            {
+                                allReadText = coverText;
+                            }
+
+                        }
+                    }
+
+                    // ถ้าไม่ใช่ใบนำ และมีข้อมูล Barcode ครบ ให้ Scan เข้าปกติ
+                    // this.bpkDocumentScanVO ใช้ในกรณีที่ Scan ด้วยการระบุ HN เอง
+                    if ((!isCover && allReadText != null) || this.bpkDocumentScanVO != null)
+                    {
+                        HashMap result = aDocScanDAO.readPatient(this.bpkDocumentScanVO == null ? allReadText[0] : this.bpkDocumentScanVO.getHn());
+                        Object aObj = result.get(EventNames.RESULT_DATA);
+                        if (aObj != null && aObj instanceof PatientVO)
+                        {
+                            aPatientVO = (PatientVO) aObj;
+
+                            BpkDocumentScanVO newBpkDocumentScanVO = null;
+                            if (this.bpkDocumentScanVO == null)
+                            {
+                                // GetBarcodeServlet?code=958000003000+5802060286+D15317+20150206163207+LAB+LAB-RESULT&type=QR_CODE
+                                newBpkDocumentScanVO = new BpkDocumentScanVO();
+                                newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
+                                newBpkDocumentScanVO.setHn(aPatientVO.getHn());
+                                newBpkDocumentScanVO.setOriginalHn(aPatientVO.getOriginalHn());
+                                newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
+                                newBpkDocumentScanVO.setVn(allReadText != null && allReadText.length >= 2 ? allReadText[1] : "");
+                                newBpkDocumentScanVO.setDoctorEid(allReadText != null && allReadText.length >= 3 ? allReadText[2] : "");
+                                newBpkDocumentScanVO.setPrintDate(BpkDocumentScanVO.getDateFromReadText(allReadText != null && allReadText.length >= 4 ? allReadText[3] : ""));
+                                newBpkDocumentScanVO.setPrintTime(BpkDocumentScanVO.getTimeFromReadText(allReadText != null && allReadText.length >= 4 ? allReadText[3] : ""));
+                                newBpkDocumentScanVO.setFolderName(allReadText != null && allReadText.length >= 5 ? allReadText[4] : "OTR");
+                                newBpkDocumentScanVO.setDocumentName(allReadText != null && allReadText.length >= 6 ? allReadText[5] : "");
+                                newBpkDocumentScanVO.setOption(allReadText != null && allReadText.length >= 7 ? allReadText[6] : "");
+                                newBpkDocumentScanVO.setScanEid(this.getCurrentUser());
+                                newBpkDocumentScanVO.setUpdateEid(this.getCurrentUser());
+                            } else
+                            {
+                                newBpkDocumentScanVO = new BpkDocumentScanVO();
+                                newBpkDocumentScanVO.setPatientId(aPatientVO.getObjectID());
+                                newBpkDocumentScanVO.setHn(aPatientVO.getHn());
+                                newBpkDocumentScanVO.setOriginalHn(aPatientVO.getOriginalHn());
+                                newBpkDocumentScanVO.setPatientName(aPatientVO.getPatientName());
+                                newBpkDocumentScanVO.setVn(bpkDocumentScanVO.getVn());
+                                newBpkDocumentScanVO.setDoctorEid(bpkDocumentScanVO.getDoctorEid());
+                                newBpkDocumentScanVO.setPrintDate(bpkDocumentScanVO.getPrintDate());
+                                newBpkDocumentScanVO.setPrintTime(bpkDocumentScanVO.getPrintTime());
+                                newBpkDocumentScanVO.setFolderName(Utility.isNotNull(bpkDocumentScanVO.getFolderName()) ? bpkDocumentScanVO.getFolderName() : "OTR");
+                                newBpkDocumentScanVO.setDocumentName(bpkDocumentScanVO.getDocumentName());
+                                newBpkDocumentScanVO.setOption(bpkDocumentScanVO.getOption());
+                                newBpkDocumentScanVO.setScanEid(this.getCurrentUser());
+                                newBpkDocumentScanVO.setUpdateEid(this.getCurrentUser());
+                            }
+
+                            newBpkDocumentScanVO = aDocScanDAO.createBpkDocumentScan(newBpkDocumentScanVO);
+
+                            this.status = 90;
+                            this.statusText = "Copying file to path";
+                            if (Utility.isNotNull(newBpkDocumentScanVO.getObjectID()))
+                            {
+                                // Generate JRXML File
+                                String jrxmlFilename = GenerateJrxml.generateJrxmlPage(scanFilenames[i], DocScanDAOFactory.getDocScanInputPath(), false, 0, DocScanDAOFactory.getDocScanInputPath());
+                                // Convert PDF File
+                                String pdfFilename = Jrxml2Pdf.convertPage(jrxmlFilename, DocScanDAOFactory.getDocScanInputPath(), DocScanDAOFactory.getDocScanInputPath());
+
+                                // Delete JRXML after convert
+                                GenerateJrxml.deleteJrxmlFile(DocScanDAOFactory.getDocScanInputPath() + jrxmlFilename);
+
+                                // ถ้าได้ข้อมูล ObjectID มาได้ ต้อง copy file ไปไว้ที่ปลายทางให้ตรงกับ folder
+                                    /*
+                                File srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + pdfFilename);
+                                File destPath = new File(DocScanDAOFactory.getDocScanOutputPath() + DocScanDAOFactory.getHnImageFolder(aPatientVO.getOriginalHn()) + System.getProperty("file.separator") + newBpkDocumentScanVO.getFolderName() + System.getProperty("file.separator"));
+                                if (!destPath.exists())
+                                {
+                                destPath.mkdirs();
+                                }
+                                File destFile = new File(destPath.toString() + System.getProperty("file.separator") + newBpkDocumentScanVO.getImageFileName());
+                                Path rstPath = Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                                 */
+                                newBpkDocumentScanVO.setPdfBytes(this.convertFile2Bytes(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + pdfFilename));
+
+                                // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
+                                    /*
+                                File chkRstPath = new File(rstPath.toString());
+                                if (chkRstPath.exists())
+                                {
+                                srcFile.delete();
+                                }*/
+
+                                // ส่วนของ thumbnail Resize image ให้เล็ก เพื่อใช้ Preview
+                                String thumbnailFilename = newBpkDocumentScanVO.getImageFileName() != null ? "THUMBNAIL_" + newBpkDocumentScanVO.getImageFileName().toUpperCase().replaceAll(".PDF", ".JPG") : "THUMBNAIL.JPG";
+                                newBpkDocumentScanVO.setThumbnailImageFileName(thumbnailFilename);
+                                BufferedImage originalImg = ImageIO.read(new File(DocScanDAOFactory.getDocScanInputPath() + scanFilenames[i]));
+                                int type = originalImg.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : originalImg.getType();
+                                BufferedImage resizeImageHintJpg = this.resizeImageWithHint(originalImg, type);
+                                String resizeFile = DocScanDAOFactory.getDocScanInputPath() + thumbnailFilename;
+                                ImageIO.write(resizeImageHintJpg, "jpg", new File(resizeFile));
+
+                                // ส่วนของ THUMBNAIL ต้อง copy file ไปไว้ที่ปลายทางให้ตรงกับ folder
+                                    /*
+                                srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + thumbnailFilename);
+                                if (!destPath.exists())
+                                {
+                                destPath.mkdirs();
+                                }
+                                destFile = new File(destPath.toString() + System.getProperty("file.separator") + thumbnailFilename);
+                                rstPath = Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                                // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
+                                chkRstPath = new File(rstPath.toString());
+                                if (chkRstPath.exists())
+                                {
+                                srcFile.delete();
+                                }*/
+                                newBpkDocumentScanVO.setJpgBytes(this.convertFile2Bytes(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + thumbnailFilename));
+
+                                // ใช้แบบ Http Upload
+                                String rst = sendDocScan(newBpkDocumentScanVO);
+                                // Utility.printCoreDebug(this, "Result from sendDocScan = '"+rst+"'");
+                                if (rst != null && FixBooleanStatus.TRUE.equals(rst.trim()))
+                                {
+                                    boolean chkRstDel = true;
+
+                                    // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
+                                    File srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + pdfFilename);
+                                    Utility.printCoreDebug(this, srcFile.toString());
+                                    do
+                                    {
+                                        chkRstDel = srcFile.delete();
+                                        if (!chkRstDel)
+                                        {
+                                            //    Utility.printCoreDebug(this, "Delete pdf fail");
+                                            Thread.sleep(1000);
+                                        }
+                                    } while (!chkRstDel);
+
+                                    // ลบ file ต้นทาง ถ้า copy ไปได้สำเร็จ
+                                    srcFile = new File(DocScanDAOFactory.getDocScanInputPath() + System.getProperty("file.separator") + thumbnailFilename);
+                                    Utility.printCoreDebug(this, srcFile.toString());
+                                    do
+                                    {
+                                        chkRstDel = srcFile.delete();
+                                        if (!chkRstDel)
+                                        {
+                                            //   Utility.printCoreDebug(this, "Delete thumnail fail");
+                                            Thread.sleep(1000);
+                                        }
+                                    } while (!chkRstDel);
+                                }
+
+                                // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ success folder
+                                File scanSrcFile = new File(getLastImage());
+                                File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathSuccess() + scanFilenames[i]);
+                                listSrcFileSuccessForDel.add(scanSrcFile);
+                                listDestFileSuccessForMove.add(scanDestFile);
+                                this.numSuccess++;
+
+                                this.setLastBpkDocumentScanVO(newBpkDocumentScanVO);
+                            } else
+                            {
+                                // กรณีที่ทำงานไม่สำเร็จให้ move file ไปไว้ที่ fail folder
                                 File scanSrcFile = new File(getLastImage());
                                 File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathFail() + scanFilenames[i]);
                                 listSrcFileFailForDel.add(scanSrcFile);
@@ -388,12 +397,25 @@ public class ImageScanFromPath implements Runnable
                             listSrcFileFailForDel.add(scanSrcFile);
                             listDestFileFailForMove.add(scanDestFile);
                             // Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                            if(!isCover)
-                                this.numFail++;
-                            else
-                                this.setNumCover(this.getNumCover() + 1);
+                            this.numFail++;
+                        }
+                    } else
+                    {
+                        // กรณีที่ทำงานสำเร็จให้ move file ไปไว้ที่ fail folder
+                        File scanSrcFile = new File(getLastImage());
+                        File scanDestFile = new File(DocScanDAOFactory.getDocScanInputPathFail() + scanFilenames[i]);
+                        listSrcFileFailForDel.add(scanSrcFile);
+                        listDestFileFailForMove.add(scanDestFile);
+                        // Files.move(scanSrcFile.toPath(), scanDestFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        if (!isCover)
+                        {
+                            this.numFail++;
+                        } else
+                        {
+                            this.setNumCover(this.getNumCover() + 1);
                         }
                     }
+
                 } catch (Exception ex)
                 {
                     ex.printStackTrace();
@@ -401,14 +423,13 @@ public class ImageScanFromPath implements Runnable
                 {
                 }
 
-                if(i+1==scanFilenames.length)
+                if (i + 1 == scanFilenames.length)
                 {
                     this.lastImage = null;
                     //"D:\\TMP.jpg";
                 }
                 this.status = 100;
                 this.statusText = "Finished";
-                this.numScan++;
             }
         } else
         {
@@ -436,7 +457,7 @@ public class ImageScanFromPath implements Runnable
                     chkRstMove = false;
                     // ex.printStackTrace();
                 }
-            }while(!chkRstMove);
+            } while (!chkRstMove);
         }
         for (int i = 0, sizei = listSrcFileFailForDel.size(); i < sizei; i++)
         {
@@ -456,7 +477,7 @@ public class ImageScanFromPath implements Runnable
                     chkRstMove = false;
                     // ex.printStackTrace();
                 }
-            }while(!chkRstMove);
+            } while (!chkRstMove);
         }
 
     }
@@ -491,7 +512,7 @@ public class ImageScanFromPath implements Runnable
                     if (result != null && result.indexOf("(") != -1)
                     {
                         result = result.substring(0, result.indexOf("(")).trim();
-                        
+
                         listResult.add(result);
                     }
 
@@ -515,7 +536,7 @@ public class ImageScanFromPath implements Runnable
         } finally
         {
         }
-        return (String[])listResult.toArray(new String[listResult.size()]);
+        return (String[]) listResult.toArray(new String[listResult.size()]);
     }
     private static final int MAX_DIM_FOR_THUMBNAIL = 200;
 
@@ -803,5 +824,23 @@ public class ImageScanFromPath implements Runnable
     public void setNumCover(int numCover)
     {
         this.numCover = numCover;
+    }
+
+    /**
+     * TRUE - หมายถึง ให้ตรวจสอบ
+     * FALSE - หมายถึง ไม่ต้องตรวจสอบ 
+     * @return the securityCheckBarcode
+     */
+    public boolean isSecurityCheckBarcode()
+    {
+        return securityCheckBarcode;
+    }
+
+    /**
+     * @param securityCheckBarcode the securityCheckBarcode to set
+     */
+    public void setSecurityCheckBarcode(boolean securityCheckBarcode)
+    {
+        this.securityCheckBarcode = securityCheckBarcode;
     }
 }

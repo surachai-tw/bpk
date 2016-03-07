@@ -59,8 +59,7 @@ public class FrmImageScan extends javax.swing.JFrame
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             java.awt.Font aFont = new java.awt.Font("Tahoma", 0, 14);
             UIManager.put("OptionPane.font", aFont);
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
         }
@@ -154,6 +153,8 @@ public class FrmImageScan extends javax.swing.JFrame
         aLblOptionByManual = new javax.swing.JLabel();
         aTxtOptionByManual = new javax.swing.JTextField();
         aBtnFindPatient = new javax.swing.JButton();
+        aLblSercurityByManual = new javax.swing.JLabel();
+        aCmbSecurityByManual = new javax.swing.JComboBox();
         ScrlBody = new javax.swing.JScrollPane();
         aPnlImagePreview = new javax.swing.JPanel();
         aLblImg = new javax.swing.JLabel();
@@ -251,7 +252,7 @@ public class FrmImageScan extends javax.swing.JFrame
 
         aPnlTotalScan.setLayout(new java.awt.GridBagLayout());
 
-        aLblTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblTotalScan.setText("จำนวนเอกสาร:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -261,7 +262,7 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlTotalScan.add(aLblTotalScan, gridBagConstraints);
 
         aTxtTotalScan.setEditable(false);
-        aTxtTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtTotalScan.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtTotalScan.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtTotalScan.setMinimumSize(new java.awt.Dimension(60, 24));
         aTxtTotalScan.setPreferredSize(new java.awt.Dimension(60, 24));
@@ -272,7 +273,7 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
         aPnlTotalScan.add(aTxtTotalScan, gridBagConstraints);
 
-        aLblTotalCover.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalCover.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblTotalCover.setText("ใบนำสแกน:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -282,7 +283,7 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlTotalScan.add(aLblTotalCover, gridBagConstraints);
 
         aTxtTotalCover.setEditable(false);
-        aTxtTotalCover.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtTotalCover.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtTotalCover.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtTotalCover.setMinimumSize(new java.awt.Dimension(60, 24));
         aTxtTotalCover.setPreferredSize(new java.awt.Dimension(60, 24));
@@ -293,7 +294,7 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
         aPnlTotalScan.add(aTxtTotalCover, gridBagConstraints);
 
-        aLblTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblTotalSuccess.setText("พบ HN:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
@@ -303,7 +304,7 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlTotalScan.add(aLblTotalSuccess, gridBagConstraints);
 
         aTxtTotalSuccess.setEditable(false);
-        aTxtTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtTotalSuccess.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtTotalSuccess.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtTotalSuccess.setMinimumSize(new java.awt.Dimension(60, 24));
         aTxtTotalSuccess.setPreferredSize(new java.awt.Dimension(60, 24));
@@ -314,7 +315,7 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
         aPnlTotalScan.add(aTxtTotalSuccess, gridBagConstraints);
 
-        aLblTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblTotalFail.setText("ผิดพลาด:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
@@ -324,7 +325,7 @@ public class FrmImageScan extends javax.swing.JFrame
         aPnlTotalScan.add(aLblTotalFail, gridBagConstraints);
 
         aTxtTotalFail.setEditable(false);
-        aTxtTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aTxtTotalFail.setFont(new java.awt.Font("Tahoma", 0, 12));
         aTxtTotalFail.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         aTxtTotalFail.setMinimumSize(new java.awt.Dimension(60, 24));
         aTxtTotalFail.setPreferredSize(new java.awt.Dimension(60, 24));
@@ -738,7 +739,7 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
         aPnlPatientDetailByManual.add(aLblDocumentNameByManual, gridBagConstraints);
 
         aCmbDocumentNameByManual.setMinimumSize(new java.awt.Dimension(120, 24));
@@ -747,7 +748,7 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 0);
         aPnlPatientDetailByManual.add(aCmbDocumentNameByManual, gridBagConstraints);
 
         aLblOptionByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
@@ -756,7 +757,7 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 0);
         aPnlPatientDetailByManual.add(aLblOptionByManual, gridBagConstraints);
 
         aTxtOptionByManual.setEditable(false);
@@ -767,7 +768,7 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 11);
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 0, 11);
         aPnlPatientDetailByManual.add(aTxtOptionByManual, gridBagConstraints);
 
         aBtnFindPatient.setText("Find");
@@ -784,6 +785,25 @@ public class FrmImageScan extends javax.swing.JFrame
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(12, 0, 0, 11);
         aPnlPatientDetailByManual.add(aBtnFindPatient, gridBagConstraints);
+
+        aLblSercurityByManual.setText("Security:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        aPnlPatientDetailByManual.add(aLblSercurityByManual, gridBagConstraints);
+
+        aCmbSecurityByManual.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ไม่ต้องตรวจสอบ Barcode ในเอกสาร", "ตรวจสอบ Barcode ในเอกสาร" }));
+        aCmbSecurityByManual.setMinimumSize(new java.awt.Dimension(200, 24));
+        aCmbSecurityByManual.setPreferredSize(new java.awt.Dimension(200, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 11, 11);
+        aPnlPatientDetailByManual.add(aCmbSecurityByManual, gridBagConstraints);
 
         aPnlPatientDetail.add(aPnlPatientDetailByManual, "ByManualInput");
 
@@ -954,18 +974,19 @@ public class FrmImageScan extends javax.swing.JFrame
             aMenuFileExitActionPerformed(null);
         }
     }
-    
+
     public void setInProgress(boolean isInProgress)
     {
         this.aBtnScanFromScanner.setEnabled(!isInProgress);
         this.aBtnScanFromPath.setEnabled(!isInProgress);
         this.aBtnCancel.setEnabled(isInProgress);
 
+        this.aCmbSecurityByManual.setEnabled(!isInProgress);
+
         if (isInProgress)
         {
             showStatusCard("Progress");
-        }
-        else
+        } else
         {
             showStatusCard("Method");
         }
@@ -974,7 +995,7 @@ public class FrmImageScan extends javax.swing.JFrame
     private void aBtnScanFromScannerActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnScanFromScannerActionPerformed
     {//GEN-HEADEREND:event_aBtnScanFromScannerActionPerformed
         this.scanFromScanner();
-        this.aImageScanFromPath.setIsForScannerOnly(true);        
+        this.aImageScanFromPath.setIsForScannerOnly(true);
         this.scanFromPath();
         /*
         this.scanFromScanner();
@@ -1098,8 +1119,7 @@ public class FrmImageScan extends javax.swing.JFrame
         try
         {
             image = ImageIO.read(source);        // get the image
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             if (e.getMessage().indexOf("Can't read input file") == -1)
             {
@@ -1121,8 +1141,7 @@ public class FrmImageScan extends javax.swing.JFrame
         {
             newWidth = maxWidth;
             newHeight = (int) (((float) priorHeight / (float) priorWidth) * (float) newWidth);
-        }
-        else
+        } else
         {
             newHeight = maxHeight;
             newWidth = (int) (((float) priorWidth / (float) priorHeight) * (float) newHeight);
@@ -1162,11 +1181,10 @@ public class FrmImageScan extends javax.swing.JFrame
 
     private void aMenuFileExitActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aMenuFileExitActionPerformed
     {//GEN-HEADEREND:event_aMenuFileExitActionPerformed
-        if(JOptionPane.showConfirmDialog(this, "Exit program ?", "Confirm", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+        if (JOptionPane.showConfirmDialog(this, "Exit program ?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
         {
             System.exit(1);
-        }
-        else
+        } else
         {
             this.setVisible(true);
         }
@@ -1212,12 +1230,10 @@ public class FrmImageScan extends javax.swing.JFrame
             {
                 this.aCmbDocumentNameByManual.addItem(listDocumentName.get(i));
             }
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
-        }
-        finally
+        } finally
         {
             aDocScanDAO = null;
         }
@@ -1241,6 +1257,17 @@ public class FrmImageScan extends javax.swing.JFrame
 
     private void scanFromPath()
     {
+        int chkSecureBarcode = this.aCmbSecurityByManual.getSelectedIndex();
+        if (chkSecureBarcode == 0)
+        {
+            // Index 0 คือ ไม่ต้องตรวจสอบ
+            this.aImageScanFromPath.setSecurityCheckBarcode(false);
+        } else
+        {
+            // เลือกเป็นอย่างอื่นต้องตรวจสอบ
+            this.aImageScanFromPath.setSecurityCheckBarcode(true);
+        }
+
         if (this.aImageScanFromPath.isIsInterrupt())
         {
             this.aImageScanFromPath.setIsInterrupt(false);
@@ -1261,14 +1288,14 @@ public class FrmImageScan extends javax.swing.JFrame
                 aBpkDocumentScanVO.setDocumentName(this.aCmbDocumentNameByManual.getSelectedItem() != null ? this.aCmbDocumentNameByManual.getSelectedItem().toString() : "");
                 aBpkDocumentScanVO.setDoctorEid(this.aTxtDoctorByManual.getText().trim());
                 this.aImageScanFromPath.setBpkDocumentScanVO(aBpkDocumentScanVO);
-            }
-            else
+            } else
             {
                 this.aImageScanFromPath.setBpkDocumentScanVO(null);
             }
 
             aTimer = new Timer(1000, new ActionListener()
             {
+
                 public void actionPerformed(ActionEvent evt)
                 {
                     if (!aImageScanFromPath.isIsInterrupt())
@@ -1297,8 +1324,7 @@ public class FrmImageScan extends javax.swing.JFrame
                             Toolkit.getDefaultToolkit().beep();
                             aTimer.stop();
                             setInProgress(false);
-                        }
-                        else
+                        } else
                         {
                             setInProgress(true);
                         }
@@ -1314,8 +1340,7 @@ public class FrmImageScan extends javax.swing.JFrame
                             // {
                             //    aLblImg.setIcon(null);
                             // }
-                        }
-                        catch (Exception ex)
+                        } catch (Exception ex)
                         {
                             // Logger.getLogger(FrmImageScan.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -1367,8 +1392,7 @@ public class FrmImageScan extends javax.swing.JFrame
 
             this.aTxtFolderInput.setText(chooser.getSelectedFile().toString());
             DocScanDAOFactory.setDocScanInputPath(this.aTxtFolderInput.getText().trim());
-        }
-        else
+        } else
         {
             Utility.printCoreDebug(this, "No Selection ");
         }
@@ -1570,13 +1594,11 @@ public class FrmImageScan extends javax.swing.JFrame
                             aFrmImageScan.runFirst();
                             aFrmLogin.dispose();
                         }
-                    }
-                    else
+                    } else
                     {
                         System.exit(0);
                     }
-                }
-                while (loginResultFail);
+                } while (loginResultFail);
 
                 aFrmImageScan.setCurrentUser(employeeId);
                 aFrmImageScan.setVisible(true);
@@ -1592,13 +1614,11 @@ public class FrmImageScan extends javax.swing.JFrame
                         // Login success
                         DataControl.setCurrentUser(username);
                         return true;
-                    }
-                    else
+                    } else
                     {
                         return false;
                     }
-                }
-                catch (Exception ex)
+                } catch (Exception ex)
                 {
                     ex.printStackTrace();
                 }
@@ -1618,6 +1638,7 @@ public class FrmImageScan extends javax.swing.JFrame
     private javax.swing.JButton aBtnUpFolder;
     private javax.swing.JComboBox aCmbDocumentNameByManual;
     private javax.swing.JComboBox aCmbFolderNameByManual;
+    private javax.swing.JComboBox aCmbSecurityByManual;
     private javax.swing.JLabel aLblDocDateByBarcode;
     private javax.swing.JLabel aLblDocDateByManual;
     private javax.swing.JLabel aLblDoctorByBarcode;
@@ -1635,6 +1656,7 @@ public class FrmImageScan extends javax.swing.JFrame
     private javax.swing.JLabel aLblPatientByBarcode;
     private javax.swing.JLabel aLblPatientByManual;
     private javax.swing.JLabel aLblProgress;
+    private javax.swing.JLabel aLblSercurityByManual;
     private javax.swing.JLabel aLblTotalCover;
     private javax.swing.JLabel aLblTotalFail;
     private javax.swing.JLabel aLblTotalScan;
@@ -1726,7 +1748,7 @@ public class FrmImageScan extends javax.swing.JFrame
     public void setCurrentUser(String currentUser)
     {
         this.currentUser = currentUser;
-        if(this.aImageScanFromPath!=null)
+        if (this.aImageScanFromPath != null)
         {
             this.aImageScanFromPath.setCurrentUser(currentUser);
         }
