@@ -341,11 +341,15 @@ public class DocScanDAO
         {
             try
             {
-                sqlCmd = new StringBuffer("SELECT DISTINCT bpk_document_scan.folder_name ");
-                sqlCmd.append(" FROM visit ");
-                sqlCmd.append(" INNER JOIN bpk_document_scan ON visit.patient_id=bpk_document_scan.patient_id AND visit.visit_id=bpk_document_scan.visit_id ");
-                sqlCmd.append(" WHERE visit.active='1' AND bpk_document_scan.visit_id='").append(visitId).append("' ");
-                sqlCmd.append(" ORDER BY bpk_document_scan.folder_name");
+                sqlCmd = new StringBuffer("SELECT DISTINCT folder_name, display_order FROM ");
+                sqlCmd.append("( SELECT bpk_document_scan.folder_name, bpk_patient_image_folder.display_order ");
+                sqlCmd.append("  FROM visit ");
+                sqlCmd.append("  INNER JOIN bpk_document_scan ON visit.patient_id=bpk_document_scan.patient_id AND visit.visit_id=bpk_document_scan.visit_id ");
+                sqlCmd.append("  INNER JOIN bpk_patient_image_folder ON bpk_document_scan.folder_name=bpk_patient_image_folder.folder_name");
+                sqlCmd.append("  WHERE visit.active='1' AND bpk_document_scan.visit_id='").append(visitId).append("' ");
+                sqlCmd.append("  AND bpk_document_scan.fix_document_scan_status_id<>'").append(FixDocumentScanStatus.HISTORY_FILE).append("' ");
+                sqlCmd.append("  AND bpk_document_scan.fix_document_scan_status_id<>'").append(FixDocumentScanStatus.DELETE_FILE).append("' ");
+                sqlCmd.append(") AS tmp ORDER BY display_order");
 
                 conn = DocScanDAOFactory.getConnection();
                 stmt = conn.createStatement();
@@ -563,19 +567,28 @@ public class DocScanDAO
                 newBpkDocumentScanVO.setUpdateDate(Utility.getCurrentDate());
                 newBpkDocumentScanVO.setUpdateTime(Utility.getCurrentTime());
                 newBpkDocumentScanVO.setImageFileName(getNextImageFileName(newBpkDocumentScanVO.getFolderName()) + ".PDF");
-                sqlCmd.append(newBpkDocumentScanVO.getObjectID()).append("', '").append(newBpkDocumentScanVO.getPatientId()).append("', ");
+                sqlCmd.append(newBpkDocumentScanVO.getObjectID()).append("', '").append(newBpkDocumentScanVO.getPatientId()).append("', '");
                 if (Utility.isNull(newBpkDocumentScanVO.getVn()))
                 {
                     // กรณีที่ไม่ได้ส่งค่า VN ให้ใช้ VN ล่าสุด
-                    sqlCmd.append(" (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.patient_id='").append(newBpkDocumentScanVO.getPatientId()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                    // sqlCmd.append(" (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.patient_id='").append(newBpkDocumentScanVO.getPatientId()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                    // กรณีที่ไม่ได้ส่งค่า VN ให้ใช้ VisitId เป็นค่าว่าง ส่วนของโปรแกรม Viewer จะมองเป็น NO VN 
+                    sqlCmd.append("', '");
                 } else
                 {
-                    if (newBpkDocumentScanVO.getVn().indexOf("-") != -1)
+                    if(VisitVO.NO_VN.equals(newBpkDocumentScanVO.getVn()))
                     {
-                        sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getHn()).append("' AND v.format_vn(vn)='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
-                    } else
+                        sqlCmd.append("', '");
+                    }
+                    else
                     {
-                        sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getHn()).append("' AND v.vn='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                        if (newBpkDocumentScanVO.getVn().indexOf("-") != -1)
+                        {
+                            sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getHn()).append("' AND v.format_vn(vn)='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                        } else
+                        {
+                            sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getHn()).append("' AND v.vn='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                        }
                     }
                 }
                 sqlCmd.append(newBpkDocumentScanVO.getFolderName()).append("', '").append(newBpkDocumentScanVO.getImageFileName()).append("', '");
@@ -631,7 +644,7 @@ public class DocScanDAO
         try
         {
 
-            sqlCmd = new StringBuffer("SELECT folder_name FROM bpk_patient_image_folder ORDER BY folder_name ");
+            sqlCmd = new StringBuffer("SELECT folder_name FROM bpk_patient_image_folder ORDER BY display_order ");
 
             stmt = conn.createStatement();
             Utility.printCoreDebug(this, sqlCmd.toString());
@@ -711,7 +724,7 @@ public class DocScanDAO
             {
 
                 sqlCmd = new StringBuffer(
-                        "SELECT DISTINCT patient_id, format_hn(hn) AS hn, imed_get_patient_name(patient_id) AS patient_name, fix_gender_id, bpkget_fix_gender_by_id(fix_gender_id) AS fix_gender_description, birthdate FROM patient WHERE active='1' ");
+                        "SELECT DISTINCT patient_id, format_hn(hn) AS hn, firstname, lastname, imed_get_patient_name(patient_id) AS patient_name, fix_gender_id, bpkget_fix_gender_by_id(fix_gender_id) AS fix_gender_description, birthdate FROM patient WHERE active='1' ");
 
                 if (Utility.isNotNull(hn))
                 {
@@ -723,9 +736,12 @@ public class DocScanDAO
                     // ส่วนของ Patient name
                     sqlCmd.append(" AND (");
                     sqlCmd.append("imed_get_patient_name(patient_id) ILIKE '%").append(patName).append("%' ");
+                    // sqlCmd.append("firstname ILIKE '%").append(patName).append("%' OR ");
+                    // sqlCmd.append("lastname ILIKE '%").append(patName).append("%' ");
                     sqlCmd.append(") ");
                 }
-                sqlCmd.append(" ORDER BY imed_get_patient_name(patient_id) ");
+                // sqlCmd.append(" ORDER BY imed_get_patient_name(patient_id) ");
+                sqlCmd.append(" ORDER BY firstname, lastname ");
                 sqlCmd.append(" LIMIT ").append(searchCount).append(" OFFSET 0");
 
                 conn = DocScanDAOFactory.getConnection();

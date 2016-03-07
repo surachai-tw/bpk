@@ -119,7 +119,8 @@ public class DocScanDAOFactory
      */
     public static String getDocScanOutputPath()
     {
-        return docScanOutputPath+System.getProperty("file.separator");
+        // return docScanOutputPath+System.getProperty("file.separator");
+        return docScanOutputPath!=null && !docScanOutputPath.endsWith("\\") ? docScanOutputPath+System.getProperty("file.separator") : docScanOutputPath;
     }
 
     /**

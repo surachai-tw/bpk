@@ -16,6 +16,7 @@ import com.bpk.persistence.emrdto.BpkDocumentScanVO;
 import com.bpk.persistence.emrdto.PatientVO;
 import com.bpk.persistence.emrdto.VisitVO;
 import com.bpk.utility.Utility;
+import java.awt.Cursor;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -66,6 +67,7 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
         aPnlButton = new javax.swing.JPanel();
         aBtnSelectVn = new javax.swing.JButton();
         aBtnCancel = new javax.swing.JButton();
+        aChkNoVn = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Find Patient");
@@ -211,7 +213,7 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
 
         aPnlButton.setLayout(new java.awt.GridBagLayout());
 
-        aBtnSelectVn.setFont(new java.awt.Font("Tahoma", 1, 11));
+        aBtnSelectVn.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         aBtnSelectVn.setText("Select VN");
         aBtnSelectVn.setToolTipText("");
         aBtnSelectVn.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -224,10 +226,9 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
-        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 0);
         aPnlButton.add(aBtnSelectVn, gridBagConstraints);
 
@@ -243,11 +244,20 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 11, 11);
         aPnlButton.add(aBtnCancel, gridBagConstraints);
+
+        aChkNoVn.setText("NO VN - เอกสารไม่ได้ระบุ VN ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 0);
+        aPnlButton.add(aChkNoVn, gridBagConstraints);
 
         getContentPane().add(aPnlButton, java.awt.BorderLayout.PAGE_END);
 
@@ -275,6 +285,7 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
 
     public void findPatient()
     {
+        this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         this.aTblMdlPatient.removeAllRow();
         DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
         try
@@ -306,15 +317,14 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
             this.aTblPatient.getColumnModel().getColumn(3).setPreferredWidth(30);
 
             this.aTblMdlPatient.fireTableDataChanged();
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             ex.printStackTrace();
-        }
-        finally
+        } finally
         {
             aDocScanDAO = null;
         }
+        this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     private void aTxtHnByManualActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aTxtHnByManualActionPerformed
@@ -365,8 +375,7 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
                     this.aTblVisit.getColumnModel().getColumn(2).setPreferredWidth(200);
 
                     this.aTblMdlVisit.fireTableDataChanged();
-                }
-                catch (Exception ex)
+                } catch (Exception ex)
                 {
                     ex.printStackTrace();
                 }
@@ -383,33 +392,44 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
     private void aBtnSelectVnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnSelectVnActionPerformed
     {//GEN-HEADEREND:event_aBtnSelectVnActionPerformed
         int row = this.aTblVisit.getSelectedRow();
-        if (row != -1)
+        if (row != -1 || this.aChkNoVn.isSelected())
         {
-            String visitId = (String) this.aTblMdlVisit.getRowID(row);
-
             this.aBpkDocumentScanVO = new BpkDocumentScanVO();
 
-            DocScanDAO aDao = DocScanDAOFactory.newDocScanDAO();
-            try
+            if (this.aChkNoVn.isSelected())
             {
-                VisitVO aVisitVO = aDao.readVisit(visitId);
-                this.aBpkDocumentScanVO.setHn(aVisitVO.getHn());
-                this.aBpkDocumentScanVO.setPatientName(aVisitVO.getPatientName());
-                this.aBpkDocumentScanVO.setVn(aVisitVO.getVn());
-                this.aBpkDocumentScanVO.setPrintDate(aVisitVO.getVisitDate());
-                this.aBpkDocumentScanVO.setPrintTime(aVisitVO.getVisitTime());
-            }
-            catch (Exception ex)
+                int rowPatient = this.aTblPatient.getSelectedRow();
+                Object[] aObj = (Object[])this.aTblMdlPatient.getRowDataAt(rowPatient);
+
+                this.aBpkDocumentScanVO.setHn((String)aObj[0]);
+                this.aBpkDocumentScanVO.setPatientName((String)aObj[1]);
+                this.aBpkDocumentScanVO.setVn(VisitVO.NO_VN);
+                this.aBpkDocumentScanVO.setPrintDate(Utility.getCurrentDate());
+                this.aBpkDocumentScanVO.setPrintTime(Utility.getCurrentTime());
+
+            } else
             {
-                ex.printStackTrace();
-            }
-            finally
-            {
-                aDao = null;
+                DocScanDAO aDao = DocScanDAOFactory.newDocScanDAO();
+                String visitId = (String) this.aTblMdlVisit.getRowID(row);
+
+                try
+                {
+                    VisitVO aVisitVO = aDao.readVisit(visitId);
+                    this.aBpkDocumentScanVO.setHn(aVisitVO.getHn());
+                    this.aBpkDocumentScanVO.setPatientName(aVisitVO.getPatientName());
+                    this.aBpkDocumentScanVO.setVn(aVisitVO.getVn());
+                    this.aBpkDocumentScanVO.setPrintDate(aVisitVO.getVisitDate());
+                    this.aBpkDocumentScanVO.setPrintTime(aVisitVO.getVisitTime());
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                } finally
+                {
+                    aDao = null;
+                }
             }
             this.dispose();
-        }
-        else
+        } else
         {
             JOptionPane.showMessageDialog(this, "ยังไม่ได้เลือก VN", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -442,6 +462,7 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
     private javax.swing.JButton aBtnCancel;
     private javax.swing.JButton aBtnFindPatient;
     private javax.swing.JButton aBtnSelectVn;
+    private javax.swing.JCheckBox aChkNoVn;
     private javax.swing.JLabel aLblHnByManual;
     private javax.swing.JLabel aLblPatientByManual;
     private javax.swing.JPanel aPnlButton;
