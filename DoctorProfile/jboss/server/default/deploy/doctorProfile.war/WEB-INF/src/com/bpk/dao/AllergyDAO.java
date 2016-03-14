@@ -49,9 +49,9 @@ public class AllergyDAO {
 			sql.append("    SELECT DISTINCT ");
 			sql.append("    datemp.* ");
 			sql.append("    FROM drug_allergy_temp datemp ");
-			sql.append("    INNER JOIN (SELECT patient_id, max(modify_date||modify_time) dadatetime FROM drug_allergy GROUP BY patient_id) da ON datemp.patient_id=da.patient_id AND (datemp.modify_date||datemp.modify_time)>(dadatetime) ");
+			sql.append("    LEFT JOIN (SELECT patient_id, max(modify_date||modify_time) dadatetime FROM drug_allergy GROUP BY patient_id) da ON datemp.patient_id=da.patient_id AND (datemp.modify_date||datemp.modify_time)>(dadatetime) ");
 			// sql.append("    INNER JOIN drug_allergy da ON datemp.patient_id=da.patient_id AND (datemp.modify_date||datemp.modify_time)>(da.modify_date||da.modify_time)");
-			sql.append("    ORDER BY datemp.modify_date DESC, datemp.modify_time DESC LIMIT 1000");
+			sql.append("    ORDER BY datemp.modify_date DESC, datemp.modify_time DESC LIMIT 10000");
 			sql.append(" ) datemp");
 			sql.append(" WHERE modify_eid NOT IN (SELECT employee_id FROM employee WHERE fix_employee_type_id='3') ");
 			sql.append(" AND trim(note)<>''");
