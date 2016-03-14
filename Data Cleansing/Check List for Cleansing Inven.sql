@@ -158,7 +158,10 @@ FROM
 LEFT JOIN tmp_chk_item_last_movement ON tmp.item_id = tmp_chk_item_last_movement.item_id 
 LEFT JOIN tmp_chk_item_last_order ON tmp.item_id = tmp_chk_item_last_order.item_id;
 
-SELECT * FROM 
+SELECT tmp3.*, 
+COALESCE((SELECT SUM(CAST(cur_quantity AS FLOAT)) FROM stock_mgnt WHERE stock_mgnt.item_id=tmp3.item_id AND isnumeric(stock_mgnt.cur_quantity)), '0') AS QTY, 
+item.unit_price_cost  
+FROM 
 (
     SELECT bpkget_item_type_by_id((SELECT fix_item_type_id FROM item WHERE item.item_id=tmp2.item_id)) imed_type, * FROM 
     (
@@ -175,7 +178,38 @@ SELECT * FROM
     OR (tmp2."Last order" < tmp2."Last movement" AND tmp2."Last movement"<='2015-02-16')
     OR (tmp2."Last order" > tmp2."Last movement" AND tmp2."Last order"<='2015-02-16')
 ) tmp3
+INNER JOIN item ON tmp3.item_id=item.item_id 
 ORDER BY tmp3.imed_type COLLATE "th_TH", "Item Name" COLLATE "th_TH"
+
+
+SELECT tmp3.*, 
+stock.stock_id, 
+stock.stock_name, 
+SUM(CAST(cur_quantity AS FLOAT)) AS QTY, 
+item.unit_price_cost  
+FROM 
+(
+    SELECT bpkget_item_type_by_id((SELECT fix_item_type_id FROM item WHERE item.item_id=tmp2.item_id)) imed_type, item_id, "Item Code", "Item Name", "Type in hospital", "Last movement", "Last order" FROM 
+    (
+        SELECT DISTINCT tmp_chk_item_last_movement.*, tmp_chk_item_last_order."Last order"  
+        FROM 
+        (
+            SELECT item_id FROM tmp_chk_item_last_movement UNION 
+            SELECT item_id FROM tmp_chk_item_last_order 
+        ) tmp
+        LEFT JOIN tmp_chk_item_last_movement ON tmp.item_id = tmp_chk_item_last_movement.item_id 
+        LEFT JOIN tmp_chk_item_last_order ON tmp.item_id = tmp_chk_item_last_order.item_id
+    ) tmp2
+    WHERE ((tmp2."Last order" IS NULL OR tmp2."Last order"='') AND (tmp2."Last movement" IS NULL OR tmp2."Last movement"='')) 
+    OR (tmp2."Last order" < tmp2."Last movement" AND tmp2."Last movement"<='2015-02-16')
+    OR (tmp2."Last order" > tmp2."Last movement" AND tmp2."Last order"<='2015-02-16')
+) tmp3
+INNER JOIN item ON tmp3.item_id=item.item_id 
+INNER JOIN stock_mgnt ON item.item_id=stock_mgnt.item_id AND stock_mgnt.active='1' AND isnumeric(stock_mgnt.cur_quantity)
+INNER JOIN stock ON stock_mgnt.stock_id = stock.stock_id AND stock.stock_id IN ('WB0007', 'WF0038', 'WF0039', 'WF0077', 'WF0089')
+GROUP BY imed_type, tmp3.item_id, "Item Code", "Item Name", "Type in hospital", "Last movement", "Last order", stock.stock_id, stock.stock_name, item.unit_price_cost 
+ORDER BY tmp3.imed_type COLLATE "th_TH", "Item Name" COLLATE "th_TH"
+
 
 -- 10. Lot ที่เก่ามาก และคาดว่าจะไม่มีผลต่อการทำงานแล้ว ควรย้ายข้อมูลไปไว้ที่ส่วนอื่น อาจจะสืบค้นได้โดย IT แต่ค้นทางหน้าจอไม่ได้ 
 -- เพื่อลดข้อมูลในระบบที่ไม่จำเป็น และป้องกันไม่ให้ user นำ Lot ดังกล่าวมาใช้งานอีก และช่วยเพิ่มเรื่อง Performance ระบบ ให้ทำงานได้เร็วขึ้น
