@@ -287,6 +287,22 @@ BEGIN
     RETURN rec_desc;
 END';
 
+CREATE OR REPLACE FUNCTION bpkget_department_description_by_id(id text) RETURNS text 
+LANGUAGE plpgsql 
+AS '
+DECLARE 
+    id ALIAS FOR $1;
+    rec RECORD;
+    rec_desc VARCHAR(255):= '''';
+BEGIN 
+    SELECT INTO rec TRIM(COALESCE(dept.description, '''')) AS description FROM base_department dept 
+    WHERE dept.base_department_id = id;
+
+    rec_desc := COALESCE(rec.description, '''');
+
+    RETURN rec_desc;
+END';
+
 -- SELECT * FROM base_department 
 -- DROP FUNCTION bpkget_department_description_by_spid(id text);
 CREATE OR REPLACE FUNCTION bpkget_department_description_by_spid(id text) RETURNS text 
