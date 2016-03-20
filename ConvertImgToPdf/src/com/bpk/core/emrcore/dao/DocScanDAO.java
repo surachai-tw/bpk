@@ -568,26 +568,26 @@ public class DocScanDAO
                 newBpkDocumentScanVO.setUpdateDate(Utility.getCurrentDate());
                 newBpkDocumentScanVO.setUpdateTime(Utility.getCurrentTime());
                 newBpkDocumentScanVO.setImageFileName(getNextImageFileName(newBpkDocumentScanVO.getFolderName()) + ".PDF");
-                sqlCmd.append(newBpkDocumentScanVO.getObjectID()).append("', '").append(newBpkDocumentScanVO.getPatientId()).append("', '");
+                sqlCmd.append(newBpkDocumentScanVO.getObjectID()).append("', '").append(newBpkDocumentScanVO.getPatientId()).append("', ");
                 if (Utility.isNull(newBpkDocumentScanVO.getVn()))
                 {
                     // กรณีที่ไม่ได้ส่งค่า VN ให้ใช้ VN ล่าสุด
                     // sqlCmd.append(" (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.patient_id='").append(newBpkDocumentScanVO.getPatientId()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
                     // กรณีที่ไม่ได้ส่งค่า VN ให้ใช้ VisitId เป็นค่าว่าง ส่วนของโปรแกรม Viewer จะมองเป็น NO VN 
-                    sqlCmd.append("', '");
+                    sqlCmd.append("'', ");
                 } else
-                {
+                { 
                     if (VisitVO.NO_VN.equals(newBpkDocumentScanVO.getVn()))
                     {
-                        sqlCmd.append("', '");
+                        sqlCmd.append("'', '");
                     } else
                     {
                         if (newBpkDocumentScanVO.getVn().indexOf("-") != -1)
                         {
-                            sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getHn()).append("' AND v.format_vn(vn)='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                            sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getOriginalHn()).append("' AND v.format_vn(vn)='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
                         } else
                         {
-                            sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getHn()).append("' AND v.vn='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                            sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getOriginalHn()).append("' AND v.vn='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
                         }
                     }
                 }
