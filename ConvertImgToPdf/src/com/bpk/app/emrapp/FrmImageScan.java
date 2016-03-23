@@ -1281,6 +1281,7 @@ public class FrmImageScan extends javax.swing.JFrame
             {
                 BpkDocumentScanVO aBpkDocumentScanVO = new BpkDocumentScanVO();
                 aBpkDocumentScanVO.setHn(this.aTxtHnByManual.getText().trim());
+                aBpkDocumentScanVO.setVn(this.aTxtVnByManual.getText().trim());
                 String printDateTime = this.aTxtPrintDateTimeByManual.getText().trim();
                 aBpkDocumentScanVO.setPrintDate(printDateTime.substring(0, printDateTime.indexOf(" ")));
                 aBpkDocumentScanVO.setPrintTime(printDateTime.substring(printDateTime.indexOf(" ")));

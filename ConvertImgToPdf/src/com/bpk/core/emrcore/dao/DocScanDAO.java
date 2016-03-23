@@ -43,7 +43,7 @@ public class DocScanDAO
                 // Find patient_id
                 if (hn.indexOf("-") != -1)
                 {
-                    sqlCmd = new StringBuffer("SELECT patient_id FROM patient WHERE active='1' AND format_hn(hn)='").append(hn).append("' LIMIT 1");
+                    sqlCmd = new StringBuffer("SELECT patient_id FROM patient WHERE active='1' AND hn='").append(Utility.formatHnToDb(hn)).append("' LIMIT 1");
                 } else
                 {
                     sqlCmd = new StringBuffer("SELECT patient_id FROM patient WHERE active='1' AND hn='").append(hn).append("' LIMIT 1");
@@ -174,7 +174,7 @@ public class DocScanDAO
                 // Find patient_id
                 if (hn.indexOf("-") != -1)
                 {
-                    sqlCmd = new StringBuilder("SELECT patient_id, hn AS original_hn, format_hn(hn) AS hn, bpkget_patient_name(patient_id) AS patient_name FROM patient WHERE active='1' AND format_hn(hn)='").append(hn).append("' LIMIT 1");
+                    sqlCmd = new StringBuilder("SELECT patient_id, hn AS original_hn, format_hn(hn) AS hn, bpkget_patient_name(patient_id) AS patient_name FROM patient WHERE active='1' AND hn='").append(Utility.formatHnToDb(hn)).append("' LIMIT 1");
                 } else
                 {
                     sqlCmd = new StringBuilder("SELECT patient_id, hn AS original_hn, format_hn(hn) AS hn, bpkget_patient_name(patient_id) AS patient_name FROM patient WHERE active='1' AND hn='").append(hn).append("' LIMIT 1");
@@ -573,20 +573,24 @@ public class DocScanDAO
                 {
                     // กรณีที่ไม่ได้ส่งค่า VN ให้ใช้ VN ล่าสุด
                     // sqlCmd.append(" (SELECT visit_id FROM visit AS v WHERE v.active='1' AND v.patient_id='").append(newBpkDocumentScanVO.getPatientId()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
-                    // กรณีที่ไม่ได้ส่งค่า VN ให้ใช้ VisitId เป็นค่าว่าง ส่วนของโปรแกรม Viewer จะมองเป็น NO VN 
-                    sqlCmd.append("'', ");
+                    // กรณีที่ไม่ได้ส่งค่า VN ให้ใช้ VisitId เป็นค่าว่าง ส่วนของโปรแกรม Viewer จะมองเป็น NO VN
+                    Utility.printCoreDebug(this, "Utility.isNull(newBpkDocumentScanVO.getVn())");
+                    sqlCmd.append("'', '");
                 } else
                 { 
                     if (VisitVO.NO_VN.equals(newBpkDocumentScanVO.getVn()))
                     {
+                        Utility.printCoreDebug(this, "VisitVO.NO_VN.equals(newBpkDocumentScanVO.getVn())");
                         sqlCmd.append("'', '");
                     } else
                     {
-                        if (newBpkDocumentScanVO.getVn().indexOf("-") != -1)
+                        if (newBpkDocumentScanVO.getVn().indexOf("-") != -1 || newBpkDocumentScanVO.getVn().indexOf("/") != -1)
                         {
-                            sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getOriginalHn()).append("' AND v.format_vn(vn)='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
+                            Utility.printCoreDebug(this, "newBpkDocumentScanVO.getVn().indexOf(\"-\") != -1");
+                            sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getOriginalHn()).append("' AND format_vn(v.vn)='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
                         } else
                         {
+                            Utility.printCoreDebug(this, "else");
                             sqlCmd.append(" (SELECT v.visit_id FROM visit AS v WHERE v.active='1' AND v.hn='").append(newBpkDocumentScanVO.getOriginalHn()).append("' AND v.vn='").append(newBpkDocumentScanVO.getVn()).append("' ORDER BY visit_date DESC, visit_time DESC LIMIT 1), '");
                         }
                     }
@@ -728,16 +732,16 @@ public class DocScanDAO
 
                 if (Utility.isNotNull(hn))
                 {
-                    sqlCmd.append(" AND format_hn(hn)='").append(hn).append("'");
+                    sqlCmd.append(" AND hn='").append(Utility.formatHnToDb(hn)).append("'");
                 }
 
                 if (Utility.isNotNull(patName))
                 {
                     // ส่วนของ Patient name
                     sqlCmd.append(" AND (");
-                    sqlCmd.append("imed_get_patient_name(patient_id) ILIKE '%").append(patName).append("%' ");
-                    // sqlCmd.append("firstname ILIKE '%").append(patName).append("%' OR ");
-                    // sqlCmd.append("lastname ILIKE '%").append(patName).append("%' ");
+                    // sqlCmd.append("imed_get_patient_name(patient_id) ILIKE '%").append(patName).append("%' ");
+                    sqlCmd.append("firstname ILIKE '%").append(patName).append("%' OR ");
+                    sqlCmd.append("lastname ILIKE '%").append(patName).append("%' ");
                     sqlCmd.append(") ");
                 }
                 // sqlCmd.append(" ORDER BY imed_get_patient_name(patient_id) ");
