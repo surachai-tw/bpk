@@ -19,7 +19,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,13 +26,12 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
+import javax.swing.JFrame;
 
 /**
  *
@@ -41,9 +39,13 @@ import java.util.regex.Pattern;
  */
 public class ImageScanFromPath implements Runnable
 {
+    /** Frm แม่ */
+    private JFrame parentFrame = null;
 
     /** ใช้ในการระบุผู้ทำการ Scan */
     private String currentUser = null;
+    /** ใช้ในการระบุผู้ทำการ Scan */
+    private String currentSpId = null;
     /** ใช้ List file ที่พบใน Path */
     private String[] scanFilenames = null;
     /** ใช้แสดง Status ระหว่างการทำงานใน Thread */
@@ -72,6 +74,25 @@ public class ImageScanFromPath implements Runnable
     private DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
     /** ใช้ในการตรวจสอบว่าให้ระบบ Check barcode อื่นๆในเอกสารหรือไม่ ในกรณีที่ทำ Manual Inpput */
     private boolean securityCheckBarcode = false;
+
+    /** ใช้ในการตรวจสอบ Priority ของใบยา */
+    private String bpkFixOrdersheetTypeId = null;
+
+    /** ใช้ในการตรวจสอบ ส่งห้องยา */
+    private String isSendToPharmacy = FixBooleanStatus.FALSE;
+
+    /** ใช้ในการตรวจสอบ ส่งห้องโภชนาการ */
+    private String isSendToNutrition = FixBooleanStatus.FALSE;
+
+    public ImageScanFromPath(JFrame frm)
+    {
+        this.parentFrame = frm;
+    }
+
+    public JFrame getParentFrame()
+    {
+        return this.parentFrame;
+    }
 
     public String[] getTextFromBarcodeWithThreshold(int precision, String scanFilename, String docScanInputPath)
     {
@@ -181,6 +202,7 @@ public class ImageScanFromPath implements Runnable
                                 for (int x = 0; x < resultText.length; x++)
                                 {
                                     // Library ของ bytescout จะได้ " " เป็นตัว split แม้ว่าจะใช้เครื่องหมาย + คั่น
+                                    System.out.println(resultText[x]);
                                     allReadText = resultText[x].split(" ");
                                     // Library ของ bytescout จะได้ "+" เป็นตัว split ตามที่ใช้เครื่องหมาย + คั่นไว้
                                     // allReadText = resultText[x].split(Pattern.quote("+"));
@@ -257,6 +279,10 @@ public class ImageScanFromPath implements Runnable
                                 newBpkDocumentScanVO.setOption(allReadText != null && allReadText.length >= 7 ? allReadText[6] : "");
                                 newBpkDocumentScanVO.setScanEid(this.getCurrentUser());
                                 newBpkDocumentScanVO.setUpdateEid(this.getCurrentUser());
+
+                                newBpkDocumentScanVO.setBpkFixOrdersheetTypeId(this.getBpkFixOrdersheetTypeId());
+                                newBpkDocumentScanVO.setIsSendToPharmacy(isSendToPharmacy);
+                                newBpkDocumentScanVO.setIsSendToNutrition(isSendToNutrition);
                             } else
                             {
                                 newBpkDocumentScanVO = new BpkDocumentScanVO();
@@ -273,6 +299,10 @@ public class ImageScanFromPath implements Runnable
                                 newBpkDocumentScanVO.setOption(bpkDocumentScanVO.getOption());
                                 newBpkDocumentScanVO.setScanEid(this.getCurrentUser());
                                 newBpkDocumentScanVO.setUpdateEid(this.getCurrentUser());
+
+                                newBpkDocumentScanVO.setBpkFixOrdersheetTypeId(bpkDocumentScanVO.getBpkFixOrdersheetTypeId());
+                                newBpkDocumentScanVO.setIsSendToPharmacy(isSendToPharmacy);
+                                newBpkDocumentScanVO.setIsSendToNutrition(isSendToNutrition);
                             }
 
                             newBpkDocumentScanVO = aDocScanDAO.createBpkDocumentScan(newBpkDocumentScanVO);
@@ -762,7 +792,7 @@ public class ImageScanFromPath implements Runnable
         {
             // Create an object we can use to communicate with the servlet
             String url = DocScanDAOFactory.getDocScanInputUrl();
-            Utility.printCoreDebug(new ImageScanFromPath(), url);
+            Utility.printCoreDebug(new ImageScanFromPath(null), url);
             URL servletURL = new URL(url);
             URLConnection servletConnection = servletURL.openConnection();
             servletConnection.setDoOutput(true);  // to allow us to write to the URL
@@ -842,5 +872,58 @@ public class ImageScanFromPath implements Runnable
     public void setSecurityCheckBarcode(boolean securityCheckBarcode)
     {
         this.securityCheckBarcode = securityCheckBarcode;
+    }
+
+    public void setCurrentSpId(String currentSpId)
+    {
+        this.currentSpId = currentSpId;
+    }
+
+    /**
+     * @return the bpkFixOrdersheetTypeId
+     */
+    public String getBpkFixOrdersheetTypeId()
+    {
+        return Utility.getStringVO(bpkFixOrdersheetTypeId);
+    }
+
+    /**
+     * @param bpkFixOrdersheetTypeId the bpkFixOrdersheetTypeId to set
+     */
+    public void setBpkFixOrdersheetTypeId(String bpkFixOrdersheeetTypeId)
+    {
+        this.bpkFixOrdersheetTypeId = bpkFixOrdersheeetTypeId;
+    }
+
+    /**
+     * @return the isSendToPharmacy
+     */
+    public String getIsSendToPharmacy()
+    {
+        return Utility.getActiveVO(isSendToPharmacy);
+    }
+
+    /**
+     * @param isSendToPharmacy the isSendToPharmacy to set
+     */
+    public void setIsSendToPharmacy(String isSendToPharmacy)
+    {
+        this.isSendToPharmacy = isSendToPharmacy;
+    }
+
+    /**
+     * @return the isSendToNutrition
+     */
+    public String getIsSendToNutrition()
+    {
+        return Utility.getActiveVO(isSendToNutrition);
+    }
+
+    /**
+     * @param isSendToNutrition the isSendToNutrition to set
+     */
+    public void setIsSendToNutrition(String isSendToNutrition)
+    {
+        this.isSendToNutrition = isSendToNutrition;
     }
 }

@@ -1,9 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * DlgFindPatientAndVisit.java
  *
  * Created on Feb 10, 2016, 1:17:06 PM
@@ -12,10 +7,13 @@ package com.bpk.app.emrapp;
 
 import com.bpk.core.emrcore.dao.DocScanDAO;
 import com.bpk.core.emrcore.dao.DocScanDAOFactory;
+import com.bpk.persistence.careplandto.AdmitVO;
+import com.bpk.persistence.emrdto.BaseServicePointVO;
 import com.bpk.persistence.emrdto.BpkDocumentScanVO;
 import com.bpk.persistence.emrdto.PatientVO;
 import com.bpk.persistence.emrdto.VisitVO;
 import com.bpk.utility.Utility;
+import com.bpk.utility.fix.FixServicePointType;
 import java.awt.Cursor;
 import java.util.List;
 import javax.swing.JFrame;
@@ -28,13 +26,37 @@ import javax.swing.JOptionPane;
 public class DlgFindPatientAndVisit extends javax.swing.JDialog
 {
 
+    FrmImageScan frmParent = null;
     BpkDocumentScanVO aBpkDocumentScanVO = null;
 
     /** Creates new form DlgFindPatientAndVisit */
-    public DlgFindPatientAndVisit(java.awt.Frame parent, boolean modal)
+    public DlgFindPatientAndVisit(FrmImageScan parent, boolean modal)
     {
         super(parent, modal);
         initComponents();
+
+        frmParent = parent;
+
+        DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
+        try
+        {
+            List listBaseServicePointVO = aDocScanDAO.listBaseServicePointByType(FixServicePointType.IPD);
+
+            this.aCmbWard.removeAllItems();
+            BaseServicePointVO blankVO = new BaseServicePointVO();
+            blankVO.setDescription("-- All Ward --");
+            this.aCmbWard.addItem(blankVO);
+            for (int i = 0, sizei = listBaseServicePointVO.size(); i < sizei; i++)
+            {
+                this.aCmbWard.addItem(listBaseServicePointVO.get(i));
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            aDocScanDAO = null;
+        }
     }
 
     /** This method is called from within the constructor to
@@ -49,6 +71,9 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
 
         aTblMdlPatient = new com.bpk.app.emrapp.BpkTableModel();
         aTblMdlVisit = new com.bpk.app.emrapp.BpkTableModel();
+        aTblMdlAdmit = new com.bpk.app.emrapp.BpkTableModel();
+        aTabPane = new javax.swing.JTabbedPane();
+        aPnlFindPatient = new javax.swing.JPanel();
         aPnlTop = new javax.swing.JPanel();
         aLblHnByManual = new javax.swing.JLabel();
         aTxtHnByManual = new javax.swing.JTextField();
@@ -56,6 +81,7 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
         aTxtPatientNameByManual = new javax.swing.JTextField();
         aBtnFindPatient = new javax.swing.JButton();
         aTxtLimit = new javax.swing.JTextField();
+        aBtnClear = new javax.swing.JButton();
         aPnlCenter = new javax.swing.JPanel();
         aSplitPane = new javax.swing.JSplitPane();
         aPnlPatientList = new javax.swing.JPanel();
@@ -68,9 +94,31 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
         aBtnSelectVn = new javax.swing.JButton();
         aBtnCancel = new javax.swing.JButton();
         aChkNoVn = new javax.swing.JCheckBox();
+        aPnlPatientInWard = new javax.swing.JPanel();
+        aPnlPatientInWardTop = new javax.swing.JPanel();
+        aLblPatientInWardHnByManual = new javax.swing.JLabel();
+        aTxtPatientInWardHnByManual = new javax.swing.JTextField();
+        aLblPatientInWardAnByManual = new javax.swing.JLabel();
+        aTxtPatientInWardAnByManual = new javax.swing.JTextField();
+        aLblPatientInWardFirstnameByManual = new javax.swing.JLabel();
+        aTxtPatientInWardFirstnameByManual = new javax.swing.JTextField();
+        aLblPatientInWardLastnameByManual = new javax.swing.JLabel();
+        aTxtPatientInWardLastnameByManual = new javax.swing.JTextField();
+        aLblPatientInWardWardByManual = new javax.swing.JLabel();
+        aCmbWard = new javax.swing.JComboBox();
+        aBtnPatientInWardFindPatient = new javax.swing.JButton();
+        aBtnPatientInWardClear = new javax.swing.JButton();
+        aPnlPatientInWardCenter = new javax.swing.JPanel();
+        aScrlAdmit = new javax.swing.JScrollPane();
+        aTblAdmit = new javax.swing.JTable();
+        aPnlPatientInWardButton = new javax.swing.JPanel();
+        aBtnSelectAn = new javax.swing.JButton();
+        aBtnPatientInWardCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Find Patient");
+
+        aPnlFindPatient.setLayout(new java.awt.BorderLayout());
 
         aPnlTop.setLayout(new java.awt.GridBagLayout());
 
@@ -145,11 +193,24 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(12, 5, 11, 11);
         aPnlTop.add(aTxtLimit, gridBagConstraints);
 
-        getContentPane().add(aPnlTop, java.awt.BorderLayout.NORTH);
+        aBtnClear.setText("Clear");
+        aBtnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aBtnClearActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(12, 0, 11, 0);
+        aPnlTop.add(aBtnClear, gridBagConstraints);
+
+        aPnlFindPatient.add(aPnlTop, java.awt.BorderLayout.NORTH);
 
         aPnlCenter.setLayout(new java.awt.BorderLayout());
 
@@ -209,11 +270,11 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
 
         aPnlCenter.add(aSplitPane, java.awt.BorderLayout.CENTER);
 
-        getContentPane().add(aPnlCenter, java.awt.BorderLayout.CENTER);
+        aPnlFindPatient.add(aPnlCenter, java.awt.BorderLayout.CENTER);
 
         aPnlButton.setLayout(new java.awt.GridBagLayout());
 
-        aBtnSelectVn.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        aBtnSelectVn.setFont(new java.awt.Font("Tahoma", 1, 11));
         aBtnSelectVn.setText("Select VN");
         aBtnSelectVn.setToolTipText("");
         aBtnSelectVn.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -259,18 +320,231 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 0);
         aPnlButton.add(aChkNoVn, gridBagConstraints);
 
-        getContentPane().add(aPnlButton, java.awt.BorderLayout.PAGE_END);
+        aPnlFindPatient.add(aPnlButton, java.awt.BorderLayout.PAGE_END);
+
+        aTabPane.addTab("Find Patient", aPnlFindPatient);
+
+        aPnlPatientInWard.setLayout(new java.awt.BorderLayout());
+
+        aPnlPatientInWardTop.setLayout(new java.awt.GridBagLayout());
+
+        aLblPatientInWardHnByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblPatientInWardHnByManual.setText("HN:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
+        aPnlPatientInWardTop.add(aLblPatientInWardHnByManual, gridBagConstraints);
+
+        aTxtPatientInWardHnByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtPatientInWardHnByManual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        aTxtPatientInWardHnByManual.setMinimumSize(new java.awt.Dimension(100, 24));
+        aTxtPatientInWardHnByManual.setPreferredSize(new java.awt.Dimension(100, 24));
+        aTxtPatientInWardHnByManual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aTxtPatientInWardHnByManualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        aPnlPatientInWardTop.add(aTxtPatientInWardHnByManual, gridBagConstraints);
+
+        aLblPatientInWardAnByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblPatientInWardAnByManual.setText("AN:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
+        aPnlPatientInWardTop.add(aLblPatientInWardAnByManual, gridBagConstraints);
+
+        aTxtPatientInWardAnByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtPatientInWardAnByManual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        aTxtPatientInWardAnByManual.setMinimumSize(new java.awt.Dimension(100, 24));
+        aTxtPatientInWardAnByManual.setPreferredSize(new java.awt.Dimension(100, 24));
+        aTxtPatientInWardAnByManual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aTxtPatientInWardAnByManualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        aPnlPatientInWardTop.add(aTxtPatientInWardAnByManual, gridBagConstraints);
+
+        aLblPatientInWardFirstnameByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblPatientInWardFirstnameByManual.setText("Firstname:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
+        aPnlPatientInWardTop.add(aLblPatientInWardFirstnameByManual, gridBagConstraints);
+
+        aTxtPatientInWardFirstnameByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtPatientInWardFirstnameByManual.setMinimumSize(new java.awt.Dimension(100, 24));
+        aTxtPatientInWardFirstnameByManual.setPreferredSize(new java.awt.Dimension(100, 24));
+        aTxtPatientInWardFirstnameByManual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aTxtPatientInWardFirstnameByManualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 11, 11, 0);
+        aPnlPatientInWardTop.add(aTxtPatientInWardFirstnameByManual, gridBagConstraints);
+
+        aLblPatientInWardLastnameByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblPatientInWardLastnameByManual.setText("Lastname:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
+        aPnlPatientInWardTop.add(aLblPatientInWardLastnameByManual, gridBagConstraints);
+
+        aTxtPatientInWardLastnameByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtPatientInWardLastnameByManual.setMinimumSize(new java.awt.Dimension(100, 24));
+        aTxtPatientInWardLastnameByManual.setPreferredSize(new java.awt.Dimension(100, 24));
+        aTxtPatientInWardLastnameByManual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aTxtPatientInWardLastnameByManualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        aPnlPatientInWardTop.add(aTxtPatientInWardLastnameByManual, gridBagConstraints);
+
+        aLblPatientInWardWardByManual.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblPatientInWardWardByManual.setText("Ward:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 0);
+        aPnlPatientInWardTop.add(aLblPatientInWardWardByManual, gridBagConstraints);
+
+        aCmbWard.setMinimumSize(new java.awt.Dimension(180, 24));
+        aCmbWard.setPreferredSize(new java.awt.Dimension(180, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        aPnlPatientInWardTop.add(aCmbWard, gridBagConstraints);
+
+        aBtnPatientInWardFindPatient.setText("Find");
+        aBtnPatientInWardFindPatient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aBtnPatientInWardFindPatientActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 11, 0);
+        aPnlPatientInWardTop.add(aBtnPatientInWardFindPatient, gridBagConstraints);
+
+        aBtnPatientInWardClear.setText("Clear");
+        aBtnPatientInWardClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aBtnPatientInWardClearActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 11, 11);
+        aPnlPatientInWardTop.add(aBtnPatientInWardClear, gridBagConstraints);
+
+        aPnlPatientInWard.add(aPnlPatientInWardTop, java.awt.BorderLayout.NORTH);
+
+        aPnlPatientInWardCenter.setLayout(new java.awt.BorderLayout());
+
+        aScrlAdmit.setFont(new java.awt.Font("Tahoma", 0, 14));
+
+        aTblAdmit.setFont(new java.awt.Font("Tahoma", 0, 14));
+        aTblAdmit.setModel(aTblMdlAdmit);
+        aTblAdmit.setRowHeight(21);
+        aTblAdmit.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        aScrlAdmit.setViewportView(aTblAdmit);
+
+        aPnlPatientInWardCenter.add(aScrlAdmit, java.awt.BorderLayout.PAGE_START);
+
+        aPnlPatientInWard.add(aPnlPatientInWardCenter, java.awt.BorderLayout.CENTER);
+
+        aPnlPatientInWardButton.setLayout(new java.awt.GridBagLayout());
+
+        aBtnSelectAn.setFont(new java.awt.Font("Tahoma", 1, 11));
+        aBtnSelectAn.setText("Select AN");
+        aBtnSelectAn.setToolTipText("");
+        aBtnSelectAn.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        aBtnSelectAn.setMaximumSize(new java.awt.Dimension(84, 32));
+        aBtnSelectAn.setMinimumSize(new java.awt.Dimension(84, 32));
+        aBtnSelectAn.setPreferredSize(new java.awt.Dimension(84, 32));
+        aBtnSelectAn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aBtnSelectAnActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 0);
+        aPnlPatientInWardButton.add(aBtnSelectAn, gridBagConstraints);
+
+        aBtnPatientInWardCancel.setFont(new java.awt.Font("Tahoma", 1, 11));
+        aBtnPatientInWardCancel.setText("Cancel");
+        aBtnPatientInWardCancel.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        aBtnPatientInWardCancel.setMaximumSize(new java.awt.Dimension(84, 32));
+        aBtnPatientInWardCancel.setMinimumSize(new java.awt.Dimension(84, 32));
+        aBtnPatientInWardCancel.setPreferredSize(new java.awt.Dimension(84, 32));
+        aBtnPatientInWardCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aBtnPatientInWardCancelActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+        gridBagConstraints.insets = new java.awt.Insets(12, 5, 11, 11);
+        aPnlPatientInWardButton.add(aBtnPatientInWardCancel, gridBagConstraints);
+
+        aPnlPatientInWard.add(aPnlPatientInWardButton, java.awt.BorderLayout.PAGE_END);
+
+        aTabPane.addTab("Patient in Ward", aPnlPatientInWard);
+
+        getContentPane().add(aTabPane, java.awt.BorderLayout.CENTER);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-840)/2, (screenSize.height-320)/2, 840, 320);
+        setBounds((screenSize.width-900)/2, (screenSize.height-640)/2, 900, 640);
     }// </editor-fold>//GEN-END:initComponents
 
-    public static BpkDocumentScanVO showDlgFindPatientAndVisit(JFrame frm, PatientVO pPatientVO)
+    public static BpkDocumentScanVO showDlgFindPatientAndVisit(FrmImageScan frm, PatientVO pPatientVO)
     {
         BpkDocumentScanVO aBpkDocumentScanVO = null;
         DlgFindPatientAndVisit aDlgFindPatientAndVisit = new DlgFindPatientAndVisit(frm, true);
         aDlgFindPatientAndVisit.setPatientVO(pPatientVO);
         aDlgFindPatientAndVisit.findPatient();
+        aDlgFindPatientAndVisit.setDefaultServicePointAndSearch();
         aDlgFindPatientAndVisit.setVisible(true);
         aBpkDocumentScanVO = aDlgFindPatientAndVisit.getBpkDocumentScanVO();
         aDlgFindPatientAndVisit = null;
@@ -327,6 +601,65 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
         this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
+    public void searchPatientInWard()
+    {
+        this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        this.aTblMdlAdmit.removeAllRow();
+        DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
+        try
+        {
+            String baseServicePointId = null;
+            Object obj = this.aCmbWard.getSelectedItem();
+            if (obj != null && obj instanceof BaseServicePointVO)
+            {
+                BaseServicePointVO aSpVO = (BaseServicePointVO) obj;
+                baseServicePointId = aSpVO.getObjectID();
+            } else
+            {
+                baseServicePointId = "";
+            }
+
+            List listAdmitVO = aDocScanDAO.searchPatientInWard(this.aTxtPatientInWardHnByManual.getText().trim(), this.aTxtPatientInWardAnByManual.getText().trim(), this.aTxtPatientInWardFirstnameByManual.getText().trim(), this.aTxtPatientInWardLastnameByManual.getText().trim(), baseServicePointId);
+
+            String[] header = new String[5];
+            header[0] = "HN";
+            header[1] = "AN";
+            header[2] = "Patient Name";
+            header[3] = "Ward";
+            header[4] = "Bed";
+
+            this.aTblMdlAdmit.createHeader(header);
+
+            for (int i = 0, sizei = listAdmitVO.size(); i < sizei; i++)
+            {
+                AdmitVO aAdmitVO = (AdmitVO) listAdmitVO.get(i);
+                Object[] rowData = new Object[header.length];
+                rowData[0] = aAdmitVO.getHn();
+                rowData[1] = aAdmitVO.getAn();
+                rowData[2] = aAdmitVO.getPatientName();
+                rowData[3] = aAdmitVO.getBaseServicePointDescription();
+                rowData[4] = aAdmitVO.getBedNumber();
+
+                this.aTblMdlAdmit.addRowData(aAdmitVO.getVisitId(), rowData);
+            }
+
+            this.aTblAdmit.getColumnModel().getColumn(0).setPreferredWidth(80);
+            this.aTblAdmit.getColumnModel().getColumn(1).setPreferredWidth(80);
+            this.aTblAdmit.getColumnModel().getColumn(2).setPreferredWidth(200);
+            this.aTblAdmit.getColumnModel().getColumn(3).setPreferredWidth(80);
+            this.aTblAdmit.getColumnModel().getColumn(4).setPreferredWidth(30);
+
+            this.aTblMdlAdmit.fireTableDataChanged();
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            aDocScanDAO = null;
+        }
+        this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+
     private void aTxtHnByManualActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aTxtHnByManualActionPerformed
     {//GEN-HEADEREND:event_aTxtHnByManualActionPerformed
         aBtnFindPatientActionPerformed(evt);
@@ -353,10 +686,11 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
                 {
                     List listVisitVO = aDao.listVisitByPatientId(patientId);
 
-                    String[] header = new String[3];
+                    String[] header = new String[4];
                     header[0] = "VN";
-                    header[1] = "Visit Date";
-                    header[2] = "PDx";
+                    header[1] = "AN";
+                    header[2] = "Visit Date";
+                    header[3] = "PDx";
                     this.aTblMdlVisit.createHeader(header);
 
                     for (int i = 0, sizei = listVisitVO.size(); i < sizei; i++)
@@ -364,15 +698,17 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
                         VisitVO aVisitVO = (VisitVO) listVisitVO.get(i);
                         Object[] rowData = new Object[header.length];
                         rowData[0] = aVisitVO.getVn();
-                        rowData[1] = Utility.formatDateForDisplay(aVisitVO.getVisitDate()) + " " + aVisitVO.getVisitTime();
-                        rowData[2] = aVisitVO.getPDx();
+                        rowData[1] = aVisitVO.getAn();
+                        rowData[2] = Utility.formatDateForDisplay(aVisitVO.getVisitDate()) + " " + aVisitVO.getVisitTime();
+                        rowData[3] = aVisitVO.getPDx();
 
                         this.aTblMdlVisit.addRowData(aVisitVO.getObjectID(), rowData);
                     }
 
                     this.aTblVisit.getColumnModel().getColumn(0).setPreferredWidth(100);
-                    this.aTblVisit.getColumnModel().getColumn(1).setPreferredWidth(200);
+                    this.aTblVisit.getColumnModel().getColumn(1).setPreferredWidth(100);
                     this.aTblVisit.getColumnModel().getColumn(2).setPreferredWidth(200);
+                    this.aTblVisit.getColumnModel().getColumn(3).setPreferredWidth(200);
 
                     this.aTblMdlVisit.fireTableDataChanged();
                 } catch (Exception ex)
@@ -399,10 +735,10 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
             if (this.aChkNoVn.isSelected())
             {
                 int rowPatient = this.aTblPatient.getSelectedRow();
-                Object[] aObj = (Object[])this.aTblMdlPatient.getRowDataAt(rowPatient);
+                Object[] aObj = (Object[]) this.aTblMdlPatient.getRowDataAt(rowPatient);
 
-                this.aBpkDocumentScanVO.setHn((String)aObj[0]);
-                this.aBpkDocumentScanVO.setPatientName((String)aObj[1]);
+                this.aBpkDocumentScanVO.setHn((String) aObj[0]);
+                this.aBpkDocumentScanVO.setPatientName((String) aObj[1]);
                 this.aBpkDocumentScanVO.setVn(VisitVO.NO_VN);
                 this.aBpkDocumentScanVO.setPrintDate(Utility.getCurrentDate());
                 this.aBpkDocumentScanVO.setPrintTime(Utility.getCurrentTime());
@@ -435,6 +771,87 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
         }
     }//GEN-LAST:event_aBtnSelectVnActionPerformed
 
+    private void aTxtPatientInWardHnByManualActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aTxtPatientInWardHnByManualActionPerformed
+    {//GEN-HEADEREND:event_aTxtPatientInWardHnByManualActionPerformed
+        searchPatientInWard();
+    }//GEN-LAST:event_aTxtPatientInWardHnByManualActionPerformed
+
+    private void aTxtPatientInWardFirstnameByManualActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aTxtPatientInWardFirstnameByManualActionPerformed
+    {//GEN-HEADEREND:event_aTxtPatientInWardFirstnameByManualActionPerformed
+        searchPatientInWard();
+    }//GEN-LAST:event_aTxtPatientInWardFirstnameByManualActionPerformed
+
+    private void aBtnPatientInWardFindPatientActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnPatientInWardFindPatientActionPerformed
+    {//GEN-HEADEREND:event_aBtnPatientInWardFindPatientActionPerformed
+        searchPatientInWard();
+    }//GEN-LAST:event_aBtnPatientInWardFindPatientActionPerformed
+
+    private void aBtnSelectAnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnSelectAnActionPerformed
+    {//GEN-HEADEREND:event_aBtnSelectAnActionPerformed
+        int row = this.aTblAdmit.getSelectedRow();
+        if (row != -1)
+        {
+            this.aBpkDocumentScanVO = new BpkDocumentScanVO();
+
+            DocScanDAO aDao = DocScanDAOFactory.newDocScanDAO();
+            String visitId = (String) this.aTblMdlAdmit.getRowID(row);
+
+            try
+            {
+                VisitVO aVisitVO = aDao.readVisit(visitId);
+                this.aBpkDocumentScanVO.setHn(aVisitVO.getHn());
+                this.aBpkDocumentScanVO.setPatientName(aVisitVO.getPatientName());
+                this.aBpkDocumentScanVO.setVn(aVisitVO.getVn());
+                this.aBpkDocumentScanVO.setPrintDate(aVisitVO.getVisitDate());
+                this.aBpkDocumentScanVO.setPrintTime(aVisitVO.getVisitTime());
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            } finally
+            {
+                aDao = null;
+            }
+
+            this.dispose();
+        } else
+        {
+            JOptionPane.showMessageDialog(this, "ยังไม่ได้เลือก AN", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_aBtnSelectAnActionPerformed
+
+    private void aBtnPatientInWardCancelActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnPatientInWardCancelActionPerformed
+    {//GEN-HEADEREND:event_aBtnPatientInWardCancelActionPerformed
+        this.aBpkDocumentScanVO = null;
+        this.dispose();
+    }//GEN-LAST:event_aBtnPatientInWardCancelActionPerformed
+
+    private void aTxtPatientInWardLastnameByManualActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aTxtPatientInWardLastnameByManualActionPerformed
+    {//GEN-HEADEREND:event_aTxtPatientInWardLastnameByManualActionPerformed
+        searchPatientInWard();
+    }//GEN-LAST:event_aTxtPatientInWardLastnameByManualActionPerformed
+
+    private void aTxtPatientInWardAnByManualActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aTxtPatientInWardAnByManualActionPerformed
+    {//GEN-HEADEREND:event_aTxtPatientInWardAnByManualActionPerformed
+        searchPatientInWard();
+    }//GEN-LAST:event_aTxtPatientInWardAnByManualActionPerformed
+
+    private void aBtnPatientInWardClearActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnPatientInWardClearActionPerformed
+    {//GEN-HEADEREND:event_aBtnPatientInWardClearActionPerformed
+        this.aTxtPatientInWardHnByManual.setText("");
+        this.aTxtPatientInWardAnByManual.setText("");
+        this.aTxtPatientInWardFirstnameByManual.setText("");
+        this.aTxtPatientInWardLastnameByManual.setText("");
+        // Utility.printCoreDebug(this, "this.frmParent.getCurrentSpId() = "+this.frmParent.getCurrentSpId());
+        this.aCmbWard.setSelectedItem(new BaseServicePointVO(this.frmParent.getCurrentSpId()));
+    }//GEN-LAST:event_aBtnPatientInWardClearActionPerformed
+
+    private void aBtnClearActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aBtnClearActionPerformed
+    {//GEN-HEADEREND:event_aBtnClearActionPerformed
+        this.aTxtHnByManual.setText("");
+        this.aTxtPatientNameByManual.setText("");
+        this.aTxtLimit.setText("100");
+    }//GEN-LAST:event_aBtnClearActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -445,7 +862,7 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
 
             public void run()
             {
-                DlgFindPatientAndVisit dialog = new DlgFindPatientAndVisit(new javax.swing.JFrame(), true);
+                DlgFindPatientAndVisit dialog = new DlgFindPatientAndVisit(null, true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter()
                 {
 
@@ -460,32 +877,54 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aBtnCancel;
+    private javax.swing.JButton aBtnClear;
     private javax.swing.JButton aBtnFindPatient;
+    private javax.swing.JButton aBtnPatientInWardCancel;
+    private javax.swing.JButton aBtnPatientInWardClear;
+    private javax.swing.JButton aBtnPatientInWardFindPatient;
+    private javax.swing.JButton aBtnSelectAn;
     private javax.swing.JButton aBtnSelectVn;
     private javax.swing.JCheckBox aChkNoVn;
+    private javax.swing.JComboBox aCmbWard;
     private javax.swing.JLabel aLblHnByManual;
     private javax.swing.JLabel aLblPatientByManual;
+    private javax.swing.JLabel aLblPatientInWardAnByManual;
+    private javax.swing.JLabel aLblPatientInWardFirstnameByManual;
+    private javax.swing.JLabel aLblPatientInWardHnByManual;
+    private javax.swing.JLabel aLblPatientInWardLastnameByManual;
+    private javax.swing.JLabel aLblPatientInWardWardByManual;
     private javax.swing.JPanel aPnlButton;
     private javax.swing.JPanel aPnlCenter;
+    private javax.swing.JPanel aPnlFindPatient;
+    private javax.swing.JPanel aPnlPatientInWard;
+    private javax.swing.JPanel aPnlPatientInWardButton;
+    private javax.swing.JPanel aPnlPatientInWardCenter;
+    private javax.swing.JPanel aPnlPatientInWardTop;
     private javax.swing.JPanel aPnlPatientList;
     private javax.swing.JPanel aPnlTop;
     private javax.swing.JPanel aPnlVisitList;
+    private javax.swing.JScrollPane aScrlAdmit;
     private javax.swing.JScrollPane aScrlPatient;
     private javax.swing.JScrollPane aScrlVisit;
     private javax.swing.JSplitPane aSplitPane;
+    private javax.swing.JTabbedPane aTabPane;
+    private javax.swing.JTable aTblAdmit;
+    private com.bpk.app.emrapp.BpkTableModel aTblMdlAdmit;
     private com.bpk.app.emrapp.BpkTableModel aTblMdlPatient;
     private com.bpk.app.emrapp.BpkTableModel aTblMdlVisit;
     private javax.swing.JTable aTblPatient;
     private javax.swing.JTable aTblVisit;
     private javax.swing.JTextField aTxtHnByManual;
     private javax.swing.JTextField aTxtLimit;
+    private javax.swing.JTextField aTxtPatientInWardAnByManual;
+    private javax.swing.JTextField aTxtPatientInWardFirstnameByManual;
+    private javax.swing.JTextField aTxtPatientInWardHnByManual;
+    private javax.swing.JTextField aTxtPatientInWardLastnameByManual;
     private javax.swing.JTextField aTxtPatientNameByManual;
     // End of variables declaration//GEN-END:variables
 
     public BpkDocumentScanVO getBpkDocumentScanVO()
     {
-
-
         return aBpkDocumentScanVO;
     }
 
@@ -496,5 +935,11 @@ public class DlgFindPatientAndVisit extends javax.swing.JDialog
             this.aTxtHnByManual.setText(pPatientVO.getHn());
             this.aTxtPatientNameByManual.setText(pPatientVO.getPatientName());
         }
+    }
+
+    public void setDefaultServicePointAndSearch()
+    {
+        this.aCmbWard.setSelectedItem(new BaseServicePointVO(this.frmParent.getCurrentSpId()));
+        this.searchPatientInWard();
     }
 }

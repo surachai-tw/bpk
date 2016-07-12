@@ -1,5 +1,12 @@
 package com.bpk.app.emrapp;
 
+import com.bpk.core.emrcore.dao.DocScanDAO;
+import com.bpk.core.emrcore.dao.DocScanDAOFactory;
+import com.bpk.persistence.emrdto.BaseServicePointVO;
+import com.bpk.utility.Utility;
+import com.bpk.utility.fix.FixServicePointType;
+import java.util.List;
+
 /**
  *
  * @author SURACHAI.TO
@@ -23,6 +30,34 @@ public class DlgLogin extends javax.swing.JDialog
                 aTxtPassword.requestFocus();
             }
         });
+
+        DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
+        try
+        {
+            List listBaseServicePointVO = aDocScanDAO.listBaseServicePointByType(FixServicePointType.IPD);
+
+            this.aCmbBaseServicePoint.removeAllItems();
+            BaseServicePointVO blankVO = new BaseServicePointVO();
+            blankVO.setDescription("-- Service Point --");
+            this.aCmbBaseServicePoint.addItem(blankVO);
+            for (int i = 0, sizei = listBaseServicePointVO.size(); i < sizei; i++)
+            {
+                this.aCmbBaseServicePoint.addItem(listBaseServicePointVO.get(i));
+            }
+
+            listBaseServicePointVO = aDocScanDAO.listBaseServicePointByType(FixServicePointType.OPD);
+
+            for (int i = 0, sizei = listBaseServicePointVO.size(); i < sizei; i++)
+            {
+                this.aCmbBaseServicePoint.addItem(listBaseServicePointVO.get(i));
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            aDocScanDAO = null;
+        }
     }
 
     /** This method is called from within the constructor to
@@ -42,6 +77,8 @@ public class DlgLogin extends javax.swing.JDialog
         aLblUsername = new javax.swing.JLabel();
         aTxtUsername = new javax.swing.JTextField();
         aLblPassword = new javax.swing.JLabel();
+        aLblBaseServicePoint = new javax.swing.JLabel();
+        aCmbBaseServicePoint = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         aPnlButton = new javax.swing.JPanel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -76,7 +113,7 @@ public class DlgLogin extends javax.swing.JDialog
 
         aPnlBody.setLayout(new java.awt.GridBagLayout());
 
-        aLblUsername.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblUsername.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblUsername.setText("Username:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -85,9 +122,19 @@ public class DlgLogin extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 0, 11);
         aPnlBody.add(aLblUsername, gridBagConstraints);
 
-        aTxtUsername.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aTxtUsername.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         aTxtUsername.setMinimumSize(new java.awt.Dimension(180, 24));
         aTxtUsername.setPreferredSize(new java.awt.Dimension(180, 24));
+        aTxtUsername.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aTxtUsernameActionPerformed(evt);
+            }
+        });
+        aTxtUsername.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                aTxtUsernameFocusLost(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
@@ -95,7 +142,7 @@ public class DlgLogin extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 11);
         aPnlBody.add(aTxtUsername, gridBagConstraints);
 
-        aLblPassword.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        aLblPassword.setFont(new java.awt.Font("Tahoma", 0, 12));
         aLblPassword.setText("Password:");
         aLblPassword.setToolTipText("");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -120,11 +167,32 @@ public class DlgLogin extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 11);
         aPnlBody.add(aTxtPassword, gridBagConstraints);
 
+        aLblBaseServicePoint.setFont(new java.awt.Font("Tahoma", 0, 12));
+        aLblBaseServicePoint.setText("Service Point:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 12, 0, 11);
+        aPnlBody.add(aLblBaseServicePoint, gridBagConstraints);
+        aLblBaseServicePoint.getAccessibleContext().setAccessibleName("Service Point:");
+        aLblBaseServicePoint.getAccessibleContext().setAccessibleDescription("");
+
+        aCmbBaseServicePoint.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        aCmbBaseServicePoint.setMinimumSize(new java.awt.Dimension(180, 24));
+        aCmbBaseServicePoint.setPreferredSize(new java.awt.Dimension(180, 24));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 11);
+        aPnlBody.add(aCmbBaseServicePoint, gridBagConstraints);
+
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/bpk/app/emrapp/images/LogoTiny.jpg"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.gridheight = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         aPnlBody.add(jLabel1, gridBagConstraints);
 
@@ -159,7 +227,7 @@ public class DlgLogin extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 11, 0);
         aPnlButton.add(aBtnLogin, gridBagConstraints);
 
-        aBtnCancel.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        aBtnCancel.setFont(new java.awt.Font("Tahoma", 1, 12));
         aBtnCancel.setText("Cancel");
         aBtnCancel.setMargin(new java.awt.Insets(0, 0, 0, 0));
         aBtnCancel.setMaximumSize(new java.awt.Dimension(80, 28));
@@ -200,6 +268,65 @@ public class DlgLogin extends javax.swing.JDialog
         this.aBtnLoginActionPerformed(evt);
     }//GEN-LAST:event_aTxtPasswordActionPerformed
 
+    private void aTxtUsernameActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aTxtUsernameActionPerformed
+    {//GEN-HEADEREND:event_aTxtUsernameActionPerformed
+        char[] pass = aTxtPassword.getPassword();
+
+        Object obj = this.aCmbBaseServicePoint.getSelectedItem();
+        if (obj != null && obj instanceof BaseServicePointVO)
+        {
+            if (aTxtUsername.getText().trim().length() > 0 && pass.length > 0)
+            {
+                this.dispose();
+            }
+        } else
+        {
+            if (aTxtUsername.getText().trim().length() > 0 && pass.length > 0)
+            {
+                selectDefaultServicePoint();
+            } else if (aTxtUsername.getText().trim().length() > 0 && pass.length == 0)
+            {
+                selectDefaultServicePoint();
+                aTxtPassword.requestFocus();
+            }
+        }
+    }//GEN-LAST:event_aTxtUsernameActionPerformed
+
+    private void aTxtUsernameFocusLost(java.awt.event.FocusEvent evt)//GEN-FIRST:event_aTxtUsernameFocusLost
+    {//GEN-HEADEREND:event_aTxtUsernameFocusLost
+        Object obj = this.aCmbBaseServicePoint.getSelectedItem();
+        if (obj==null)
+        {
+            selectDefaultServicePoint();
+        } 
+        
+        if(obj instanceof BaseServicePointVO)
+        {
+            BaseServicePointVO aBaseServicePointVO = (BaseServicePointVO)obj;
+            if(Utility.isNull(aBaseServicePointVO.getObjectID()))        
+            {
+                selectDefaultServicePoint();
+            }
+        }
+    }//GEN-LAST:event_aTxtUsernameFocusLost
+
+    private void selectDefaultServicePoint()
+    {
+        DocScanDAO aDocScanDAO = DocScanDAOFactory.newDocScanDAO();
+        try
+        {
+            String defaultBaseServicePointId = aDocScanDAO.getDefaultServicePointByEmployeeId(this.aTxtUsername.getText().trim());
+
+            this.aCmbBaseServicePoint.setSelectedItem(new BaseServicePointVO(defaultBaseServicePointId));
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            aDocScanDAO = null;
+        }
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -226,6 +353,8 @@ public class DlgLogin extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aBtnCancel;
     private javax.swing.JButton aBtnLogin;
+    private javax.swing.JComboBox aCmbBaseServicePoint;
+    private javax.swing.JLabel aLblBaseServicePoint;
     private javax.swing.JLabel aLblName;
     private javax.swing.JLabel aLblPassword;
     private javax.swing.JLabel aLblUsername;
@@ -256,9 +385,21 @@ public class DlgLogin extends javax.swing.JDialog
     {
         if (!isCancel)
         {
-            String[] loginData = new String[2];
+            String[] loginData = new String[3];
             loginData[0] = this.aTxtUsername.getText();
             loginData[1] = new String(this.aTxtPassword.getPassword());
+
+            Object obj = this.aCmbBaseServicePoint.getSelectedItem();
+            if (obj != null && obj instanceof BaseServicePointVO)
+            {
+                BaseServicePointVO aBaseServicePointVO = (BaseServicePointVO) obj;
+                loginData[2] = aBaseServicePointVO.getObjectID();
+            } else
+            {
+                loginData[2] = "";
+            }
+
+            // Utility.printCoreDebug(this, "SpId = " + loginData[2]);
 
             return loginData;
         }

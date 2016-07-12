@@ -1,5 +1,7 @@
 package com.bpk.core.emrcore.dao;
 
+import com.bpk.persistence.careplandto.AdmitVO;
+import com.bpk.persistence.emrdto.BaseServicePointVO;
 import com.bpk.persistence.emrdto.BpkDocumentScanVO;
 import com.bpk.persistence.emrdto.FolderVO;
 import com.bpk.persistence.emrdto.PatientVO;
@@ -264,6 +266,7 @@ public class DocScanDAO
                 sqlCmd = new StringBuffer(
                         "SELECT DISTINCT visit.visit_id, format_vn(visit.vn) AS vn, format_an(visit.an) AS an, visit.fix_visit_type_id, visit.visit_date, visit.visit_time, get_first_pdx_name(visit.visit_id) AS pdx ");
                 sqlCmd.append(" FROM visit ");
+                sqlCmd.append(" LEFT JOIN admit ON visit.visit_id=admit.visit_id AND admit.active='1' ");
                 sqlCmd.append(" LEFT JOIN bpk_document_scan ON visit.patient_id=bpk_document_scan.patient_id AND visit.visit_id=bpk_document_scan.visit_id ");
                 sqlCmd.append(" WHERE visit.active='1' AND visit.patient_id='").append(patientId).append("' ");
                 sqlCmd.append(" ORDER BY visit.visit_date DESC, visit.visit_time DESC");
@@ -290,11 +293,11 @@ public class DocScanDAO
                     List listFolder = aVisitVO.getListFolderVO();
                     for (int i = 0, sizei = listFolder.size(); i < sizei; i++)
                     {
-                        FolderVO tmpFolderVO = (FolderVO) listFolder.get(i);
+                    FolderVO tmpFolderVO = (FolderVO) listFolder.get(i);
 
-                        tmpFolderVO.setListBpkDocumentScanVO(this.listBpkDocumentScanVO(aVisitVO.getObjectID(), tmpFolderVO.getObjectID()));
+                    tmpFolderVO.setListBpkDocumentScanVO(this.listBpkDocumentScanVO(aVisitVO.getObjectID(), tmpFolderVO.getObjectID()));
                     }
-                    */
+                     */
                     listVisitVO.add(aVisitVO);
                 }
 
@@ -561,7 +564,7 @@ public class DocScanDAO
                     }
                 }
 
-                sqlCmd = new StringBuffer("INSERT INTO bpk_document_scan (bpk_document_scan_id, patient_id, visit_id, folder_name, image_file_name, scan_eid, scan_date, scan_time, update_eid, update_date, update_time, document_name, print_date, print_time, doctor_eid, fix_document_scan_status_id) VALUES('");
+                sqlCmd = new StringBuffer("INSERT INTO bpk_document_scan (bpk_document_scan_id, patient_id, visit_id, folder_name, image_file_name, scan_eid, scan_date, scan_time, update_eid, update_date, update_time, document_name, print_date, print_time, doctor_eid, fix_document_scan_status_id, bpk_fix_ordersheet_type_id, is_send_to_pharmacy, is_send_to_nutrition) VALUES('");
                 newBpkDocumentScanVO.setObjectID(XPersistent.generateObjectID());
                 newBpkDocumentScanVO.setScanDate(Utility.getCurrentDate());
                 newBpkDocumentScanVO.setScanTime(Utility.getCurrentTime());
@@ -577,7 +580,7 @@ public class DocScanDAO
                     Utility.printCoreDebug(this, "Utility.isNull(newBpkDocumentScanVO.getVn())");
                     sqlCmd.append("'', '");
                 } else
-                { 
+                {
                     if (VisitVO.NO_VN.equals(newBpkDocumentScanVO.getVn()))
                     {
                         Utility.printCoreDebug(this, "VisitVO.NO_VN.equals(newBpkDocumentScanVO.getVn())");
@@ -600,7 +603,10 @@ public class DocScanDAO
                 sqlCmd.append(newBpkDocumentScanVO.getUpdateEid()).append("', '").append(newBpkDocumentScanVO.getUpdateDate()).append("', '").append(newBpkDocumentScanVO.getUpdateTime()).append("', '");
                 sqlCmd.append(newBpkDocumentScanVO.getDocumentName()).append("', '").append(newBpkDocumentScanVO.getPrintDate()).append("', '").append(newBpkDocumentScanVO.getPrintTime()).append("', '");
                 sqlCmd.append(validateEmployeeId(newBpkDocumentScanVO.getDoctorEid())).append("', '");
-                sqlCmd.append(FixDocumentScanStatus.BEGIN_SCAN).append("')");
+                sqlCmd.append(FixDocumentScanStatus.BEGIN_SCAN).append("', '");
+                sqlCmd.append(newBpkDocumentScanVO.getBpkFixOrdersheetTypeId()).append("', '");
+                sqlCmd.append(newBpkDocumentScanVO.getIsSendToPharmacy()).append("', '");
+                sqlCmd.append(newBpkDocumentScanVO.getIsSendToNutrition()).append("')");
 
                 conn = DocScanDAOFactory.getConnection();
                 stmt = conn.createStatement();
@@ -714,6 +720,53 @@ public class DocScanDAO
         return listDocumentName;
     }
 
+    public List listBaseServicePointByType(String fixServicePointTypeId) throws Exception
+    {
+        List list = new ArrayList();
+
+        Connection conn = null;
+        Statement stmt;
+        ResultSet rs;
+        StringBuffer sql = new StringBuffer(
+                "SELECT base_service_point_id, description FROM base_service_point WHERE active='1' AND fix_service_point_type_id='").append(
+                fixServicePointTypeId).append("' ORDER BY description");
+
+        try
+        {
+            conn = DocScanDAOFactory.getConnection();
+            stmt = conn.createStatement();
+
+            Utility.printCoreDebug(this, sql.toString());
+            rs = stmt.executeQuery(sql.toString());
+
+            for (; rs.next();)
+            {
+                BaseServicePointVO aSpVO = new BaseServicePointVO();
+
+                aSpVO.setObjectID(rs.getString("base_service_point_id"));
+                aSpVO.setDescription(rs.getString("description"));
+
+                list.add(aSpVO);
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            throw ex;
+        } finally
+        {
+            sql = null;
+            rs = null;
+            stmt = null;
+            conn = null;
+        }
+
+        return list;
+    }
+
     public List searchPatient(String hn, String patName, String searchCount) throws Exception
     {
         List listPatientVO = new ArrayList();
@@ -794,6 +847,110 @@ public class DocScanDAO
         {
         }
         return listPatientVO;
+    }
+
+    public List searchPatientInWard(String hn, String an, String firstname, String lastname, String baseServicePointId) throws Exception
+    {
+        List listAdmitVO = new ArrayList();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rst = null;
+        StringBuffer sqlCmd = new StringBuffer();
+        try
+        {
+            sqlCmd.append("SELECT  ");
+            sqlCmd.append("visit.patient_id, ");
+            sqlCmd.append("visit.visit_id, ");
+            sqlCmd.append("admit.admit_id, ");
+            sqlCmd.append("visit.hn AS original_hn, ");
+            sqlCmd.append("format_hn(visit.hn) AS hn, ");
+            sqlCmd.append("format_an(admit.an) AS an, ");
+            sqlCmd.append("admit.admit_date, ");
+            sqlCmd.append("admit.admit_time, ");
+            sqlCmd.append("bpkget_patient_name(visit.patient_id) AS patient_name, ");
+            sqlCmd.append("bed_management.base_service_point_id, ");
+            sqlCmd.append("bpkget_service_description(bed_management.base_service_point_id) AS base_service_point_description, ");
+            sqlCmd.append("bed_management.room_number, ");
+            sqlCmd.append("bed_management.bed_number, ");
+            sqlCmd.append("ipd_attending_physician.employee_id, ");
+            sqlCmd.append("bpkget_employee_name(ipd_attending_physician.employee_id) AS employee_name ");
+            sqlCmd.append("FROM admit ");
+            sqlCmd.append("INNER JOIN visit ON admit.visit_id = visit.visit_id AND visit.active='1' ");
+            sqlCmd.append("INNER JOIN patient ON visit.patient_id = patient.patient_id AND patient.active='1' ");
+            sqlCmd.append("INNER JOIN bed_management ON admit.admit_id = bed_management.admit_id AND bed_management.current_bed='1' ");
+            sqlCmd.append("LEFT JOIN ipd_attending_physician ON admit.admit_id = ipd_attending_physician.admit_id AND ipd_attending_physician.priority='1' AND is_current='1' ");
+            sqlCmd.append("WHERE ");
+            sqlCmd.append("admit.active='1' ");
+            if (Utility.isNotNull(hn))
+            {
+                sqlCmd.append(" AND visit.hn='").append(Utility.formatHnToDb(hn)).append("' ");
+            }
+            if (Utility.isNotNull(an))
+            {
+                sqlCmd.append(" AND admit.an='").append(Utility.formatAnToDb(an)).append("' ");
+            }
+            if (Utility.isNotNull(firstname))
+            {
+                sqlCmd.append(" AND patient.firstname ILIKE '%").append(firstname).append("%' ");
+            }
+            if (Utility.isNotNull(lastname))
+            {
+                sqlCmd.append(" AND patient.lastname ILIKE '%").append(lastname).append("%' ");
+            }
+            if (Utility.isNotNull(baseServicePointId))
+            {
+                sqlCmd.append(" AND bed_management.base_service_point_id='").append(baseServicePointId).append("' ");
+            }
+            sqlCmd.append("ORDER BY bpkget_service_description(bed_management.base_service_point_id), bed_management.bed_number, an");
+
+            conn = DocScanDAOFactory.getConnection();
+            stmt = conn.createStatement();
+            Utility.printCoreDebug(this, sqlCmd.toString());
+            rst = stmt.executeQuery(sqlCmd.toString());
+
+            for (; rst.next();)
+            {
+                AdmitVO tmpAdmitVO = new AdmitVO();
+                tmpAdmitVO.setObjectID(rst.getString("admit_id"));
+                tmpAdmitVO.setVisitId(rst.getString("visit_id"));
+                tmpAdmitVO.setPatientId(rst.getString("patient_id"));
+                tmpAdmitVO.setAdmitDate(rst.getString("admit_date"));
+                tmpAdmitVO.setAdmitTime(rst.getString("admit_time"));
+                tmpAdmitVO.setPatientName(rst.getString("patient_name"));
+                tmpAdmitVO.setOriginalHn(rst.getString("original_hn"));
+                tmpAdmitVO.setHn(rst.getString("hn"));
+                tmpAdmitVO.setAn(rst.getString("an"));
+                tmpAdmitVO.setBaseServicePointDescription(rst.getString("base_service_point_description"));
+                tmpAdmitVO.setRoomNumber(rst.getString("room_number"));
+                tmpAdmitVO.setBedNumber(rst.getString("bed_number"));
+                tmpAdmitVO.setBaseServicePointId(rst.getString("base_service_point_id"));
+                tmpAdmitVO.setEmployeeId(rst.getString("employee_id"));
+                tmpAdmitVO.setEmployeeName(rst.getString("employee_name"));
+
+                listAdmitVO.add(tmpAdmitVO);
+            }
+
+            rst.close();
+            stmt.close();
+            conn.close();
+
+        } catch (Exception ex)
+        {
+            if (conn != null)
+            {
+                try
+                {
+                    conn.close();
+                } catch (Exception ex2)
+                {
+                }
+            }
+            ex.printStackTrace();
+            throw ex;
+        } finally
+        {
+        }
+        return listAdmitVO;
     }
 
     public VisitVO readVisit(String visitId)
@@ -887,6 +1044,46 @@ public class DocScanDAO
         }
 
         return aEmployeeRoleVO;
+    }
+
+    public String getDefaultServicePointByEmployeeId(String username) throws Exception
+    {
+        String baseServicePointId = null;
+        Connection conn = null;
+        Statement stmt;
+        ResultSet rs;
+        StringBuffer sql = new StringBuffer(
+                "SELECT base_service_point_id FROM employee WHERE employee_id='").append(username).append("'");
+
+        try
+        {
+            conn = DocScanDAOFactory.getConnection();
+            stmt = conn.createStatement();
+
+            Utility.printCoreDebug(this, sql.toString());
+            rs = stmt.executeQuery(sql.toString());
+
+            if (rs.next())
+            {
+                baseServicePointId = rs.getString("base_service_point_id");
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            throw ex;
+        } finally
+        {
+            sql = null;
+            rs = null;
+            stmt = null;
+            conn = null;
+        }
+
+        return baseServicePointId;
     }
 
     private String validateEmployeeId(String doctorCode) throws Exception
